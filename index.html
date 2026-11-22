@@ -111,6 +111,7 @@ footer{text-align:center;color:var(--mute);padding:24px 16px calc(24px + env(saf
 /* ===== إعدادات المتجر: عدّلها حسب متجرك ===== */
 const STORE   = "متجري";                 // اسم المتجر
 const WHATSAPP= "963936193191";          // رقم واتساب بصيغة دولية بدون + أو أصفار
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbzI4BlxYryIb-467tYWnxG4lC2_xVOG-vA2hNcWpoPgVUtVArGL3bynFXcusxR78lY6/exec";                     // رابط Google Apps Script لتسجيل الطلبات (اتركه فارغاً لو ما استخدمته)
 const RATE    = 120;                      // سعر الصرف: كم ليرة سورية = 1 دولار (حدّثه دائماً)
 const SHIP    = {"الدرباسية":1,"عامودا":1,"قامشلو":2,"تربسبية":2,"ديرك":3,"رميلان":3,"تل تمر":3,"الحسكة":3}; // أجرة التوصيل بالدولار
 /* المنتجات: السعر بالدولار */
@@ -175,6 +176,7 @@ $("#send").onclick=()=>{
   const sub=ids.reduce((a,i)=>a+find(i).p*cart[i],0),sh=SHIP[$("#gov").value];
   const lines=ids.map(i=>`• ${find(i).n} × ${cart[i]} = ${money(find(i).p*cart[i])}`).join("\n");
   const msg=`طلب جديد من ${STORE}\n\n${lines}\n\nالمجموع: ${money(sub)}\nالتوصيل (${$("#gov").value}): ${money(sh)}\nالإجمالي: ${money(sub+sh)}\n\nالاسم: ${fn}\nالهاتف: ${ph}\nالعنوان: ${ad}\nالدفع: ${$("#pay").value}`;
+  if(SHEET_URL){try{fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({name:fn,phone:ph,city:$('#gov').value,address:ad,pay:$('#pay').value,items:ids.map(i=>find(i).n+' × '+cart[i]).join(' | '),subtotal:sub,ship:sh,total:sub+sh})}).catch(()=>{})}catch(e){}}
   window.open("https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(msg),"_blank");
 };
 try{const i=JSON.parse(localStorage.getItem('info')||'null');if(i){$('#fn').value=i.fn||'';$('#ph').value=i.ph||'';$('#addr').value=i.ad||'';if(SHIP[i.g])$('#gov').value=i.g;if(i.p)$('#pay').value=i.p}}catch(e){}

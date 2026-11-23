@@ -61,9 +61,52 @@ input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--lin
 .note{color:var(--mute);font-size:.85rem;margin-top:6px}
 footer{text-align:center;color:var(--mute);padding:24px 16px calc(24px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line)}
 @media (prefers-reduced-motion:reduce){aside{transition:none}}
+
+/* ===== واجهة زجاجية (Glass) بأسلوب iOS ===== */
+:root{--glass:rgba(255,255,255,.58);--glass-strong:rgba(255,255,255,.74);--glass-line:rgba(255,255,255,.75);--glass-shadow:0 10px 32px rgba(15,76,69,.14);--field:rgba(255,255,255,.55);--mute:#47605b;--b1:#58c2b0;--b2:#f4a261;--b3:#8fb0f5;--bgA:#e6f2ee;--bgB:#f7efe5}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--glass:rgba(24,48,44,.5);--glass-strong:rgba(18,38,35,.74);--glass-line:rgba(255,255,255,.14);--glass-shadow:0 10px 32px rgba(0,0,0,.4);--field:rgba(255,255,255,.07);--mute:#a9c0ba;--b1:#1f8f7d;--b2:#b4622a;--b3:#3b5bb5;--bgA:#08130f;--bgB:#0f1d2a}}
+:root[data-theme="dark"]{--glass:rgba(24,48,44,.5);--glass-strong:rgba(18,38,35,.74);--glass-line:rgba(255,255,255,.14);--glass-shadow:0 10px 32px rgba(0,0,0,.4);--field:rgba(255,255,255,.07);--mute:#a9c0ba;--b1:#1f8f7d;--b2:#b4622a;--b3:#3b5bb5;--bgA:#08130f;--bgB:#0f1d2a}
+html{background:linear-gradient(160deg,var(--bgA),var(--bgB));background-attachment:fixed;min-height:100%}
+body{background:transparent;min-height:100vh}
+.bg{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.bg i{position:absolute;width:60vmax;height:60vmax;border-radius:50%;opacity:.6;animation:drift 22s ease-in-out infinite alternate}
+.bg i:nth-child(1){background:radial-gradient(circle,var(--b1),transparent 65%);top:-20vmax;right:-15vmax}
+.bg i:nth-child(2){background:radial-gradient(circle,var(--b2),transparent 65%);bottom:-25vmax;left:-20vmax;animation-delay:-7s}
+.bg i:nth-child(3){background:radial-gradient(circle,var(--b3),transparent 65%);top:30vh;left:20vw;width:45vmax;height:45vmax;opacity:.4;animation-delay:-13s}
+@keyframes drift{to{transform:translate3d(6vmax,4vmax,0) scale(1.1)}}
+body::before{display:none}
+header{top:calc(env(safe-area-inset-top,0px) + 8px);width:min(1000px,calc(100% - 20px));margin:8px auto 0;border-radius:22px;background:var(--glass);color:var(--ink);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow),inset 0 1px 0 rgba(255,255,255,.5)}
+.logo{color:var(--brand)}
+.pill{background:var(--field);border:1px solid var(--glass-line)}
+.cartbtn{box-shadow:0 4px 14px rgba(240,138,60,.35)}
+.trust span{background:var(--glass);border:1px solid var(--glass-line);border-radius:999px;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.chip{background:var(--glass);border:1px solid var(--glass-line);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.chip[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);box-shadow:0 4px 14px rgba(15,76,69,.3)}
+.card{background:var(--glass);border:1px solid var(--glass-line);border-radius:24px;padding:8px;-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);box-shadow:var(--glass-shadow),inset 0 1px 0 rgba(255,255,255,.45);transition:transform .25s,box-shadow .25s}
+@media (hover:hover){.card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(15,76,69,.2),inset 0 1px 0 rgba(255,255,255,.5)}}
+.thumb{border-radius:18px}
+.card .b{padding:10px 8px 6px}
+.add{border-radius:999px;padding:10px;font-weight:700;background:var(--brand);background:linear-gradient(180deg,color-mix(in srgb,var(--brand) 85%,#fff),var(--brand));transition:transform .15s}
+.add:active,.send:active,.cartbtn:active{transform:scale(.96)}
+aside{inset:8px auto 8px 8px;width:min(420px,calc(100% - 16px));border-radius:26px;background:var(--glass-strong);border:1px solid var(--glass-line);-webkit-backdrop-filter:blur(28px) saturate(180%);backdrop-filter:blur(28px) saturate(180%);transform:translateX(-115%);overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.28)}
+aside.open{transform:none}
+.ah{border-bottom-color:var(--glass-line)}
+.row{border-bottom-color:var(--glass-line)}
+.sum{background:var(--glass);border-top:1px solid var(--glass-line)}
+input,select,textarea{background:var(--field);border:1px solid var(--glass-line);border-radius:14px}
+.qty button{background:var(--field);border:1px solid var(--glass-line);border-radius:10px}
+.send{border-radius:999px;box-shadow:0 6px 18px rgba(27,122,75,.35);transition:transform .15s}
+footer{border-top-color:var(--glass-line)}
+body::after{content:"";position:fixed;inset:0;background:rgba(10,25,22,.3);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .25s;z-index:9}
+body:has(aside.open)::after{opacity:1;pointer-events:auto}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .thumb{filter:brightness(.88)}}
+:root[data-theme="dark"] .thumb{filter:brightness(.88)}
+@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){header,.card,aside,.sum,.chip,.trust span{background:var(--card)}}
+@media (prefers-reduced-motion:reduce){.bg i{animation:none}.card,.add,.send,body::after{transition:none}}
 </style>
 </head>
 <body>
+<div class="bg" aria-hidden="true"><i></i><i></i><i></i></div>
 <header>
   <div class="logo" id="storeName"></div>
   <button class="pill" id="lang">Kurdî</button>
@@ -167,6 +210,8 @@ $("#cur").onclick=()=>{cur=cur==="SYP"?"USD":"SYP";render()};
 $("#gov").onchange=render;
 const open=v=>{$("#cart").classList.toggle("open",v);$("#cart").setAttribute("aria-hidden",!v)};
 $("#openCart").onclick=()=>open(true);$("#closeCart").onclick=()=>open(false);
+document.body.addEventListener("click",e=>{if(e.target===document.body)open(false)});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")open(false)});
 $("#send").onclick=()=>{
   const ids=Object.keys(cart).filter(i=>cart[i]>0&&find(i)),err=$("#err");
   const fn=$("#fn").value.trim(),ph=$("#ph").value.trim(),ad=$("#addr").value.trim();

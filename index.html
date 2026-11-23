@@ -342,7 +342,7 @@ button.btn{border:0;cursor:pointer;font-family:inherit}
   </div>
 </main>
 
-<footer>© <span id="yr"></span> <span id="fName"></span> – للتواصل واتساب: <span id="fWa" dir="ltr"></span><div class="flinks"><button class="lnk" data-doc="ship">سياسة التوصيل والاسترجاع</button> · <button class="lnk" data-doc="priv">سياسة الخصوصية</button></div><div id="rateNote" dir="ltr" hidden style="margin-top:6px;font-size:.8rem;opacity:.75"></div></footer>
+<footer>© <span id="yr"></span> <span id="fName"></span>. <span>جميع الحقوق محفوظة</span>.<div class="flinks"><button class="lnk" data-doc="ship">سياسة التوصيل والاسترجاع</button> · <button class="lnk" data-doc="priv">سياسة الخصوصية</button></div><div id="rateNote" dir="ltr" hidden style="margin-top:6px;font-size:.8rem;opacity:.75"></div></footer>
 
 <aside id="cart" aria-label="السلة" aria-hidden="true">
   <div class="ah"><h2>سلتك</h2><button class="pill" id="closeCart" style="color:var(--ink)">إغلاق</button></div>
@@ -398,11 +398,12 @@ button.btn{border:0;cursor:pointer;font-family:inherit}
 const STORE   = "متجري";                 // اسم المتجر
 const WHATSAPP= "963936193191";          // رقم واتساب بصيغة دولية بدون + أو أصفار
 const SHEET_URL = "https://script.google.com/macros/s/AKfycbzI4BlxYryIb-467tYWnxG4lC2_xVOG-vA2hNcWpoPgVUtVArGL3bynFXcusxR78lY6/exec";                     // رابط Google Apps Script لتسجيل الطلبات (اتركه فارغاً لو ما استخدمته)
+const SHEET_PRODUCTS = true;              // true: المنتجات بتنقرأ من تبويب "المنتجات" بجدول Google (الأمثلة تحت بتصير احتياطية وما بتظهر)
 const RATE_FALLBACK = 120;               // سعر احتياطي: كم ليرة سورية = 1 دولار (بيُستعمل إذا فشل جلب السعر التلقائي)
 let RATE = RATE_FALLBACK;                   // السعر المستعمل فعلياً (بيتحدث تلقائياً)
 const SHIP    = {"الدرباسية":1,"عامودا":1,"قامشلو":2,"تربسبية":2,"ديرك":3,"رميلان":3,"تل تمر":3,"الحسكة":3}; // أجرة التوصيل بالدولار
 /* المنتجات: السعر بالدولار. لعرض خصم أضف old:السعر_القديم للمنتج، مثلاً {id:2,...,p:8,old:10,...} */
-const PRODUCTS = [
+let PRODUCTS = [
  {id:1,n:"صابون غار حلبي",d:"قطعة 200 غ، تخمير سنوات",p:3,c:"مواد غذائية وطبيعية",e:"🧼",bg:"#dfeee0"},
  {id:2,n:"زيت زيتون بكر",d:"عبوة 1 لتر",p:9,c:"مواد غذائية وطبيعية",e:"🫒",bg:"#e8efcf"},
  {id:3,n:"زعتر بلدي",d:"برطمان 500 غ",p:4,c:"مواد غذائية وطبيعية",e:"🌿",bg:"#d8ecdf"},
@@ -451,7 +452,7 @@ const t=k=>lang==='ku'&&KU[k]||k;
 function tr(r){const w=document.createTreeWalker(r,NodeFilter.SHOW_TEXT);let n;while(n=w.nextNode()){if(n.parentNode.tagName==='SCRIPT')continue;if(n._o===undefined)n._o=n.nodeValue;const k=n._o.trim();n.nodeValue=lang==='ku'&&KU[k]?n._o.replace(k,KU[k]):n._o}}
 const money=u=>cur==='SYP'?Math.round(u*RATE).toLocaleString(lang==='ku'?'en-US':'ar-SY')+(lang==='ku'?' SYP':' ل.س'):'$'+(+u.toFixed(2)).toLocaleString('en-US');
 const find=id=>PRODUCTS.find(x=>x.id==id);
-$("#storeName").textContent=STORE;$("#fName").textContent=STORE;$("#fWa").textContent="+"+WHATSAPP;$("#yr").textContent=new Date().getFullYear();
+$("#storeName").textContent=STORE;$("#fName").textContent=STORE;$("#yr").textContent=new Date().getFullYear();
 $("#gov").innerHTML=Object.keys(SHIP).map(g=>`<option value="${g}">${g}</option>`).join("");
 
 function chips(){
@@ -719,6 +720,25 @@ document.addEventListener("pointerdown",e=>{
     j--;el.textContent=w.slice(0,j);if(j<=0){del=false;i++}setTimeout(step,35)}
   step()})();
 
+addKU({'جميع الحقوق محفوظة':'Hemû maf parastî ne'});
+/* ===== المنتجات من جدول Google ===== */
+(function(){
+  if(!SHEET_URL||!SHEET_PRODUCTS)return;
+  const KEYP='sheetProducts',BG=['#dfeee0','#e8efcf','#dbe6f3','#e3e0f2','#f3e5d4','#e0eef2','#f6ecc9','#fbe9c8','#d9ecf0','#efe3d0'];
+  const mk=(r,i)=>{const p=Number(r.price);if(!r.name||!isFinite(p)||p<=0)return null;
+    const o={id:Number(r.id)||i+1,n:esc(String(r.name).slice(0,80)),d:esc(String(r.desc||'').slice(0,160)),p:p,c:String(r.cat||'أخرى').replace(/[&<>"']/g,'').slice(0,40),e:String(r.emoji||'🛍️').slice(0,4),bg:BG[i%BG.length]};
+    const old=Number(r.old);if(old>p)o.old=old;
+    const im=String(r.images||'').split(/[\s,]+/).filter(u=>/^(https:\/\/|images\/)/.test(u)).slice(0,6);if(im.length)o.imgs=im;
+    return o};
+  const apply=a=>{PRODUCTS=a;if(cat!=='الكل'&&!a.some(x=>x.c===cat))cat='الكل';chips();render()};
+  let c=null;try{c=JSON.parse(localStorage.getItem(KEYP)||'null')}catch(e){}
+  PRODUCTS=Array.isArray(c)?c:[];
+  fetch(SHEET_URL+(SHEET_URL.includes('?')?'&':'?')+'products=1').then(r=>r.json()).then(d=>{
+    if(!d||!Array.isArray(d.products))return;
+    const a=d.products.map(mk).filter(Boolean);
+    try{localStorage.setItem(KEYP,JSON.stringify(a))}catch(e){}
+    apply(a)}).catch(()=>{});
+})();
 chips();render();
 
 /* ===== حركات: ظهور البطاقات + طيران المنتج للسلة ===== */

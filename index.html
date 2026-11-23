@@ -145,6 +145,52 @@ dialog{padding:0;border:1px solid var(--glass-line);border-radius:26px;color:var
 dialog::backdrop{background:rgba(10,25,22,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 @supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){dialog,.tile,.pro,.seg,.ghost{background:var(--card)}}
 @media (prefers-reduced-motion:reduce){.tile,.big,.ghost,.seg button{transition:none}}
+
+/* ===== حركات فخمة ===== */
+:root{--gold:#c8962e}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--gold:#f4c46a}}
+:root[data-theme="dark"]{--gold:#f4c46a}
+@keyframes rise{from{opacity:0;transform:translateY(26px) scale(.97)}}
+@keyframes popIn{from{opacity:0;transform:scale(.85)}}
+@keyframes dropIn{from{opacity:0;transform:translateY(-26px)}}
+@keyframes blurIn{from{opacity:0;filter:blur(12px);transform:translateY(16px)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-24px)}}
+@keyframes sheen{from{background-position:100% 0}to{background-position:0% 0}}
+@keyframes btnShine{0%,55%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
+@keyframes bump{0%{transform:scale(1)}35%{transform:scale(1.18)}100%{transform:scale(1)}}
+header{animation:dropIn .7s cubic-bezier(.2,.8,.2,1) backwards}
+.logo,.hero h1{background:linear-gradient(100deg,var(--brand) 0%,var(--brand) 38%,var(--gold) 50%,var(--brand) 62%,var(--brand) 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;animation:sheen 7s ease-in-out infinite alternate}
+.hero h1{background-image:linear-gradient(100deg,var(--ink) 0%,var(--brand) 38%,var(--gold) 50%,var(--brand) 62%,var(--ink) 100%);animation:blurIn 1s cubic-bezier(.2,.8,.2,1) backwards,sheen 8s ease-in-out 1s infinite alternate}
+.hero p{animation:fadeUp .8s .25s backwards}
+.trust span{animation:popIn .6s backwards}
+.trust span:nth-child(1){animation-delay:.5s}.trust span:nth-child(2){animation-delay:.62s}.trust span:nth-child(3){animation-delay:.74s}
+#shop:not([hidden]),#pros:not([hidden]){animation:fadeUp .5s backwards}
+.grid.reveal .card{animation:rise .65s cubic-bezier(.2,.8,.2,1) backwards}
+.grid.reveal .card:nth-child(n+11){animation-delay:700ms}
+.grid.reveal .card:nth-child(2){animation-delay:70ms}.grid.reveal .card:nth-child(3){animation-delay:140ms}.grid.reveal .card:nth-child(4){animation-delay:210ms}.grid.reveal .card:nth-child(5){animation-delay:280ms}.grid.reveal .card:nth-child(6){animation-delay:350ms}.grid.reveal .card:nth-child(7){animation-delay:420ms}.grid.reveal .card:nth-child(8){animation-delay:490ms}.grid.reveal .card:nth-child(9){animation-delay:560ms}.grid.reveal .card:nth-child(10){animation-delay:630ms}
+.pro{animation:rise .5s backwards}
+.tile{animation:popIn .45s backwards}
+.card{position:relative}
+.thumb{transition:font-size .4s cubic-bezier(.2,.8,.2,1)}
+.chip{transition:transform .2s,background .25s,box-shadow .25s}
+@media (hover:hover){
+  .card::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.38) 50%,transparent 60%);transform:translateX(-110%);transition:transform .8s;pointer-events:none}
+  .card:hover::after{transform:translateX(110%)}
+  .card:hover .thumb{font-size:4.7rem}
+  .chip:hover{transform:translateY(-2px)}
+  .tile:hover{transform:translateY(-3px)}
+  .tile .te{transition:transform .3s}
+  .tile:hover .te{transform:scale(1.2) rotate(-6deg)}
+}
+.big,.send,.cartbtn{position:relative;overflow:hidden;isolation:isolate}
+.big::after,.send::after,.cartbtn::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.55) 50%,transparent 65%);transform:translateX(-120%);animation:btnShine 4.5s ease-in-out infinite;pointer-events:none}
+.cartbtn::after{animation-delay:1.5s}.send::after{animation-delay:2s}
+.cartbtn.bump{animation:bump .5s}
+aside.enter .row{animation:slideIn .5s backwards}
+aside.enter .row:nth-child(2){animation-delay:.08s}aside.enter .row:nth-child(3){animation-delay:.16s}aside.enter .row:nth-child(4){animation-delay:.24s}aside.enter .row:nth-child(n+5){animation-delay:.32s}
+.fly{position:fixed;left:0;top:0;z-index:60;font-size:2.4rem;line-height:1;pointer-events:none;will-change:transform}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
@@ -182,7 +228,7 @@ dialog::backdrop{background:rgba(10,25,22,.35);-webkit-backdrop-filter:blur(6px)
   </div>
 </main>
 
-<footer>© <span id="yr"></span> <span id="fName"></span> – للتواصل واتساب: <span id="fWa" dir="ltr"></span></footer>
+<footer>© <span id="yr"></span> <span id="fName"></span> – للتواصل واتساب: <span id="fWa" dir="ltr"></span><div id="rateNote" dir="ltr" hidden style="margin-top:6px;font-size:.8rem;opacity:.75"></div></footer>
 
 <aside id="cart" aria-label="السلة" aria-hidden="true">
   <div class="ah"><h2>سلتك</h2><button class="pill" id="closeCart" style="color:var(--ink)">إغلاق</button></div>
@@ -227,7 +273,8 @@ dialog::backdrop{background:rgba(10,25,22,.35);-webkit-backdrop-filter:blur(6px)
 const STORE   = "متجري";                 // اسم المتجر
 const WHATSAPP= "963936193191";          // رقم واتساب بصيغة دولية بدون + أو أصفار
 const SHEET_URL = "https://script.google.com/macros/s/AKfycbzI4BlxYryIb-467tYWnxG4lC2_xVOG-vA2hNcWpoPgVUtVArGL3bynFXcusxR78lY6/exec";                     // رابط Google Apps Script لتسجيل الطلبات (اتركه فارغاً لو ما استخدمته)
-const RATE    = 120;                      // سعر الصرف: كم ليرة سورية = 1 دولار (حدّثه دائماً)
+const RATE_FALLBACK = 120;               // سعر احتياطي: كم ليرة سورية = 1 دولار (بيُستعمل إذا فشل جلب السعر التلقائي)
+let RATE = RATE_FALLBACK;                   // السعر المستعمل فعلياً (بيتحدث تلقائياً)
 const SHIP    = {"الدرباسية":1,"عامودا":1,"قامشلو":2,"تربسبية":2,"ديرك":3,"رميلان":3,"تل تمر":3,"الحسكة":3}; // أجرة التوصيل بالدولار
 /* المنتجات: السعر بالدولار */
 const PRODUCTS = [
@@ -297,14 +344,14 @@ function render(){
   $("#sub").textContent=money(sub);$("#ship").textContent=ids.length?money(sh):"—";$("#total").textContent=money(sub+sh);
   grid();pros();save();document.documentElement.lang=lang==='ku'?'ku':'ar';document.documentElement.dir=lang==='ku'?'ltr':'rtl';$('#lang').textContent=lang==='ku'?'عربي':'Kurdî';tr(document.body);
 }
-$("#chips").onclick=e=>{const b=e.target.closest("[data-c]");if(b){cat=b.dataset.c;chips();grid();tr(document.body)}};
+$("#chips").onclick=e=>{const b=e.target.closest("[data-c]");if(b){cat=b.dataset.c;chips();grid();tr(document.body);reveal()}};
 $("#grid").onclick=e=>{const b=e.target.closest("[data-add]");if(b){cart[b.dataset.add]=(cart[b.dataset.add]||0)+1;render()}};
 $("#items").onclick=e=>{const m=e.target.closest("[data-m]"),p=e.target.closest("[data-p]");
   if(m){cart[m.dataset.m]--;if(cart[m.dataset.m]<=0)delete cart[m.dataset.m]}
   if(p)cart[p.dataset.p]++;render()};
 $("#cur").onclick=()=>{cur=cur==="SYP"?"USD":"SYP";render()};
 $("#gov").onchange=render;
-const open=v=>{$("#cart").classList.toggle("open",v);$("#cart").setAttribute("aria-hidden",!v)};
+const open=v=>{const a=$("#cart");a.classList.toggle("open",v);a.setAttribute("aria-hidden",!v);if(v){a.classList.add("enter");clearTimeout(open._t);open._t=setTimeout(()=>a.classList.remove("enter"),900)}};
 $("#openCart").onclick=()=>open(true);$("#closeCart").onclick=()=>open(false);
 document.body.addEventListener("click",e=>{if(e.target===document.body)open(false)});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")open(false)});
@@ -343,7 +390,7 @@ function pros(){
   $("#plist").innerHTML=!cur?`<p class="empty">اختر مهنة لعرض الأرقام</p>`:l.length?l.map(x=>`<article class="pro"><div class="pe" aria-hidden="true">${cur.e}</div><div class="pi"><h3>${esc(x.n)}</h3><small>${esc(x.c||"")}${x.d?" · "+esc(x.d):""}</small></div><div class="acts"><a class="btn call" href="tel:+${intl(x.ph)}">اتصال</a><a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/${intl(x.ph)}">واتساب</a></div></article>`).join(""):`<p class="empty">ما في معلمين مسجلين بهالمهنة حالياً.</p><button class="ghost" data-join>إذا بتشتغل بهالمهنة، سجّل رقمك</button>`;
 }
 function setView(v){view=v;$("#shop").hidden=v!=='shop';$("#pros").hidden=v!=='pros';
-  $("#tabShop").setAttribute('aria-selected',v==='shop');$("#tabPros").setAttribute('aria-selected',v==='pros')}
+  $("#tabShop").setAttribute('aria-selected',v==='shop');$("#tabPros").setAttribute('aria-selected',v==='pros');if(v==='shop')reveal()}
 $("#tabShop").onclick=()=>setView('shop');$("#tabPros").onclick=()=>setView('pros');
 $("#tgrid").onclick=e=>{const b=e.target.closest("[data-t]");if(b){sel=sel===b.dataset.t?null:b.dataset.t;pros();tr($("#pros"))}};
 $("#plist").onclick=e=>{if(e.target.closest("[data-join]"))openDlg('join',sel)};
@@ -371,6 +418,47 @@ $("#dsend").onclick=()=>{
   window.open("https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(msg),"_blank");
 };
 chips();render();
+
+/* ===== حركات: ظهور البطاقات + طيران المنتج للسلة ===== */
+const noMotion=window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches;
+function reveal(){const g=$("#grid");g.classList.remove("reveal");void g.offsetWidth;g.classList.add("reveal");clearTimeout(reveal._t);reveal._t=setTimeout(()=>g.classList.remove("reveal"),1600)}
+reveal();
+$("#grid").addEventListener("click",e=>{
+  const b=e.target.closest("[data-add]");if(!b||noMotion)return;
+  const th=b.closest(".card").querySelector(".thumb"),cb=$("#openCart");if(!th||!cb||!th.animate)return;
+  const r=th.getBoundingClientRect(),t=cb.getBoundingClientRect();
+  const fx=r.left+r.width/2-20,fy=r.top+r.height/2-20,tx=t.left+t.width/2-20,ty=t.top+t.height/2-20;
+  const f=document.createElement("span");f.className="fly";f.textContent=th.textContent.trim();document.body.appendChild(f);
+  const a=f.animate([
+    {transform:`translate(${fx}px,${fy}px) scale(1)`,opacity:1},
+    {transform:`translate(${(fx+tx)/2}px,${Math.min(fy,ty)-70}px) scale(1.25)`,opacity:1,offset:.4},
+    {transform:`translate(${tx}px,${ty}px) scale(.25)`,opacity:.35}
+  ],{duration:780,easing:"cubic-bezier(.5,0,.3,1)"});
+  a.onfinish=()=>{f.remove();cb.classList.remove("bump");void cb.offsetWidth;cb.classList.add("bump")};
+},true);
+$("#openCart").addEventListener("animationend",e=>{if(e.animationName==="bump")e.currentTarget.classList.remove("bump")});
+
+/* ===== سعر الصرف التلقائي (ExchangeRate-API، بدون مفتاح) ===== */
+(function(){
+  const URL="https://open.er-api.com/v6/latest/USD",KEY="rate_v1",TTL=6*3600*1000;
+  const ok=v=>typeof v==="number"&&isFinite(v)&&v>RATE_FALLBACK*0.5&&v<RATE_FALLBACK*2; // يرفض الرقم إذا بعيد كتير عن الاحتياطي (مثلاً فرق عدد الأصفار)
+  function apply(v){
+    RATE=v;
+    const n=document.getElementById("rateNote");
+    n.innerHTML='1$ ≈ '+Math.round(v)+' SYP · <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener" style="color:inherit">Rates By Exchange Rate API</a>';
+    n.hidden=false;render();
+  }
+  let c=null;try{c=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}
+  if(c&&ok(c.v)){apply(c.v);if(Date.now()-c.t<TTL)return}
+  const ac=window.AbortController?new AbortController():null,tm=setTimeout(()=>ac&&ac.abort(),6000);
+  fetch(URL,ac?{signal:ac.signal}:{}).then(r=>r.json()).then(d=>{
+    clearTimeout(tm);
+    const v=d&&d.result==="success"&&d.rates?Number(d.rates.SYP):NaN;
+    if(!ok(v))return;
+    try{localStorage.setItem(KEY,JSON.stringify({v:v,t:Date.now()}))}catch(e){}
+    apply(v);
+  }).catch(()=>{clearTimeout(tm)});
+})();
 </script>
 </body>
 </html>

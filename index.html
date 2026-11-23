@@ -3,10 +3,12 @@
 <head>
 <meta charset="utf-8">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f4c45'/%3E%3Ctext x='32' y='47' font-size='42' font-weight='700' text-anchor='middle' fill='%23f08a3c' font-family='Tahoma,Arial,sans-serif'%3Eم%3C/text%3E%3C/svg%3E">
+<meta name="color-scheme" content="light dark">
+<script>try{var __t=localStorage.getItem("theme");if(__t==="light"||__t==="dark")document.documentElement.setAttribute("data-theme",__t)}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>متجري – تسوّق أونلاين في سوريا</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Reem+Kufi:wght@600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Cairo:wght@600;700;800&display=swap">
 <style>
 :root{--bg:#f2f6f4;--card:#fff;--ink:#16302c;--mute:#5d7570;--line:#d6e2de;--brand:#0f4c45;--brand-ink:#fff;--accent:#f08a3c;--accent-ink:#2a1500;--ok:#1b7a4b;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -103,12 +105,53 @@ body:has(aside.open)::after{opacity:1;pointer-events:auto}
 :root[data-theme="dark"] .thumb{filter:brightness(.88)}
 @supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){header,.card,aside,.sum,.chip,.trust span{background:var(--card)}}
 @media (prefers-reduced-motion:reduce){.bg i{animation:none}.card,.add,.send,body::after{transition:none}}
+
+/* ===== خطوط + وضع + المعلمين ===== */
+[hidden]{display:none!important}
+h1,h2,h3,.logo,.price,.tile .tn{font-family:Cairo,Tajawal,"Segoe UI",Tahoma,Arial,sans-serif}
+.logo{font-weight:800}
+.hero h1{font-weight:800;line-height:1.4;letter-spacing:0}
+.card h3{font-size:1.02rem;font-weight:700;line-height:1.5}
+.price{font-weight:800}
+#theme{padding:4px 10px;line-height:1.4}
+header{gap:8px}
+.pill,.cartbtn,.logo{white-space:nowrap}
+.logo{min-width:0;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:360px){.logo{font-size:1.1rem}header{gap:4px;padding:8px}.pill{padding:2px 7px;font-size:.8rem}#theme{padding:2px 6px}.cartbtn{padding:4px 9px;font-size:.82rem}}
+@media (max-width:440px){.logo{font-size:1.25rem}header{gap:6px;padding:8px 10px}.pill{padding:3px 9px;font-size:.88rem}#theme{padding:3px 8px}.cartbtn{padding:5px 11px;font-size:.9rem}}
+.seg{display:flex;gap:4px;padding:4px;margin:4px 0 16px;border-radius:999px;background:var(--glass);border:1px solid var(--glass-line);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+.seg button{flex:1;border:0;background:transparent;border-radius:999px;padding:9px 10px;font-weight:700;transition:background .2s,color .2s}
+.seg button[aria-selected="true"]{background:var(--brand);color:var(--brand-ink);box-shadow:0 4px 14px rgba(15,76,69,.3)}
+.prohead{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.big{flex:1;min-width:150px;border:0;border-radius:999px;padding:12px 18px;font-weight:800;background:var(--accent);color:var(--accent-ink);box-shadow:0 6px 18px rgba(240,138,60,.35);transition:transform .15s}
+.ghost{border-radius:999px;padding:10px 16px;font-weight:700;background:var(--glass);border:1px solid var(--glass-line);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.big:active,.ghost:active,.tile:active{transform:scale(.97)}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-bottom:18px}
+.tile{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;padding:16px 8px;border-radius:22px;background:var(--glass);border:1px solid var(--glass-line);-webkit-backdrop-filter:blur(16px) saturate(170%);backdrop-filter:blur(16px) saturate(170%);box-shadow:var(--glass-shadow),inset 0 1px 0 rgba(255,255,255,.45);transition:transform .15s}
+.tile .te{font-size:2rem;line-height:1.2}
+.tile .tn{font-weight:700;font-size:.95rem;text-align:center}
+.tile .tc{position:absolute;top:8px;inset-inline-end:8px;min-width:22px;height:22px;padding:0 6px;border-radius:99px;background:var(--accent);color:var(--accent-ink);font-size:.75rem;display:grid;place-items:center}
+.tile[aria-pressed="true"]{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+.pro{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:12px 14px;margin-bottom:10px;border-radius:20px;background:var(--glass);border:1px solid var(--glass-line);-webkit-backdrop-filter:blur(16px) saturate(170%);backdrop-filter:blur(16px) saturate(170%);box-shadow:var(--glass-shadow),inset 0 1px 0 rgba(255,255,255,.45)}
+.pro .pe{font-size:1.8rem}
+.pro .pi{flex:1 1 140px;min-width:0}
+.pro h3{font-size:1.05rem}
+.pro small{color:var(--mute)}
+.acts{display:flex;gap:6px;margin-inline-start:auto}
+.btn{display:inline-block;text-decoration:none;border-radius:999px;padding:8px 14px;font-weight:700;font-size:.9rem;white-space:nowrap}
+.btn.call{background:var(--brand);color:var(--brand-ink)}
+.btn.wa{background:var(--ok);color:#fff}
+dialog{padding:0;border:1px solid var(--glass-line);border-radius:26px;color:var(--ink);background:var(--glass-strong);-webkit-backdrop-filter:blur(28px) saturate(180%);backdrop-filter:blur(28px) saturate(180%);width:min(440px,calc(100% - 24px));max-height:88vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+dialog::backdrop{background:rgba(10,25,22,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){dialog,.tile,.pro,.seg,.ghost{background:var(--card)}}
+@media (prefers-reduced-motion:reduce){.tile,.big,.ghost,.seg button{transition:none}}
 </style>
 </head>
 <body>
 <div class="bg" aria-hidden="true"><i></i><i></i><i></i></div>
 <header>
   <div class="logo" id="storeName"></div>
+  <button class="pill" id="theme" aria-label="الوضع"></button>
   <button class="pill" id="lang">Kurdî</button>
   <button class="pill" id="cur" aria-label="تبديل العملة"></button>
   <button class="cartbtn" id="openCart"><span>السلة</span> (<span id="cnt">0</span>)</button>
@@ -121,8 +164,22 @@ body:has(aside.open)::after{opacity:1;pointer-events:auto}
 </section>
 
 <main>
-  <div class="chips" id="chips" role="group" aria-label="التصنيفات"></div>
-  <div class="grid" id="grid"></div>
+  <div class="seg" role="tablist">
+    <button role="tab" id="tabShop" aria-selected="true">المنتجات</button>
+    <button role="tab" id="tabPros" aria-selected="false">المعلمين والخدمات</button>
+  </div>
+  <div id="shop">
+    <div class="chips" id="chips" role="group" aria-label="التصنيفات"></div>
+    <div class="grid" id="grid"></div>
+  </div>
+  <div id="pros" hidden>
+    <div class="prohead">
+      <button class="big" id="reqPro"><span aria-hidden="true">🛠️</span> اطلب معلم</button>
+      <button class="ghost" id="joinPro">سجّل كمعلم أو محل</button>
+    </div>
+    <div class="tgrid" id="tgrid"></div>
+    <div id="plist"></div>
+  </div>
 </main>
 
 <footer>© <span id="yr"></span> <span id="fName"></span> – للتواصل واتساب: <span id="fWa" dir="ltr"></span></footer>
@@ -151,6 +208,20 @@ body:has(aside.open)::after{opacity:1;pointer-events:auto}
   </div>
 </aside>
 
+<dialog id="dlg" aria-labelledby="dlgT">
+  <div class="ah"><h2 id="dlgT"></h2><button class="pill" id="dlgX" style="color:var(--ink)">إغلاق</button></div>
+  <div class="ab">
+    <label>المهنة<select id="dt"></select></label>
+    <label>المدينة<select id="dc"></select></label>
+    <label><span id="dnl">الاسم</span><input id="dn" autocomplete="name"></label>
+    <label>رقم الهاتف<input id="dp" type="tel" inputmode="tel" dir="ltr" placeholder="09xxxxxxxx" autocomplete="tel"></label>
+    <label><span id="ddl">وصف الشغل المطلوب</span><textarea id="dd" rows="3"></textarea></label>
+    <p class="note">سيفتح واتساب برسالة جاهزة، وتضغط إرسال.</p>
+    <div class="err" id="derr" role="alert"></div>
+    <button class="send" id="dsend">أرسل عبر واتساب</button>
+  </div>
+</dialog>
+
 <script>
 /* ===== إعدادات المتجر: عدّلها حسب متجرك ===== */
 const STORE   = "متجري";                 // اسم المتجر
@@ -167,8 +238,32 @@ const PRODUCTS = [
  {id:5,n:"شاحن سريع 30 واط",d:"مع كبل Type-C",p:7,c:"إلكترونيات",e:"🔌",bg:"#e3e0f2"},
  {id:6,n:"باور بانك 20000",d:"منفذان USB + Type-C",p:16,c:"إلكترونيات",e:"🔋",bg:"#f3e5d4"},
  {id:7,n:"طقم أكواب زجاج",d:"6 قطع",p:6,c:"أدوات منزلية",e:"🥛",bg:"#e0eef2"},
- {id:8,n:"مصباح LED قابل للشحن",d:"يضيء 8 ساعات",p:5,c:"أدوات منزلية",e:"💡",bg:"#f6ecc9"}
+ {id:8,n:"مصباح LED قابل للشحن",d:"يضيء 8 ساعات",p:5,c:"أدوات منزلية",e:"💡",bg:"#f6ecc9"},
+ /* أمثلة تجريبية: بدّل الأسعار والمنتجات بمنتجاتك الحقيقية */
+ {id:9,n:"كبل كهرباء نحاس 2.5 مم",d:"لفة 100 متر",p:48,c:"كهرباء",e:"🔌",bg:"#f6ecc9"},
+ {id:10,n:"قاطع كهرباء 16 أمبير",d:"قطعة واحدة",p:3,c:"كهرباء",e:"⚡",bg:"#fbe9c8"},
+ {id:11,n:"خلاط حمام",d:"نحاس، ضمان سنة",p:18,c:"صحية",e:"🚿",bg:"#dbe9f3"},
+ {id:12,n:"أنبوب PPR 25 مم",d:"عود 4 متر",p:2,c:"صحية",e:"🚰",bg:"#d9ecf0"},
+ {id:13,n:"دفتر 100 ورقة",d:"سطر، غلاف مقوى",p:1,c:"قرطاسية",e:"📓",bg:"#efe3d0"},
+ {id:14,n:"طقم أقلام",d:"12 قلماً",p:2,c:"قرطاسية",e:"✏️",bg:"#f3e6c9"},
+ {id:15,n:"مطرقة حديد",d:"500 غ، يد خشب",p:4,c:"عدة وأدوات",e:"🔨",bg:"#e3e3e3"},
+ {id:16,n:"شريط قياس 5 متر",d:"قفل أوتوماتيك",p:2,c:"عدة وأدوات",e:"📏",bg:"#e8e4cf"},
+ {id:17,n:"دهان بلاستيك أبيض",d:"عبوة 18 لتر",p:35,c:"دهان",e:"🎨",bg:"#f0e6f2"},
+ {id:18,n:"رولو دهان",d:"مع يد",p:3,c:"دهان",e:"🖌️",bg:"#e5ecf7"}
 ];
+/* المعلمين والمحلات: أضف كل واحد بهالشكل داخل PROS:
+   {t:"plumb", n:"اسم المعلم", c:"المدينة", ph:"09xxxxxxxx", d:"وصف قصير اختياري"}
+   قيم t: plumb صحية، elec كهرباء، build بناء، paint دهان، plaster زريقة، smith حداد، shops محلات */
+const TRADES=[
+ {id:"plumb",n:"معلم صحية",e:"🚰"},
+ {id:"elec",n:"معلم كهرباء",e:"⚡"},
+ {id:"build",n:"معلم بناء",e:"🧱"},
+ {id:"paint",n:"معلم دهان",e:"🎨"},
+ {id:"plaster",n:"معلم زريقة",e:"🪣"},
+ {id:"smith",n:"معلم حداد",e:"⚒️"},
+ {id:"shops",n:"محلات تجارية",e:"🏪"}
+];
+const PROS=[];
 /* ========================================= */
 const $=s=>document.querySelector(s);
 let cur="SYP", cat="الكل", cart={};
@@ -176,6 +271,7 @@ try{const s=JSON.parse(localStorage.getItem("cart")||"{}");if(s&&typeof s==="obj
 const save=()=>{try{localStorage.setItem("cart",JSON.stringify(cart));localStorage.setItem("cur",cur);localStorage.setItem("lang",lang)}catch(e){}};
 let lang='ar';try{lang=localStorage.getItem('lang')==='ku'?'ku':'ar'}catch(e){}
 const KU={'متجري':'Firoşgeha min','السلة':'Selik','ل.س':'SYP','منتجات سورية وأخرى مختارة، توصلك لباب البيت':'Hilberên sûrî û yên hilbijartî, heta ber deriyê malê','اطلب بدقيقتين، وادفع عند الاستلام أو عبر المحافظ الإلكترونية. نوصل للدرباسية وقامشلو وعامودا وديرك وغيرها.':'Di du deqeyan de ferman bide, di wergirtinê de bide an bi berîka elektronîk. Em digihînin Derbasiyê, Qamişlo, Amûdê, Dêrik û bajarên din.','الدفع عند الاستلام':'Dayîn dema wergirtinê','سيريتل كاش وMTN كاش وشام كاش':'Syriatel Cash, MTN Cash û Sham Cash','توصيل داخل منطقة الحسكة':'Gihandin li herêma Hesekê','الكل':'Hemû','مواد غذائية وطبيعية':'Xwarin û hilberên xwezayî','إلكترونيات':'Elektronîk','أدوات منزلية':'Amûrên malê','صابون غار حلبي':'Sabûna defnê ya Helebê','قطعة 200 غ، تخمير سنوات':'Perçeyek 200 g, bi salan hatiye gihandin','زيت زيتون بكر':'Rûnê zeytûnê yê saf','عبوة 1 لتر':'Pakêtek 1 lître','زعتر بلدي':'Zahterê herêmî','برطمان 500 غ':'Kavilek 500 g','سماعات بلوتوث':'Guhekên Bluetooth','بطارية 20 ساعة':'Bataryaya 20 demjimêran','شاحن سريع 30 واط':'Şarjkera bilez 30 waat','مع كبل Type-C':'Bi kabloya Type-C','باور بانك 20000':'Power bank 20000','منفذان USB + Type-C':'Du dergehên USB + Type-C','طقم أكواب زجاج':'Setek qedehên cama','6 قطع':'6 perçe','مصباح LED قابل للشحن':'Lampeya LED ya şarjkirî','يضيء 8 ساعات':'8 saetan ronî dike','أضف للسلة':'Têxe selikê','ما في منتجات بهذا التصنيف حالياً.':'Niha di vê beşê de hilber tune ne.','السلة فارغة. أضف منتجاً من القائمة لتبدأ.':'Selik vala ye. Ji lîsteyê hilberek lê zêde bike.','سلتك':'Selika te','إغلاق':'Bigire','بيانات التوصيل':'Agahiyên gihandinê','الاسم الكامل':'Navê tevahî','رقم الهاتف':'Hejmara telefonê','المدينة':'Bajar','العنوان بالتفصيل (الحي، الشارع، أقرب معلم)':'Navnîşana berfireh (taxa, kolan, nîşana herî nêzîk)','طريقة الدفع':'Awayê dayînê','سيريتل كاش':'Syriatel Cash','MTN كاش':'MTN Cash','شام كاش':'Sham Cash','حوالة بنكية':'Rêkirina bankê','لو اخترت محفظة أو حوالة، نرسلك رقم الحساب على واتساب لتأكيد الطلب.':'Ger berîk an rêkirin hilbijêrî, em hejmara hesabê bi WhatsApp ji te re dişînin.','نحفظ بياناتك على جهازك فقط لتسهيل طلبك القادم.':'Em agahiyên te tenê li ser cîhaza te tomar dikin da ku fermana te ya din hêsan bibe.','المجموع':'Berhev','التوصيل':'Gihandin','الإجمالي':'Giştî','أرسل الطلب عبر واتساب':'Fermanê bi WhatsApp bişîne','– للتواصل واتساب:':'– Têkilî bi WhatsApp:','الدرباسية':'Derbasiyê','عامودا':'Amûdê','قامشلو':'Qamişlo','تربسبية':'Tirbespiyê','ديرك':'Dêrik','رميلان':'Rimêlan','تل تمر':'Til Temir','الحسكة':'Hesekê','السلة فارغة. أضف منتجاً أولاً.':'Selik vala ye. Pêşî hilberek lê zêde bike.','اكتب اسمك وعنوانك الكامل.':'Nav û navnîşana xwe ya tevahî binivîse.','رقم الهاتف غير صحيح. مثال: 0933123456':'Hejmara telefonê şaş e. Mînak: 0933123456'};
+Object.assign(KU,{'المنتجات':'Hilber','المعلمين والخدمات':'Usta û xizmet','اطلب معلم':'Ustayekî bixwaze','سجّل كمعلم أو محل':'Wekî usta an dikan tomar bibe','اختر مهنة لعرض الأرقام':'Pîşeyekê hilbijêre da ku hejmaran bibînî','ما في معلمين مسجلين بهالمهنة حالياً.':'Niha di vê pîşeyê de usta tomar nebûne.','إذا بتشتغل بهالمهنة، سجّل رقمك':'Ger tu di vê pîşeyê de dixebitî, hejmara xwe tomar bike','اتصال':'Telefon','واتساب':'WhatsApp','المهنة':'Pîşe','الاسم':'Nav','الاسم أو اسم المحل':'Nav an navê dikanê','وصف الشغل المطلوب':'Danasîna karê pêwîst','نبذة قصيرة (اختياري)':'Danasînek kurt (bi dilê xwe)','أرسل عبر واتساب':'Bi WhatsApp bişîne','سيفتح واتساب برسالة جاهزة، وتضغط إرسال.':'WhatsApp bi peyamek amade vedibe, tu tenê dikî Send.','اكتب اسمك.':'Navê xwe binivîse.','اكتب وصف الشغل المطلوب.':'Karê pêwîst binivîse.','معلم صحية':'Ustayê lûleyan','معلم كهرباء':'Ustayê elektrîkê','معلم بناء':'Ustayê avahiyê','معلم دهان':'Ustayê boyaxê','معلم زريقة':'Ustayê zirîqê','معلم حداد':'Ustayê hesinkar','محلات تجارية':'Dikanên bazirganî','كهرباء':'Elektrîk','صحية':'Tesîsat','قرطاسية':'Amûrên nivîsarê','عدة وأدوات':'Alav û amûr','دهان':'Boyax','كبل كهرباء نحاس 2.5 مم':'Kabloya elektrîkê ya sifir 2.5 mm','لفة 100 متر':'Pelek 100 metre','قاطع كهرباء 16 أمبير':'Qutkera elektrîkê 16 amper','قطعة واحدة':'Perçek','خلاط حمام':'Mixera hemamê','نحاس، ضمان سنة':'Sifir, garantiya salek','أنبوب PPR 25 مم':'Lûleya PPR 25 mm','عود 4 متر':'Çîpek 4 metre','دفتر 100 ورقة':'Defterek 100 rûpel','سطر، غلاف مقوى':'Bi rêzik, bi bergê req','طقم أقلام':'Setek pênûs','12 قلماً':'12 pênûs','مطرقة حديد':'Çekûcê hesin','500 غ، يد خشب':'500 g, destikê dar','شريط قياس 5 متر':'Metreya 5 metreyî','قفل أوتوماتيك':'Bi qufla otomatîk','دهان بلاستيك أبيض':'Boyaxa plastîk a spî','عبوة 18 لتر':'Pakêtek 18 lître','رولو دهان':'Roloya boyaxê','مع يد':'Bi destik'});
 const t=k=>lang==='ku'&&KU[k]||k;
 function tr(r){const w=document.createTreeWalker(r,NodeFilter.SHOW_TEXT);let n;while(n=w.nextNode()){if(n.parentNode.tagName==='SCRIPT')continue;if(n._o===undefined)n._o=n.nodeValue;const k=n._o.trim();n.nodeValue=lang==='ku'&&KU[k]?n._o.replace(k,KU[k]):n._o}}
 const money=u=>cur==='SYP'?Math.round(u*RATE).toLocaleString(lang==='ku'?'en-US':'ar-SY')+(lang==='ku'?' SYP':' ل.س'):'$'+(+u.toFixed(2)).toLocaleString('en-US');
@@ -199,7 +295,7 @@ function render(){
   $("#items").innerHTML=ids.length?ids.map(i=>{const p=find(i);return `<div class="row"><span class="e">${p.e}</span><div class="n">${p.n}<br><small>${money(p.p)}</small></div><div class="qty"><button data-m="${i}" aria-label="إنقاص">−</button><b>${cart[i]}</b><button data-p="${i}" aria-label="زيادة">+</button></div></div>`}).join(""):`<p class="empty">السلة فارغة. أضف منتجاً من القائمة لتبدأ.</p>`;
   const sub=ids.reduce((a,i)=>a+find(i).p*cart[i],0),sh=ids.length?SHIP[$("#gov").value]:0;
   $("#sub").textContent=money(sub);$("#ship").textContent=ids.length?money(sh):"—";$("#total").textContent=money(sub+sh);
-  grid();save();document.documentElement.lang=lang==='ku'?'ku':'ar';document.documentElement.dir=lang==='ku'?'ltr':'rtl';$('#lang').textContent=lang==='ku'?'عربي':'Kurdî';tr(document.body);
+  grid();pros();save();document.documentElement.lang=lang==='ku'?'ku':'ar';document.documentElement.dir=lang==='ku'?'ltr':'rtl';$('#lang').textContent=lang==='ku'?'عربي':'Kurdî';tr(document.body);
 }
 $("#chips").onclick=e=>{const b=e.target.closest("[data-c]");if(b){cat=b.dataset.c;chips();grid();tr(document.body)}};
 $("#grid").onclick=e=>{const b=e.target.closest("[data-add]");if(b){cart[b.dataset.add]=(cart[b.dataset.add]||0)+1;render()}};
@@ -227,6 +323,53 @@ $("#send").onclick=()=>{
 };
 try{const i=JSON.parse(localStorage.getItem('info')||'null');if(i){$('#fn').value=i.fn||'';$('#ph').value=i.ph||'';$('#addr').value=i.ad||'';if(SHIP[i.g])$('#gov').value=i.g;if(i.p)$('#pay').value=i.p}}catch(e){}
 $('#lang').onclick=()=>{lang=lang==='ku'?'ar':'ku';chips();render()};
+/* ===== الوضع: تلقائي / نهاري / ليلي ===== */
+let theme='auto';try{const v=localStorage.getItem('theme');if(v==='light'||v==='dark')theme=v}catch(e){}
+function applyTheme(){const r=document.documentElement;if(theme==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',theme);
+  const b=$('#theme');b.textContent={auto:'🌓',light:'☀️',dark:'🌙'}[theme];
+  b.title={auto:'تلقائي حسب الجهاز',light:'نهاري',dark:'ليلي'}[theme];b.setAttribute('aria-label',b.title);
+  try{localStorage.setItem('theme',theme)}catch(e){}}
+$('#theme').onclick=()=>{theme={auto:'light',light:'dark',dark:'auto'}[theme];applyTheme()};
+applyTheme();
+
+/* ===== المعلمين والمحلات ===== */
+let view='shop',sel=null,mode='req';
+const esc=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const intl=p=>{let d=String(p).replace(/\D/g,'');if(d.startsWith('963'))return d;if(d.startsWith('0'))d=d.slice(1);return '963'+d};
+function pros(){
+  $("#tgrid").innerHTML=TRADES.map(x=>{const n=PROS.filter(y=>y.t===x.id).length;
+    return `<button class="tile" aria-pressed="${sel===x.id}" data-t="${x.id}">${n?`<b class="tc">${n}</b>`:""}<span class="te" aria-hidden="true">${x.e}</span><span class="tn">${x.n}</span></button>`}).join("");
+  const cur=TRADES.find(x=>x.id===sel),l=PROS.filter(x=>x.t===sel);
+  $("#plist").innerHTML=!cur?`<p class="empty">اختر مهنة لعرض الأرقام</p>`:l.length?l.map(x=>`<article class="pro"><div class="pe" aria-hidden="true">${cur.e}</div><div class="pi"><h3>${esc(x.n)}</h3><small>${esc(x.c||"")}${x.d?" · "+esc(x.d):""}</small></div><div class="acts"><a class="btn call" href="tel:+${intl(x.ph)}">اتصال</a><a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/${intl(x.ph)}">واتساب</a></div></article>`).join(""):`<p class="empty">ما في معلمين مسجلين بهالمهنة حالياً.</p><button class="ghost" data-join>إذا بتشتغل بهالمهنة، سجّل رقمك</button>`;
+}
+function setView(v){view=v;$("#shop").hidden=v!=='shop';$("#pros").hidden=v!=='pros';
+  $("#tabShop").setAttribute('aria-selected',v==='shop');$("#tabPros").setAttribute('aria-selected',v==='pros')}
+$("#tabShop").onclick=()=>setView('shop');$("#tabPros").onclick=()=>setView('pros');
+$("#tgrid").onclick=e=>{const b=e.target.closest("[data-t]");if(b){sel=sel===b.dataset.t?null:b.dataset.t;pros();tr($("#pros"))}};
+$("#plist").onclick=e=>{if(e.target.closest("[data-join]"))openDlg('join',sel)};
+const dlg=$("#dlg");
+function openDlg(m,tid){mode=m;
+  $("#dt").innerHTML=TRADES.map(x=>`<option value="${x.id}">${x.n}</option>`).join("");
+  if(tid)$("#dt").value=tid;
+  $("#dc").innerHTML=Object.keys(SHIP).map(g=>`<option value="${g}">${g}</option>`).join("");
+  try{const i=JSON.parse(localStorage.getItem('info')||'null');if(i&&m==='req'){if(!$('#dn').value)$('#dn').value=i.fn||'';if(!$('#dp').value)$('#dp').value=i.ph||'';if(SHIP[i.g])$('#dc').value=i.g}}catch(e){}
+  $("#dlgT").textContent=m==='req'?'اطلب معلم':'سجّل كمعلم أو محل';
+  $("#dnl").textContent=m==='req'?'الاسم':'الاسم أو اسم المحل';
+  $("#ddl").textContent=m==='req'?'وصف الشغل المطلوب':'نبذة قصيرة (اختياري)';
+  $("#derr").textContent="";tr(dlg);dlg.showModal()}
+$("#reqPro").onclick=()=>openDlg('req',sel);$("#joinPro").onclick=()=>openDlg('join',sel);
+$("#dlgX").onclick=()=>dlg.close();
+dlg.addEventListener("click",e=>{if(e.target===dlg)dlg.close()});
+$("#dsend").onclick=()=>{
+  const n=$("#dn").value.trim(),ph=$("#dp").value.trim(),d=$("#dd").value.trim(),er=$("#derr");
+  const tn=TRADES.find(x=>x.id===$("#dt").value).n,c=$("#dc").value;
+  if(!n){er.textContent=t('اكتب اسمك.');return}
+  if(!/^(\+?963|0)?9\d{8}$/.test(ph.replace(/[\s-]/g,""))){er.textContent=t('رقم الهاتف غير صحيح. مثال: 0933123456');return}
+  if(mode==='req'&&!d){er.textContent=t('اكتب وصف الشغل المطلوب.');return}
+  er.textContent="";
+  const msg=mode==='req'?`طلب معلم من ${STORE}\n\nالمهنة: ${tn}\nالمدينة: ${c}\nالاسم: ${n}\nالهاتف: ${ph}\nالوصف: ${d}`:`طلب تسجيل بدليل المعلمين والمحلات - ${STORE}\n\nالمهنة/النوع: ${tn}\nالاسم: ${n}\nالمدينة: ${c}\nالهاتف: ${ph}\nنبذة: ${d||"-"}`;
+  window.open("https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(msg),"_blank");
+};
 chips();render();
 </script>
 </body>

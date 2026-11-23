@@ -256,6 +256,32 @@ button.btn{border:0;cursor:pointer;font-family:inherit}
 #toast{display:none;position:fixed;inset:auto;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));margin:0;transform:translateX(-50%);width:max-content;max-width:min(92vw,420px);padding:10px 18px;border:1px solid var(--glass-line);border-radius:999px;background:var(--glass-strong);color:var(--ink);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:var(--glass-shadow);font-weight:700;text-align:center;z-index:80;overflow:visible}
 #toast.on,#toast:popover-open{display:block;animation:toastIn .3s}
 @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(12px)}}
+
+/* ===== صور متحركة + لمسات ===== */
+.typer{min-height:1.9em;margin:2px 0 8px;font-family:Cairo,Tajawal,sans-serif;font-weight:700;font-size:1.15rem;color:var(--brand);animation:fadeUp .8s .15s backwards}
+.caret{display:inline-block;width:2px;height:1.05em;background:var(--accent);margin-inline-start:3px;vertical-align:-.15em;animation:caretBlink 1s steps(1) infinite}
+@keyframes caretBlink{50%{opacity:0}}
+.thumb{position:relative;overflow:hidden}
+.emo{display:inline-block;animation:bob 3.4s ease-in-out infinite;transition:scale .3s}
+.card:nth-child(even) .emo{animation-delay:-1.7s}
+@keyframes bob{50%{transform:translateY(-7px) rotate(-3deg)}}
+@media (hover:hover){.card:hover .emo{scale:1.1}}
+.sl{touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.sl img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1);transition:opacity .7s ease,transform 7s ease-out;-webkit-user-drag:none}
+.sl img.on{opacity:1;transform:scale(1.09)}
+.dots{position:absolute;bottom:8px;left:0;right:0;display:flex;justify-content:center;gap:5px;z-index:2;pointer-events:none}
+.dots i{width:6px;height:6px;border-radius:99px;background:rgba(255,255,255,.6);box-shadow:0 1px 3px rgba(0,0,0,.35);transition:width .3s,background .3s}
+.dots i.on{width:18px;background:#fff}
+.more{display:flex;justify-content:center;margin:20px 0 4px}
+.add,.ghost,.chip,.pill,.btn,.tile,.seg button,.qty button{position:relative;overflow:hidden;isolation:isolate}
+.chip,.pill,.btn,.ghost,.qty button{flex-shrink:0}
+.rip{position:absolute;z-index:-1;border-radius:50%;background:currentColor;opacity:.22;transform:scale(0);animation:ripple .55s ease-out forwards;pointer-events:none}
+@keyframes ripple{to{transform:scale(1);opacity:0}}
+.add:active,.btn:active,.qty button:active,.chip:active{transform:scale(.95)}
+.card:active{transform:scale(.985)}
+@media (max-width:700px){.card{-webkit-backdrop-filter:blur(10px) saturate(150%);backdrop-filter:blur(10px) saturate(150%)}}
+.lite .bg i{animation:none}
+.lite .card,.lite .tile,.lite .pro,.lite .chip,.lite .trust span,.lite .seg,.lite .ghost{-webkit-backdrop-filter:none;backdrop-filter:none;background:var(--glass-strong)}
 </style>
 </head>
 <body>
@@ -270,6 +296,7 @@ button.btn{border:0;cursor:pointer;font-family:inherit}
 
 <section class="hero">
   <h1>منتجات سورية وأخرى مختارة، توصلك لباب البيت</h1>
+  <div class="typer" aria-hidden="true"><span id="typed"></span><i class="caret"></i></div>
   <p>اطلب بدقيقتين، وادفع عند الاستلام أو عبر المحافظ الإلكترونية. نوصل للدرباسية وقامشلو وعامودا وديرك وغيرها.</p>
   <div class="trust"><span>الدفع عند الاستلام</span><span>سيريتل كاش وMTN كاش وشام كاش</span><span>توصيل داخل منطقة الحسكة</span></div>
   <div style="margin-top:12px"><button class="ghost" id="install" hidden>📲 ثبّت المتجر كتطبيق</button></div>
@@ -294,6 +321,7 @@ button.btn{border:0;cursor:pointer;font-family:inherit}
       <div class="rc"><span id="resCount"></span><button class="ghost" id="clearF" hidden>مسح الفلاتر</button></div>
     </div>
     <div class="grid" id="grid"></div>
+    <div class="more"><button class="ghost" id="more" hidden>عرض المزيد</button></div>
   </div>
   <div id="pros" hidden>
     <div class="prohead">
@@ -432,11 +460,13 @@ function chips(){
 }
 function grid(){
   const l=filtered(),any=!!(q||pmin!=null||pmax!=null||offersOnly);
-  $("#grid").innerHTML=l.length?l.map(cardHTML).join(""):`<p class="empty">${any?'ما لقينا منتج بهالفلاتر.':'ما في منتجات بهذا التصنيف حالياً.'}</p>`;
+  const sig=[cat,q,pmin,pmax,sort,offersOnly,cur].join('|');if(sig!==gridSig){shown=PAGE;gridSig=sig}
+  $("#grid").innerHTML=l.length?l.slice(0,shown).map(cardHTML).join(""):`<p class="empty">${any?'ما لقينا منتج بهالفلاتر.':'ما في منتجات بهذا التصنيف حالياً.'}</p>`;
   $("#resCount").textContent=L(l.length+' منتج',l.length+' hilber');
   $("#clearF").hidden=!(any||sort!=='def');
+  $("#more").hidden=l.length<=shown;
 }
-function render(){
+function render(keep){
   $("#cur").textContent=cur==="SYP"?"ل.س":"$";
   $("#cur").title=cur==="SYP"?"الأسعار بالليرة، اضغط للدولار":"الأسعار بالدولار، اضغط لليرة";
   const ids=Object.keys(cart).filter(i=>cart[i]>0&&find(i));
@@ -444,16 +474,16 @@ function render(){
   $("#items").innerHTML=ids.length?ids.map(i=>{const p=find(i);return `<div class="row"><span class="e">${p.e}</span><div class="n">${p.n}<br><small>${money(p.p)}</small></div><div class="qty"><button data-m="${i}" aria-label="إنقاص">−</button><b>${cart[i]}</b><button data-p="${i}" aria-label="زيادة">+</button></div></div>`}).join(""):`<p class="empty">السلة فارغة. أضف منتجاً من القائمة لتبدأ.</p>`;
   const sub=ids.reduce((a,i)=>a+find(i).p*cart[i],0),sh=ids.length?SHIP[$("#gov").value]:0;
   $("#sub").textContent=money(sub);$("#ship").textContent=ids.length?money(sh):"—";$("#total").textContent=money(sub+sh);
-  grid();pros();save();ui();document.documentElement.lang=lang==='ku'?'ku':'ar';document.documentElement.dir=lang==='ku'?'ltr':'rtl';$('#lang').textContent=lang==='ku'?'عربي':'Kurdî';tr(document.body);
+  if(!keep){grid();pros()}save();ui();document.documentElement.lang=lang==='ku'?'ku':'ar';document.documentElement.dir=lang==='ku'?'ltr':'rtl';$('#lang').textContent=lang==='ku'?'عربي':'Kurdî';tr(keep?$("#cart"):document.body);
 }
 $("#chips").onclick=e=>{const b=e.target.closest("[data-c]");if(b){cat=b.dataset.c;chips();grid();tr(document.body);reveal()}};
-$("#grid").onclick=e=>{const b=e.target.closest("[data-add]");if(b){cart[b.dataset.add]=(cart[b.dataset.add]||0)+1;render();return}
+$("#grid").onclick=e=>{const b=e.target.closest("[data-add]");if(b){cart[b.dataset.add]=(cart[b.dataset.add]||0)+1;render(true);return}
   if(e.target.closest("a"))return;const c=e.target.closest(".card");if(c)location.hash="p="+c.dataset.id};
 $("#items").onclick=e=>{const m=e.target.closest("[data-m]"),p=e.target.closest("[data-p]");
   if(m){cart[m.dataset.m]--;if(cart[m.dataset.m]<=0)delete cart[m.dataset.m]}
-  if(p)cart[p.dataset.p]++;render()};
+  if(p)cart[p.dataset.p]++;render(true)};
 $("#cur").onclick=()=>{cur=cur==="SYP"?"USD":"SYP";pmin=pmax=null;$("#pmin").value="";$("#pmax").value="";render()};
-$("#gov").onchange=render;
+$("#gov").onchange=()=>render(true);
 const open=v=>{const a=$("#cart");a.classList.toggle("open",v);a.setAttribute("aria-hidden",!v);if(v){a.classList.add("enter");clearTimeout(open._t);open._t=setTimeout(()=>a.classList.remove("enter"),900)}};
 $("#openCart").onclick=()=>open(true);$("#closeCart").onclick=()=>open(false);
 document.body.addEventListener("click",e=>{if(e.target===document.body)open(false)});
@@ -541,7 +571,7 @@ function filtered(){
   if(sort==='asc')l=[...l].sort((a,b)=>a.p-b.p);else if(sort==='desc')l=[...l].sort((a,b)=>b.p-a.p);
   return l}
 function cardHTML(p){const d=discOf(p);
-  return `<article class="card" data-id="${p.id}">${d?`<span class="badge">${t('خصم')} ${d}%</span>`:''}<div class="thumb" style="background:${p.bg}" aria-hidden="true">${p.e}</div><div class="b"><h3><a class="plink" href="#p=${p.id}">${p.n}</a></h3><small>${p.d}</small><div class="price">${money(p.p)}${d?` <s class="old">${money(p.old)}</s>`:''}</div><button class="add" data-add="${p.id}">أضف للسلة</button></div></article>`}
+  return `<article class="card" data-id="${p.id}">${d?`<span class="badge">${t('خصم')} ${d}%</span>`:''}${thumbHTML(p)}<div class="b"><h3><a class="plink" href="#p=${p.id}">${p.n}</a></h3><small>${p.d}</small><div class="price">${money(p.p)}${d?` <s class="old">${money(p.old)}</s>`:''}</div><button class="add" data-add="${p.id}">أضف للسلة</button></div></article>`}
 const refreshGrid=()=>{grid();tr($("#shop"))};
 addKU({'خصم':'Daxistin'});
 $("#q").addEventListener("input",e=>{q=e.target.value.trim();refreshGrid()});
@@ -570,7 +600,7 @@ const priceHTML=p=>money(p.p)+(isOffer(p)?` <s class="old">${money(p.old)}</s> <
 function fillProduct(){const p=curP;if(!p)return;
   $("#pdT").textContent=p.n;
   const rel=PRODUCTS.filter(x=>x.c===p.c&&x.id!==p.id).slice(0,4);
-  $("#pdB").innerHTML=`<div class="thumb pd-th" style="background:${p.bg}" aria-hidden="true">${p.e}</div><p class="pd-c"><span class="chip" style="cursor:default">${p.c}</span></p><p class="pd-d">${p.d}</p><div class="price pd-p">${priceHTML(p)}</div><div class="pd-a"><button class="send" data-add="${p.id}">أضف للسلة</button><button class="ghost" id="pdShare">شارك</button></div>${rel.length?`<h3 class="sec">منتجات مشابهة</h3><div class="rel">${rel.map(x=>`<a class="chip" href="#p=${x.id}">${x.e} ${x.n}</a>`).join('')}</div>`:''}`;
+  $("#pdB").innerHTML=`${thumbHTML(p,true)}<p class="pd-c"><span class="chip" style="cursor:default">${p.c}</span></p><p class="pd-d">${p.d}</p><div class="price pd-p">${priceHTML(p)}</div><div class="pd-a"><button class="send" data-add="${p.id}">أضف للسلة</button><button class="ghost" id="pdShare">شارك</button></div>${rel.length?`<h3 class="sec">منتجات مشابهة</h3><div class="rel">${rel.map(x=>`<a class="chip" href="#p=${x.id}">${x.e} ${x.n}</a>`).join('')}</div>`:''}`;
   tr(pdlg)}
 function openFromHash(){const m=/^#p=(\d+)$/.exec(location.hash);
   if(!m){if(pdlg.open)pdlg.close();return}
@@ -581,7 +611,7 @@ pdlg.addEventListener("close",()=>{curP=null;if(/^#p=/.test(location.hash))histo
 $("#pdX").onclick=()=>pdlg.close();
 pdlg.addEventListener("click",e=>{
   if(e.target===pdlg){pdlg.close();return}
-  const b=e.target.closest("[data-add]");if(b){cart[b.dataset.add]=(cart[b.dataset.add]||0)+1;render();toast(L('أضفناه للسلة ✓','Hate zêdekirin ✓'));return}
+  const b=e.target.closest("[data-add]");if(b){cart[b.dataset.add]=(cart[b.dataset.add]||0)+1;render(true);toast(L('أضفناه للسلة ✓','Hate zêdekirin ✓'));return}
   if(e.target.closest("#pdShare"))shareP(curP)});
 async function shareP(p){
   const url=location.href.split("#")[0]+"#p="+p.id;
@@ -647,6 +677,48 @@ $("#install").onclick=async()=>{if(dip){dip.prompt();try{await dip.userChoice}ca
   else toast(L('اضغط زر المشاركة ثم «إضافة إلى الشاشة الرئيسية»','Bişkoka parvekirinê bitikîne û paşê «Add to Home Screen»'))};
 if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol))addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{})});
 
+/* ===== صور متحركة + أداء + لمسات ===== */
+const PAGE=24;let shown=PAGE,gridSig="";
+const RMo=window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches;
+if((navigator.deviceMemory&&navigator.deviceMemory<=3)||(navigator.hardwareConcurrency&&navigator.hardwareConcurrency<=4))document.documentElement.classList.add("lite");
+addKU({'عرض المزيد':'Bêtir nîşan bide'});
+/* لإضافة صور لمنتج: imgs:["images/اسم.webp","images/اسم2.webp"] (صورة واحدة أو أكتر). بدون imgs بيظهر الإيموجي */
+function thumbHTML(p,big){
+  const im=Array.isArray(p.imgs)&&p.imgs.length?p.imgs:null,cls="thumb"+(big?" pd-th":"");
+  const emo=`<span class="emo" aria-hidden="true">${p.e}</span>`;
+  if(!im)return `<div class="${cls}" style="background:${p.bg}" aria-hidden="true">${emo}</div>`;
+  return `<div class="${cls} sl" style="background:${p.bg}" data-sl>${emo}${im.map((u,i)=>`<img src="${esc(u)}" alt="${esc(p.n)}" loading="lazy" decoding="async" class="${i?"":"on"}">`).join("")}${im.length>1?`<span class="dots" aria-hidden="true">${im.map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</span>`:""}</div>`}
+function slGo(sl,d){const im=sl.querySelectorAll("img"),ds=sl.querySelectorAll(".dots i");if(im.length<2)return;let i=0;im.forEach((x,k)=>{if(x.classList.contains("on"))i=k});
+  im[i].classList.remove("on");if(ds[i])ds[i].classList.remove("on");i=(i+d+im.length)%im.length;im[i].classList.add("on");if(ds[i])ds[i].classList.add("on")}
+const inView=el=>{const r=el.getBoundingClientRect();return r.width>0&&r.bottom>0&&r.top<innerHeight&&r.right>0&&r.left<innerWidth};
+setInterval(()=>{if(document.hidden||RMo)return;document.querySelectorAll("[data-sl]").forEach(sl=>{if(!sl.matches(":hover")&&inView(sl))slGo(sl,1)})},3500);
+let sx=null,sw=false;
+document.addEventListener("pointerdown",e=>{sx=e.target.closest("[data-sl]")?e.clientX:null},{passive:true});
+document.addEventListener("pointerup",e=>{const sl=e.target.closest("[data-sl]");if(sx!==null&&sl&&Math.abs(e.clientX-sx)>35){slGo(sl,e.clientX<sx?1:-1);sw=true;setTimeout(()=>{sw=false},80)}sx=null},{passive:true});
+document.addEventListener("click",e=>{if(sw&&e.target.closest("[data-sl]")){e.stopPropagation();e.preventDefault()}},true);
+$("#more").onclick=()=>{shown+=PAGE;grid();tr($("#shop"))};
+
+/* ===== مؤثر الضغط (ripple) + اهتزاز خفيف عند الإضافة ===== */
+document.addEventListener("pointerdown",e=>{
+  const b=e.target.closest(".add,.send,.big,.ghost,.chip,.pill,.cartbtn,.btn,.tile,.seg button,.qty button");
+  if(!b||b.disabled)return;
+  if(b.hasAttribute("data-add")){try{navigator.vibrate&&navigator.vibrate(10)}catch(_){}}
+  if(RMo)return;
+  const r=b.getBoundingClientRect(),d=Math.max(r.width,r.height)*1.8,s=document.createElement("span");
+  s.className="rip";s.style.cssText=`width:${d}px;height:${d}px;left:${e.clientX-r.left-d/2}px;top:${e.clientY-r.top-d/2}px`;
+  b.appendChild(s);setTimeout(()=>s.remove(),650)},{passive:true});
+
+/* ===== كتابة متحركة بالهيرو ===== */
+(function(){const el=$("#typed");if(!el)return;
+  const PH={ar:["كهرباء وصحية وقرطاسية","مواد غذائية وإلكترونيات","معلم لكل مهنة","توصيل لباب البيت"],ku:["Elektrîk, tesîsat û amûrên nivîsarê","Xwarin û elektronîk","Ustayek ji bo her pîşeyê","Gihandin heta ber deriyê malê"]};
+  let i=0,j=0,del=false;
+  function step(){const ph=PH[lang]||PH.ar,w=ph[i%ph.length];
+    if(RMo){el.textContent=ph[0];return}
+    if(document.hidden){setTimeout(step,600);return}
+    if(!del){j++;el.textContent=w.slice(0,j);if(j>=w.length){del=true;setTimeout(step,1700);return}setTimeout(step,75);return}
+    j--;el.textContent=w.slice(0,j);if(j<=0){del=false;i++}setTimeout(step,35)}
+  step()})();
+
 chips();render();
 
 /* ===== حركات: ظهور البطاقات + طيران المنتج للسلة ===== */
@@ -658,7 +730,7 @@ $("#grid").addEventListener("click",e=>{
   const th=b.closest(".card").querySelector(".thumb"),cb=$("#openCart");if(!th||!cb||!th.animate)return;
   const r=th.getBoundingClientRect(),t=cb.getBoundingClientRect();
   const fx=r.left+r.width/2-20,fy=r.top+r.height/2-20,tx=t.left+t.width/2-20,ty=t.top+t.height/2-20;
-  const f=document.createElement("span");f.className="fly";f.textContent=th.textContent.trim();document.body.appendChild(f);
+  const f=document.createElement("span");f.className="fly";const im0=th.querySelector("img.on");if(im0){const i2=new Image();i2.src=im0.currentSrc||im0.src;i2.alt="";i2.style.cssText="width:40px;height:40px;border-radius:50%;object-fit:cover;display:block";f.appendChild(i2)}else f.textContent=th.textContent.trim();document.body.appendChild(f);
   const a=f.animate([
     {transform:`translate(${fx}px,${fy}px) scale(1)`,opacity:1},
     {transform:`translate(${(fx+tx)/2}px,${Math.min(fy,ty)-70}px) scale(1.25)`,opacity:1,offset:.4},

@@ -547,6 +547,7 @@ button.btn{border:0;cursor:pointer;font-family:inherit}
 const STORE   = "متجري";                 // اسم المتجر
 const WHATSAPP= "963936193191";          // رقم واتساب بصيغة دولية بدون + أو أصفار
 const SHEET_URL = "https://script.google.com/macros/s/AKfycbza87CVglv96ldM2OZq9M5Mz-C_plb-Nk9q7_cfJbie4jKHH4x-vrossFkFE9dzaYZ_/exec";                     // رابط Google Apps Script لتسجيل الطلبات (اتركه فارغاً لو ما استخدمته)
+const ONESIGNAL_APP_ID = "";               // الصق هون الـ App ID من OneSignal (مش سري). فاضي = إشعارات الجوال متوقفة
 const SHEET_PRODUCTS = true;              // true: المنتجات بتنقرأ من تبويب "المنتجات" بجدول Google (الأمثلة تحت بتصير احتياطية وما بتظهر)
 const RATE_FALLBACK = 120;               // سعر احتياطي: كم ليرة سورية = 1 دولار (بيُستعمل إذا فشل جلب السعر التلقائي)
 let RATE = RATE_FALLBACK;                   // السعر المستعمل فعلياً (بيتحدث تلقائياً)
@@ -651,6 +652,7 @@ $("#send").onclick=()=>{
   let no;if(lastO&&lastO.sig===sig&&Date.now()-lastO.t<600000)no=lastO.no;else{no=mkNo();orders.unshift({no,t:Date.now(),sig,st:'قيد المراجعة',un:0,total:sub+sh,items:ids.map(i=>({n:find(i).n,q:cart[i]}))});saveOrders()}
   const note=$("#ordNote");note.innerHTML=L('رقم طلبك: ','Hejmara fermana te: ')+'<b dir="ltr">'+no+'</b> — '+L('احتفظ فيه لتتبّع طلبك من تبويب «طلباتي».','ji bo şopandina fermanê di «Fermanên min» de biparêze.');note.hidden=false;
   const msg=`طلب جديد من ${STORE}\nرقم الطلب: ${no}\n\n${lines}\n\nالمجموع: ${money(sub)}\nالتوصيل (${$("#gov").value}): ${money(sh)}\nالإجمالي: ${money(sub+sh)}\n\nالاسم: ${fn}\nالهاتف: ${ph}\nالعنوان: ${ad}\nالدفع: ${$("#pay").value}`;
+  try{osLogin(ph)}catch(e){}
   if(SHEET_URL){try{fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({order:no,name:fn,phone:ph,city:$('#gov').value,address:ad,pay:$('#pay').value,items:ids.map(i=>find(i).n+' × '+cart[i]).join(' | '),subtotal:sub,ship:sh,total:sub+sh})}).catch(()=>{})}catch(e){}}
   window.open("https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(msg),"_blank");
 };
@@ -1160,7 +1162,7 @@ $("#ownNote").onclick=e=>{const b=e.target.closest("[data-shop]");if(b)openShop(
 /* ===== إشعارات تغيّر حالة الطلب ===== */
 const FINAL_ST=['تم التسليم','ملغي'];
 function badge(){const n=orders.reduce((a,o)=>a+(o.un||0),0),b=$("#tabOrd");if(n)b.setAttribute('data-n',String(n));else b.removeAttribute('data-n')}
-function pushNotif(msg,tag){if(!('Notification' in window)||Notification.permission!=='granted')return;
+function pushNotif(msg,tag){if(window.__osLogin)return;if(!('Notification' in window)||Notification.permission!=='granted')return;
   const o={body:msg,icon:'icon-192.png',tag:tag,dir:'auto'};
   try{if(navigator.serviceWorker&&navigator.serviceWorker.getRegistration){navigator.serviceWorker.getRegistration().then(rg=>{if(rg&&rg.showNotification)rg.showNotification(STORE,o);else new Notification(STORE,o)}).catch(()=>{})}else new Notification(STORE,o)}catch(e){}}
 function onStatus(o,s){const msg=L('طلبك رقم '+o.no+': '+s,'Fermana te '+o.no+': '+t(s));o.un=view==='orders'?0:(o.un||0)+1;toast(msg);pushNotif(msg,o.no)}
@@ -1176,7 +1178,23 @@ async function pollOrders(){
     if(ch){saveOrders();badge();if(view==='orders')renderOrders()}}
   catch(e){}finally{polling=false}}
 function updNotifBox(){$("#notifBox").hidden=!('Notification' in window&&Notification.permission==='default')}
-$("#notifBtn").onclick=async()=>{try{const p=await Notification.requestPermission();if(p==='granted')toast(t('تم تفعيل الإشعارات ✓'))}catch(e){}updNotifBox()};
+$("#notifBtn").onclick=async()=>{try{
+  if(OS){await OS.Notifications.requestPermission();if(Notification.permission==='granted'){const ph=osPhone();if(ph){osLogin(ph);toast(t('تم تفعيل الإشعارات ✓'))}else toast(t('تم التفعيل. بتوصلك إشعارات طلبك بعد ما تبعتو.'))}}
+  else{const p=await Notification.requestPermission();if(p==='granted')toast(t('تم تفعيل الإشعارات ✓'))}
+}catch(e){}updNotifBox()};
+/* ===== إشعارات الجوال (OneSignal): بتوصل حتى لو المتجر مسكّر ===== */
+let OS=null;
+function osPhone(){try{const i=JSON.parse(localStorage.getItem('info')||'null');return i&&i.ph?last9(i.ph):''}catch(e){return ''}}
+function osLogin(ph){const id=last9(ph||'');if(!OS||!id||!('Notification' in window)||Notification.permission!=='granted')return;try{OS.login(id);window.__osLogin=true}catch(e){}}
+(function(){
+  if(!ONESIGNAL_APP_ID||location.protocol!=='https:')return;
+  const base=location.pathname.replace(/[^\/]*$/,'');
+  window.OneSignalDeferred=window.OneSignalDeferred||[];
+  OneSignalDeferred.push(async function(O){
+    await O.init({appId:ONESIGNAL_APP_ID,serviceWorkerPath:base.slice(1)+'push/onesignal/OneSignalSDKWorker.js',serviceWorkerParam:{scope:base+'push/onesignal/'}});
+    OS=O;osLogin(osPhone());updNotifBox()});
+  const sc=document.createElement('script');sc.src='https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js';sc.defer=true;document.head.appendChild(sc);
+})();
 badge();setTimeout(pollOrders,2500);setInterval(pollOrders,120000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)pollOrders()});
 updOwnNote();
 openFromHash();

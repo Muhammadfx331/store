@@ -728,7 +728,7 @@ addKU({'جميع الحقوق محفوظة':'Hemû maf parastî ne'});
   const mk=(r,i)=>{const p=Number(r.price);if(!r.name||!isFinite(p)||p<=0)return null;
     const o={id:Number(r.id)||i+1,n:esc(String(r.name).slice(0,80)),d:esc(String(r.desc||'').slice(0,160)),p:p,c:String(r.cat||'أخرى').replace(/[&<>"']/g,'').slice(0,40),e:String(r.emoji||'🛍️').slice(0,4),bg:BG[i%BG.length]};
     const old=Number(r.old);if(old>p)o.old=old;
-    const im=String(r.images||'').split(/[\s,]+/).filter(u=>/^(https:\/\/|images\/)/.test(u)).slice(0,6);if(im.length)o.imgs=im;
+    const im=String(r.images||'').split(/[\s,]+/).filter(u=>/^(https:\/\/|images\/)/i.test(u)).slice(0,6);if(im.length)o.imgs=im;
     return o};
   const apply=a=>{PRODUCTS=a;if(cat!=='الكل'&&!a.some(x=>x.c===cat))cat='الكل';chips();render()};
   let c=null;try{c=JSON.parse(localStorage.getItem(KEYP)||'null')}catch(e){}

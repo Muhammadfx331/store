@@ -306,6 +306,18 @@ button.btn{border:0;cursor:pointer;font-family:inherit}
 @media (prefers-reduced-motion:reduce){#lbi,#lbx[open]{transition:none!important;animation:none!important}}
 .btn.map{background:var(--glass);color:var(--ink);border:1px solid var(--glass-line)}
 .btn.prod{background:var(--accent);color:var(--accent-ink)}
+
+/* ===== صورة/أيقونة المحل أو المعلم ===== */
+.av{position:relative;display:inline-grid;place-items:center;width:44px;height:44px;border-radius:50%;overflow:hidden;flex:none;font-size:1.4rem;line-height:1;background:var(--field);border:2px solid var(--glass-line);box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.av.ld b{visibility:hidden}.av.ld{background:#fff}
+.av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.av.s{width:24px;height:24px;font-size:.8rem;border-width:1px}
+.av.l{width:76px;height:76px;font-size:2.2rem}
+.shopc{display:inline-flex;align-items:center;gap:6px;max-width:100%;background:none;border:0;padding:2px 0;margin:2px 0;color:var(--mute);font:inherit;font-size:.82rem;cursor:pointer;text-align:start}
+.shopc span.sn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.shopc:hover span.sn{text-decoration:underline}
+.pd-shop{margin:4px 0 8px}
+.shophead{display:flex;align-items:center;gap:12px;width:100%}
 </style>
 </head>
 <body>
@@ -509,7 +521,7 @@ function render(keep){
   if(!keep){grid();pros()}save();ui();document.documentElement.lang=lang==='ku'?'ku':'ar';document.documentElement.dir=lang==='ku'?'ltr':'rtl';$('#lang').textContent=lang==='ku'?'عربي':'Kurdî';tr(keep?$("#cart"):document.body);
 }
 $("#chips").onclick=e=>{const b=e.target.closest("[data-c]");if(b){cat=b.dataset.c;chips();grid();tr(document.body);reveal()}};
-$("#grid").onclick=e=>{const b=e.target.closest("[data-add]");if(b){cart[b.dataset.add]=(cart[b.dataset.add]||0)+1;render(true);return}
+$("#grid").onclick=e=>{const sc=e.target.closest("[data-shopc]");if(sc){openShop(sc.dataset.shopc);return}const b=e.target.closest("[data-add]");if(b){cart[b.dataset.add]=(cart[b.dataset.add]||0)+1;render(true);return}
   if(e.target.closest("a"))return;const c=e.target.closest(".card");if(c)location.hash="p="+c.dataset.id};
 $("#items").onclick=e=>{const m=e.target.closest("[data-m]"),p=e.target.closest("[data-p]");
   if(m){cart[m.dataset.m]--;if(cart[m.dataset.m]<=0)delete cart[m.dataset.m]}
@@ -553,11 +565,19 @@ const esc=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 const intl=p=>{let d=String(p).replace(/\D/g,'');if(d.startsWith('963'))return d;if(d.startsWith('0'))d=d.slice(1);return '963'+d};
 function mapURL(v){v=String(v||'').trim();if(/^https:\/\//i.test(v))return v;const m=/^(-?\d{1,3}(?:\.\d+)?)\s*,\s*(-?\d{1,3}(?:\.\d+)?)$/.exec(v);return m?'https://www.google.com/maps/search/?api=1&query='+m[1]+','+m[2]:''}
 function shopCount(x){return PRODUCTS.filter(p=>p.shop&&p.shop===x.n).length}
+function imgURL(u){u=String(u||'').trim();if(!u)return'';
+  let m=/drive\.google\.com\/file\/d\/([\w-]{10,})/.exec(u)||/drive\.google\.com\/(?:open|uc|thumbnail)\?(?:[^#]*&)?id=([\w-]{10,})/.exec(u);
+  if(m)return 'https://drive.google.com/thumbnail?id='+m[1]+'&sz=w256';
+  return /^(https:\/\/|images\/)/i.test(u)&&u.length<600?u:''}
+function proOf(name){return PROS.find(y=>y.n===name)}
+function avatar(x,size){const tr_=x&&TRADES.find(t=>t.id===x.t),e=tr_?tr_.e:'🏪';
+  return `<span class="av${size?' '+size:''}" aria-hidden="true"><b style="font-weight:400">${e}</b>${x&&x.i?`<img src="${esc(x.i)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('ld')" onerror="this.remove()">`:''}</span>`}
+function shopChip(name,cls){if(!name)return'';return `<button class="shopc ${cls||''}" data-shopc="${esc(name)}">${avatar(proOf(name),'s')}<span class="sn">${esc(name)}</span></button>`}
 function pros(){
   $("#tgrid").innerHTML=TRADES.map(x=>{const n=PROS.filter(y=>y.t===x.id).length;
     return `<button class="tile" aria-pressed="${sel===x.id}" data-t="${x.id}">${n?`<b class="tc">${n}</b>`:""}<span class="te" aria-hidden="true">${x.e}</span><span class="tn">${x.n}</span></button>`}).join("");
   const cur=TRADES.find(x=>x.id===sel),l=PROS.filter(x=>x.t===sel);
-  $("#plist").innerHTML=!cur?`<p class="empty">اختر مهنة لعرض الأرقام</p>`:l.length?l.map(x=>`<article class="pro"><div class="pe" aria-hidden="true">${cur.e}</div><div class="pi"><h3>${esc(x.n)}</h3><small>${esc(x.c||"")}${x.d?" · "+esc(x.d):""}</small></div><div class="acts"><a class="btn call" href="tel:+${intl(x.ph)}">اتصال</a><a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/${intl(x.wa||x.ph)}">واتساب</a>${mapURL(x.m)?`<a class="btn map" target="_blank" rel="noopener" href="${esc(mapURL(x.m))}">${t('الخريطة')}</a>`:''}${shopCount(x)?`<button class="btn prod" data-shop="${esc(x.n)}">${t('منتجاته')} (${shopCount(x)})</button>`:''}</div></article>`).join(""):`<p class="empty">ما في معلمين مسجلين بهالمهنة حالياً.</p><button class="ghost" data-join>إذا بتشتغل بهالمهنة، سجّل رقمك</button>`;
+  $("#plist").innerHTML=!cur?`<p class="empty">اختر مهنة لعرض الأرقام</p>`:l.length?l.map(x=>`<article class="pro">${avatar(x)}<div class="pi"><h3>${esc(x.n)}</h3><small>${esc(x.c||"")}${x.d?" · "+esc(x.d):""}</small></div><div class="acts"><a class="btn call" href="tel:+${intl(x.ph)}">اتصال</a><a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/${intl(x.wa||x.ph)}">واتساب</a>${mapURL(x.m)?`<a class="btn map" target="_blank" rel="noopener" href="${esc(mapURL(x.m))}">${t('الخريطة')}</a>`:''}${shopCount(x)?`<button class="btn prod" data-shop="${esc(x.n)}">${t('منتجاته')} (${shopCount(x)})</button>`:''}</div></article>`).join(""):`<p class="empty">ما في معلمين مسجلين بهالمهنة حالياً.</p><button class="ghost" data-join>إذا بتشتغل بهالمهنة، سجّل رقمك</button>`;
 }
 function setView(v){view=v;$("#shop").hidden=v!=='shop';$("#pros").hidden=v!=='pros';$("#orders").hidden=v!=='orders';
   $("#tabShop").setAttribute('aria-selected',v==='shop');$("#tabPros").setAttribute('aria-selected',v==='pros');$("#tabOrd").setAttribute('aria-selected',v==='orders');
@@ -605,7 +625,7 @@ function filtered(){
   if(sort==='asc')l=[...l].sort((a,b)=>a.p-b.p);else if(sort==='desc')l=[...l].sort((a,b)=>b.p-a.p);
   return l}
 function cardHTML(p){const d=discOf(p);
-  return `<article class="card" data-id="${p.id}">${d?`<span class="badge">${t('خصم')} ${d}%</span>`:''}${thumbHTML(p)}<div class="b"><h3><a class="plink" href="#p=${p.id}">${p.n}</a></h3><small>${p.d}</small><div class="price">${money(p.p)}${d?` <s class="old">${money(p.old)}</s>`:''}</div><button class="add" data-add="${p.id}">أضف للسلة</button></div></article>`}
+  return `<article class="card" data-id="${p.id}">${d?`<span class="badge">${t('خصم')} ${d}%</span>`:''}${thumbHTML(p)}<div class="b"><h3><a class="plink" href="#p=${p.id}">${p.n}</a></h3><small>${p.d}</small>${shopChip(p.shop)}<div class="price">${money(p.p)}${d?` <s class="old">${money(p.old)}</s>`:''}</div><button class="add" data-add="${p.id}">أضف للسلة</button></div></article>`}
 const refreshGrid=()=>{grid();tr($("#shop"))};
 addKU({'خصم':'Daxistin'});
 $("#q").addEventListener("input",e=>{q=e.target.value.trim();refreshGrid()});
@@ -634,7 +654,7 @@ const priceHTML=p=>money(p.p)+(isOffer(p)?` <s class="old">${money(p.old)}</s> <
 function fillProduct(){const p=curP;if(!p)return;
   $("#pdT").textContent=p.n;
   const rel=PRODUCTS.filter(x=>x.c===p.c&&x.id!==p.id).slice(0,4);
-  $("#pdB").innerHTML=`${thumbHTML(p,true)}<p class="pd-c"><span class="chip" style="cursor:default">${p.c}</span></p><p class="pd-d">${p.d}</p><div class="price pd-p">${priceHTML(p)}</div><div class="pd-a"><button class="send" data-add="${p.id}">أضف للسلة</button><button class="ghost" id="pdShare">شارك</button></div>${rel.length?`<h3 class="sec">منتجات مشابهة</h3><div class="rel">${rel.map(x=>`<a class="chip" href="#p=${x.id}">${x.e} ${x.n}</a>`).join('')}</div>`:''}`;
+  $("#pdB").innerHTML=`${thumbHTML(p,true)}<p class="pd-c"><span class="chip" style="cursor:default">${p.c}</span></p><p class="pd-d">${p.d}</p>${p.shop?`<div class="pd-shop">${shopChip(p.shop)}</div>`:''}<div class="price pd-p">${priceHTML(p)}</div><div class="pd-a"><button class="send" data-add="${p.id}">أضف للسلة</button><button class="ghost" id="pdShare">شارك</button></div>${rel.length?`<h3 class="sec">منتجات مشابهة</h3><div class="rel">${rel.map(x=>`<a class="chip" href="#p=${x.id}">${x.e} ${x.n}</a>`).join('')}</div>`:''}`;
   tr(pdlg)}
 function openFromHash(){const m=/^#p=(\d+)$/.exec(location.hash);
   if(!m){if(pdlg.open)pdlg.close();return}
@@ -645,6 +665,7 @@ pdlg.addEventListener("close",()=>{curP=null;if(/^#p=/.test(location.hash))histo
 $("#pdX").onclick=()=>pdlg.close();
 pdlg.addEventListener("click",e=>{
   if(e.target===pdlg){pdlg.close();return}
+  const sc=e.target.closest("[data-shopc]");if(sc){openShop(sc.dataset.shopc);return}
   const b=e.target.closest("[data-add]");if(b){cart[b.dataset.add]=(cart[b.dataset.add]||0)+1;render(true);toast(L('أضفناه للسلة ✓','Hate zêdekirin ✓'));return}
   if(e.target.closest("#pdShare"))shareP(curP)});
 async function shareP(p){
@@ -785,7 +806,7 @@ const sdlg=$("#sdlg");
 function openShop(name){
   const x=PROS.find(y=>y.n===name),l=PRODUCTS.filter(p=>p.shop===name),mu=x&&mapURL(x.m);
   $("#sdT").textContent=name;
-  $("#sdB").innerHTML=`<div class="pro"><div class="pi"><h3>${esc(name)}</h3><small>${esc((x&&x.c)||'')}${x&&x.d?' · '+esc(x.d):''}</small></div><div class="acts">${x?`<a class="btn call" href="tel:+${intl(x.ph)}">اتصال</a><a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/${intl(x.wa||x.ph)}">واتساب</a>`:''}${mu?`<a class="btn map" target="_blank" rel="noopener" href="${esc(mu)}">${t('الخريطة')}</a>`:''}</div></div><p class="note">${t('الشراء من منتجات المحل يتم عن طريقنا فقط: أضف للسلة وأرسل الطلب.')}</p>`+l.map(p=>`<div class="row"><span class="e">${p.imgs?`<img src="${esc(p.imgs[0])}" alt="" width="44" height="44" style="border-radius:12px;object-fit:cover">`:p.e}</span><div class="n"><a class="plink" href="#p=${p.id}">${p.n}</a><br><small>${money(p.p)}</small></div><button class="btn call" data-add="${p.id}">${t('أضف للسلة')}</button></div>`).join('');
+  $("#sdB").innerHTML=`<div class="pro"><div class="shophead">${avatar(x,'l')}<div class="pi"><h3>${esc(name)}</h3><small>${esc((x&&x.c)||'')}${x&&x.d?' · '+esc(x.d):''}</small></div></div><div class="acts">${x?`<a class="btn call" href="tel:+${intl(x.ph)}">اتصال</a><a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/${intl(x.wa||x.ph)}">واتساب</a>`:''}${mu?`<a class="btn map" target="_blank" rel="noopener" href="${esc(mu)}">${t('الخريطة')}</a>`:''}</div></div><p class="note">${t('الشراء من منتجات المحل يتم عن طريقنا فقط: أضف للسلة وأرسل الطلب.')}</p>`+l.map(p=>`<div class="row"><span class="e">${p.imgs?`<img src="${esc(p.imgs[0])}" alt="" width="44" height="44" style="border-radius:12px;object-fit:cover">`:p.e}</span><div class="n"><a class="plink" href="#p=${p.id}">${p.n}</a><br><small>${money(p.p)}</small></div><button class="btn call" data-add="${p.id}">${t('أضف للسلة')}</button></div>`).join('');
   tr(sdlg);sdlg.showModal()}
 $("#sdX").onclick=()=>sdlg.close();
 sdlg.addEventListener("click",e=>{if(e.target===sdlg){sdlg.close();return}const b=e.target.closest("[data-add]");if(b){cart[b.dataset.add]=(cart[b.dataset.add]||0)+1;render(true);toast(L('أضفناه للسلة ✓','Hate zêdekirin ✓'))}});
@@ -795,13 +816,13 @@ sdlg.addEventListener("click",e=>{if(e.target===sdlg){sdlg.close();return}const 
   const K='sheetPros',T={'صحية':'plumb','كهرباء':'elec','بناء':'build','دهان':'paint','زريقة':'plaster','حداد':'smith','محلات':'shops'};
   const tid=v=>{v=String(v||'').trim();if(TRADES.some(x=>x.id===v))return v;for(const k in T)if(v.includes(k))return T[k];return null};
   const num=v=>String(v||'').replace(/[^\d+]/g,'').slice(0,16);
-  const mk=r=>{const t=tid(r.type);if(!t||!r.name||!num(r.phone))return null;return{t:t,n:String(r.name).trim().slice(0,60),c:String(r.city||'').slice(0,40),ph:num(r.phone),wa:num(r.wa),m:String(r.map||'').trim().slice(0,300),d:String(r.desc||'').slice(0,160)}};
+  const mk=r=>{const t=tid(r.type);if(!t||!r.name||!num(r.phone))return null;return{t:t,n:String(r.name).trim().slice(0,60),c:String(r.city||'').slice(0,40),ph:num(r.phone),wa:num(r.wa),m:String(r.map||'').trim().slice(0,300),d:String(r.desc||'').slice(0,160),i:imgURL(r.img)}};
   try{const c=JSON.parse(localStorage.getItem(K)||'null');if(Array.isArray(c))PROS=c}catch(e){}
   fetch(SHEET_URL+(SHEET_URL.includes('?')?'&':'?')+'pros=1').then(r=>r.json()).then(d=>{
     if(!d||!Array.isArray(d.pros))return;
     PROS=d.pros.map(mk).filter(Boolean);
     try{localStorage.setItem(K,JSON.stringify(PROS))}catch(e){}
-    pros();tr($("#pros"))}).catch(()=>{});
+    pros();tr($("#pros"));grid();tr($("#shop"))}).catch(()=>{});
 })();
 addKU({'الخريطة':'Nexşe','منتجاته':'Hilberên wî','الشراء من منتجات المحل يتم عن طريقنا فقط: أضف للسلة وأرسل الطلب.':'Kirîna hilberên vê dikanê tenê bi riya me ye: têxe selikê û fermanê bişîne.','رابط موقع المحل على خرائط جوجل (اختياري)':'Lînka cihê dikanê li Google Maps (bijare)'});
 addKU({'جميع الحقوق محفوظة':'Hemû maf parastî ne'});

@@ -1,5 +1,5 @@
 /* Service worker: شبكة أولاً، وإذا ما في إنترنت بيفتح آخر نسخة محفوظة */
-const V = 'store-v1';
+const V = 'store-v2';
 const ASSETS = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(V).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
@@ -16,4 +16,9 @@ self.addEventListener('fetch', e => {
       return res;
     }).catch(() => caches.match(r).then(m => m || caches.match('index.html')))
   );
+});
+// لما الزبون يضغط على إشعار تغيّر حالة الطلب: افتح المتجر
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  e.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(l => (l.length ? l[0].focus() : clients.openWindow('./'))));
 });

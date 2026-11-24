@@ -318,6 +318,15 @@ button.btn{border:0;cursor:pointer;font-family:inherit}
 .shopc:hover span.sn{text-decoration:underline}
 .pd-shop{margin:4px 0 8px}
 .shophead{display:flex;align-items:center;gap:12px;width:100%}
+
+/* ===== نموذج تسجيل/تعديل المحلات والمعلمين ===== */
+.photorow{display:flex;align-items:center;gap:14px;margin-top:12px}
+.codebox{font:700 1.7rem/1.2 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.14em;text-align:center;padding:14px;border-radius:16px;background:var(--field);border:1px dashed var(--glass-line);margin:8px 0;user-select:all}
+.okmsg{color:var(--ok);font-weight:800;font-size:1.05rem;margin:6px 0}
+.dact{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.dact .send{margin:0;flex:1 1 140px}
+.dact .ghost{flex:1 1 120px}
+.hpot{position:absolute!important;inset-inline-start:-9999px;width:1px;height:1px;opacity:0;overflow:hidden}
 </style>
 </head>
 <body>
@@ -363,6 +372,7 @@ button.btn{border:0;cursor:pointer;font-family:inherit}
     <div class="prohead">
       <button class="big" id="reqPro"><span aria-hidden="true">🛠️</span> اطلب معلم</button>
       <button class="ghost" id="joinPro">سجّل كمعلم أو محل</button>
+      <button class="ghost" id="editPro">تعديل ملفي</button>
     </div>
     <div class="tgrid" id="tgrid"></div>
     <div id="plist"></div>
@@ -433,6 +443,50 @@ button.btn{border:0;cursor:pointer;font-family:inherit}
 <dialog id="ldlg" aria-labelledby="ldT">
   <div class="ah"><h2 id="ldT"></h2><button class="pill" id="ldX" style="color:var(--ink)">إغلاق</button></div>
   <div class="ab doc" id="ldB"></div>
+</dialog>
+<dialog id="jdlg" aria-labelledby="jdT">
+  <div class="ah"><h2 id="jdT">سجّل ملفك بالدليل</h2><button class="pill" id="jdX" style="color:var(--ink)">إغلاق</button></div>
+  <div class="ab">
+    <div id="jForm">
+      <label>النوع<select id="jt"></select></label>
+      <label>الاسم أو اسم المحل<input id="jn" maxlength="60" autocomplete="organization"></label>
+      <label>المدينة<select id="jc"></select></label>
+      <label>رقم الهاتف<input id="jp" type="tel" inputmode="tel" dir="ltr" placeholder="09xxxxxxxx" autocomplete="tel"></label>
+      <label>رقم واتساب (إذا مختلف)<input id="jw" type="tel" inputmode="tel" dir="ltr" placeholder="09xxxxxxxx"></label>
+      <label>رابط الموقع على خرائط جوجل (اختياري)<input id="jm" dir="ltr" placeholder="https://maps.app.goo.gl/..."></label>
+      <label>نبذة قصيرة (اختياري)<textarea id="jd" rows="2" maxlength="160"></textarea></label>
+      <div class="photorow"><span class="av l" id="jPrev" aria-hidden="true"><b style="font-weight:400">📷</b></span><div><button type="button" class="ghost" id="jPick">اختر صورة</button><p class="note">صورة المحل أو شعارك أو صورتك. بتظهر دائرية.</p></div></div>
+      <input type="file" id="jf" accept="image/*" hidden>
+      <input class="hpot" id="jweb" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <p class="note">بعد الإرسال منراجع طلبك، ولما نوافق عليه بيظهر اسمك وصورتك بالدليل.</p>
+      <div class="err" id="jerr" role="alert"></div>
+      <button class="send" id="jsend">أرسل للمراجعة</button>
+      <div class="dact" id="jFallback" hidden><button class="ghost" id="jWaFb">أرسل الطلب عبر واتساب بدل ذلك</button></div>
+    </div>
+    <div id="jDone" hidden>
+      <p class="okmsg">وصل طلبك ✓ وهو قيد المراجعة.</p>
+      <p class="note">هاد رمز التعديل الخاص فيك. احتفظ فيه، لأنك بتحتاجو لتعدّل بياناتك وصورتك بعدين. ما بنقدر نعرضو مرة تانية.</p>
+      <div class="codebox" id="jCode" dir="ltr"></div>
+      <div class="dact"><button class="ghost" id="jCopy">نسخ الرمز</button><button class="send" id="jWa">أبلغنا على واتساب</button></div>
+    </div>
+  </div>
+</dialog>
+<dialog id="edlg" aria-labelledby="edT">
+  <div class="ah"><h2 id="edT">تعديل ملفي</h2><button class="pill" id="edX" style="color:var(--ink)">إغلاق</button></div>
+  <div class="ab">
+    <label>رقم الهاتف المسجّل<input id="ep" type="tel" inputmode="tel" dir="ltr" placeholder="09xxxxxxxx" autocomplete="tel"></label>
+    <label>رمز التعديل<input id="ec" dir="ltr" autocapitalize="characters" autocomplete="off" placeholder="XXXX-XXXX" maxlength="9"></label>
+    <p class="note">غيّر بس اللي بدك تغيّرو، وخلّي الباقي فاضي.</p>
+    <label>المدينة<select id="ecity"></select></label>
+    <label>رقم واتساب جديد<input id="ew" type="tel" inputmode="tel" dir="ltr"></label>
+    <label>رابط جديد على خرائط جوجل<input id="em" dir="ltr" placeholder="https://..."></label>
+    <label>نبذة جديدة<textarea id="ed" rows="2" maxlength="160"></textarea></label>
+    <div class="photorow"><span class="av l" id="ePrev" aria-hidden="true"><b style="font-weight:400">📷</b></span><div><button type="button" class="ghost" id="ePick">صورة جديدة</button></div></div>
+    <input type="file" id="ef" accept="image/*" hidden>
+    <div class="err" id="eerr" role="alert"></div>
+    <button class="send" id="esend">احفظ التعديلات</button>
+    <p class="note">ضاع الرمز؟ تواصل معنا على واتساب ونعطيك رمز جديد.</p>
+  </div>
 </dialog>
 <div id="toast" popover="manual" role="status" aria-live="polite"></div>
 
@@ -886,6 +940,82 @@ $("#openCart").addEventListener("animationend",e=>{if(e.animationName==="bump")e
     apply(v);
   }).catch(()=>{clearTimeout(tm)});
 })();
+/* ===== تسجيل وتعديل المحلات والمعلمين بالدليل (بموافقة صاحب المتجر) ===== */
+const jdlg=$("#jdlg"),edlg=$("#edlg"),PH={j:null,e:null},PHONE_RE=/^(\+?963|0)?9\d{8}$/,CA="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+addKU({'سجّل ملفك بالدليل':'Profîla xwe di rêberê de tomar bike','النوع':'Cure','الاسم أو اسم المحل':'Nav an navê dikanê','المدينة':'Bajar','رقم الهاتف':'Hejmara telefonê','رقم واتساب (إذا مختلف)':'Hejmara WhatsApp (heke cuda be)','رابط الموقع على خرائط جوجل (اختياري)':'Lînka cihê li Google Maps (bijare)','نبذة قصيرة (اختياري)':'Danasîna kurt (bijare)','اختر صورة':'Wêneyek hilbijêre','صورة المحل أو شعارك أو صورتك. بتظهر دائرية.':'Wêneya dikanê, logo an wêneya te. Bi şiklê gilover tê nîşandan.','بعد الإرسال منراجع طلبك، ولما نوافق عليه بيظهر اسمك وصورتك بالدليل.':'Piştî şandinê em daxwaza te dinirxînin, û gava em erê bikin nav û wêneya te di rêberê de xuya dibe.','أرسل للمراجعة':'Ji bo nirxandinê bişîne','أرسل الطلب عبر واتساب بدل ذلك':'Li şûna wê bi WhatsApp bişîne','وصل طلبك ✓ وهو قيد المراجعة.':'Daxwaza te gihîşt ✓ û di nirxandinê de ye.','هاد رمز التعديل الخاص فيك. احتفظ فيه، لأنك بتحتاجو لتعدّل بياناتك وصورتك بعدين. ما بنقدر نعرضو مرة تانية.':'Ev koda guhertina te ye. Wê biparêze, ji ber ku ji bo guhertina agahî û wêneya te lazim e. Em nikarin dîsa nîşan bidin.','نسخ الرمز':'Kodê kopî bike','أبلغنا على واتساب':'Bi WhatsApp ji me re bêje','تعديل ملفي':'Profîla min biguherîne','رقم الهاتف المسجّل':'Hejmara telefonê ya tomarkirî','رمز التعديل':'Koda guhertinê','غيّر بس اللي بدك تغيّرو، وخلّي الباقي فاضي.':'Tenê tiştê dixwazî biguherînî biguherîne, yên din vala bihêle.','رقم واتساب جديد':'Hejmara nû ya WhatsApp','رابط جديد على خرائط جوجل':'Lînka nû ya Google Maps','نبذة جديدة':'Danasîna nû','صورة جديدة':'Wêneya nû','احفظ التعديلات':'Guhertinan tomar bike','ضاع الرمز؟ تواصل معنا على واتساب ونعطيك رمز جديد.':'Kod winda bû? Bi WhatsApp bi me re têkilî daynî û em kodek nû didin te.','— بدون تغيير —':'— Bê guhertin —',
+ 'اكتب الاسم.':'Nav binivîse.','رقم الهاتف غير صحيح. مثال: 0933123456':'Hejmara telefonê şaş e. Mînak: 0933123456','رابط الخريطة لازم يبدأ بـ https://':'Lînka nexşeyê divê bi https:// dest pê bike','تعذّر قراءة الصورة. جرّب صورة تانية.':'Wêne nehat xwendin. Wêneyek din biceribîne.','جاري الإرسال…':'Tê şandin…','ما قدرنا نتأكد إنو الطلب وصل. تأكد من الإنترنت أو ابعت طلبك عبر واتساب.':'Nikarîn piştrast bikin ku daxwaz gihîşt. Înternetê kontrol bike an bi WhatsApp bişîne.','تأكد من البيانات (الاسم، الهاتف، الرمز).':'Agahiyan kontrol bike (nav, telefon, kod).','محاولات كتير. جرّب بعد ساعة.':'Gelek hewldan. Piştî saetekê biceribîne.','هالرقم مسجّل من قبل. إذا هاد رقمك، تواصل معنا لنعطيك رمز التعديل.':'Ev hejmar berê hatiye tomar kirin. Heke ya te ye, bi me re têkilî daynî.','هالاسم مستعمل. غيّر الاسم شوي.':'Ev nav hatiye bikaranîn. Hinekî biguherîne.','الصورة غير صالحة. جرّب صورة تانية.':'Wêne derbasdar nîne. Wêneyek din biceribîne.','الرقم أو الرمز غير صحيح.':'Hejmar an kod şaş e.','صار خطأ. جرّب مرة تانية.':'Çewtiyek çêbû. Dîsa biceribîne.','اكتب رقمك والرمز.':'Hejmar û kodê binivîse.','غيّر شي واحد على الأقل.':'Herî kêm tiştekî biguherîne.','تم حفظ التعديلات ✓ بتظهر لما الزبائن يعيدوا فتح المتجر.':'Guhertin hatin tomar kirin ✓ gava mişterî dîsa vekin xuya dibin.','تم نسخ الرمز':'Kod hate kopî kirin'});
+function genCode(){const b=new Uint8Array(8);try{crypto.getRandomValues(b)}catch(e){for(let i=0;i<8;i++)b[i]=Math.floor(Math.random()*256)}return[...b].map(x=>CA[x%32]).join('')}
+const fmtCode=c=>c.slice(0,4)+'-'+c.slice(4);
+const cleanPh=v=>nd(String(v||'')).replace(/[\s-]/g,'');
+function shrinkImage(file){return new Promise((res,rej)=>{
+  if(!file||!/^image\//.test(file.type))return rej(new Error('type'));
+  const u=URL.createObjectURL(file),im=new Image();
+  im.onload=()=>{URL.revokeObjectURL(u);try{
+    const side=Math.min(im.naturalWidth,im.naturalHeight),out=Math.min(320,side);if(!side)throw 0;
+    const c=document.createElement('canvas');c.width=c.height=out;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,out,out);
+    x.drawImage(im,(im.naturalWidth-side)/2,(im.naturalHeight-side)/2,side,side,0,0,out,out);
+    let q=.85,d=c.toDataURL('image/jpeg',q);while(d.length>110000&&q>.4){q-=.1;d=c.toDataURL('image/jpeg',q)}
+    d.length>110000?rej(new Error('big')):res(d)}catch(e){rej(e)}};
+  im.onerror=()=>{URL.revokeObjectURL(u);rej(new Error('bad'))};im.src=u})}
+function setPrev(k,url){const el=$(k==='j'?'#jPrev':'#ePrev');el.innerHTML=url?`<img src="${url}" alt="">`:'<b style="font-weight:400">📷</b>';el.classList.toggle('ld',!!url)}
+async function onPhoto(k,file){const er=$(k==='j'?'#jerr':'#eerr');if(!file)return;
+  try{PH[k]=await shrinkImage(file);setPrev(k,PH[k]);er.textContent=''}catch(e){PH[k]=null;setPrev(k,null);er.textContent=t('تعذّر قراءة الصورة. جرّب صورة تانية.')}}
+$("#jPick").onclick=()=>$("#jf").click();$("#ePick").onclick=()=>$("#ef").click();
+$("#jf").onchange=e=>onPhoto('j',e.target.files[0]);$("#ef").onchange=e=>onPhoto('e',e.target.files[0]);
+async function postJSON(o){const ac=window.AbortController?new AbortController():null,tm=setTimeout(()=>ac&&ac.abort(),25000);
+  try{const r=await fetch(SHEET_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(o),signal:ac?ac.signal:undefined});return await r.json()}finally{clearTimeout(tm)}}
+const ERRS={invalid:'تأكد من البيانات (الاسم، الهاتف، الرمز).',rate:'محاولات كتير. جرّب بعد ساعة.',exists:'هالرقم مسجّل من قبل. إذا هاد رقمك، تواصل معنا لنعطيك رمز التعديل.',name:'هالاسم مستعمل. غيّر الاسم شوي.',photo:'الصورة غير صالحة. جرّب صورة تانية.',auth:'الرقم أو الرمز غير صحيح.'};
+const errMsg=c=>t(ERRS[c]||'صار خطأ. جرّب مرة تانية.');
+function getOwner(){try{return JSON.parse(localStorage.getItem('owner')||'null')}catch(e){return null}}
+function saveOwner(o){try{localStorage.setItem('owner',JSON.stringify(o))}catch(e){}}
+const cityOpts=blank=>(blank?`<option value="">${t('— بدون تغيير —')}</option>`:'')+Object.keys(SHIP).map(g=>`<option value="${g}">${g}</option>`).join('');
+function openJoin(tid){
+  if(!SHEET_URL)return openDlg('join',tid);
+  $("#jt").innerHTML=TRADES.map(x=>`<option value="${x.id}">${x.n}</option>`).join('');if(tid)$("#jt").value=tid;
+  $("#jc").innerHTML=cityOpts(false);
+  ['#jn','#jp','#jw','#jm','#jd','#jweb'].forEach(i=>$(i).value='');$("#jf").value='';PH.j=null;setPrev('j',null);
+  $("#jerr").textContent='';$("#jForm").hidden=false;$("#jDone").hidden=true;$("#jFallback").hidden=true;$("#jsend").disabled=false;
+  tr(jdlg);jdlg.showModal()}
+function joinWA(d){const tn=(TRADES.find(x=>x.id===d.type)||{}).n||d.type;
+  const msg=`طلب تسجيل بدليل المعلمين والمحلات - ${STORE}\n\nالمهنة/النوع: ${tn}\nالاسم: ${d.name}\nالمدينة: ${d.city}\nالهاتف: ${d.phone}\nنبذة: ${d.desc||"-"}`;
+  window.open("https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(msg),"_blank")}
+$("#jsend").onclick=async()=>{
+  const er=$("#jerr"),d={action:'apply',type:$("#jt").value,name:$("#jn").value.trim(),city:$("#jc").value,phone:cleanPh($("#jp").value),wa:cleanPh($("#jw").value),map:$("#jm").value.trim(),desc:$("#jd").value.trim(),photo:PH.j||'',website:$("#jweb").value};
+  if(!d.name){er.textContent=t('اكتب الاسم.');return}
+  if(!PHONE_RE.test(d.phone)||(d.wa&&!PHONE_RE.test(d.wa))){er.textContent=t('رقم الهاتف غير صحيح. مثال: 0933123456');return}
+  if(d.map&&!/^https:\/\//i.test(d.map)){er.textContent=t('رابط الخريطة لازم يبدأ بـ https://');return}
+  d.code=genCode();er.textContent='';const b=$("#jsend"),old=b.textContent;b.disabled=true;b.textContent=t('جاري الإرسال…');
+  try{const r=await postJSON(d);
+    if(r&&r.ok){saveOwner({ph:d.phone,code:d.code,name:d.name});$("#jCode").textContent=fmtCode(d.code);$("#jForm").hidden=true;$("#jDone").hidden=false;tr(jdlg);
+      $("#jWa").onclick=()=>window.open("https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(`تقديم جديد بدليل ${STORE}\nالاسم: ${d.name}\nالهاتف: ${d.phone}\n(أُرسل من النموذج وينتظر الموافقة)`),"_blank");}
+    else er.textContent=errMsg(r&&r.error)}
+  catch(e){er.textContent=t('ما قدرنا نتأكد إنو الطلب وصل. تأكد من الإنترنت أو ابعت طلبك عبر واتساب.');$("#jFallback").hidden=false;$("#jWaFb").onclick=()=>joinWA(d)}
+  finally{b.disabled=false;b.textContent=old}};
+$("#jCopy").onclick=async()=>{const c=$("#jCode").textContent;let ok=false;try{await navigator.clipboard.writeText(c);ok=true}catch(e){try{const r=document.createRange();r.selectNodeContents($("#jCode"));const s=getSelection();s.removeAllRanges();s.addRange(r);ok=document.execCommand('copy')}catch(_){}}
+  toast(ok?t('تم نسخ الرمز'):c)};
+$("#jdX").onclick=()=>jdlg.close();jdlg.addEventListener("click",e=>{if(e.target===jdlg)jdlg.close()});
+/* تعديل البروفايل بالرمز */
+function openEdit(){const o=getOwner();$("#ecity").innerHTML=cityOpts(true);
+  $("#ep").value=o?o.ph:'';$("#ec").value=o?fmtCode(o.code):'';['#ew','#em','#ed'].forEach(i=>$(i).value='');$("#ef").value='';PH.e=null;setPrev('e',null);
+  $("#eerr").textContent='';$("#esend").disabled=false;tr(edlg);edlg.showModal()}
+$("#esend").onclick=async()=>{
+  const er=$("#eerr"),ph=cleanPh($("#ep").value),code=nd($("#ec").value).toUpperCase().replace(/[^A-Z0-9]/g,'');
+  if(!PHONE_RE.test(ph)||code.length!==8){er.textContent=t('اكتب رقمك والرمز.');return}
+  const d={action:'update',phone:ph,code:code},c=$("#ecity").value,w=cleanPh($("#ew").value),m=$("#em").value.trim(),ds=$("#ed").value.trim();
+  if(c)d.city=c;if(w){if(!PHONE_RE.test(w)){er.textContent=t('رقم الهاتف غير صحيح. مثال: 0933123456');return}d.wa=w}
+  if(m){if(!/^https:\/\//i.test(m)){er.textContent=t('رابط الخريطة لازم يبدأ بـ https://');return}d.map=m}
+  if(ds)d.desc=ds;if(PH.e)d.photo=PH.e;
+  if(Object.keys(d).length<=3){er.textContent=t('غيّر شي واحد على الأقل.');return}
+  er.textContent='';const b=$("#esend"),old=b.textContent;b.disabled=true;b.textContent=t('جاري الإرسال…');
+  try{const r=await postJSON(d);
+    if(r&&r.ok){saveOwner({ph:ph,code:code,name:(getOwner()||{}).name||''});edlg.close();toast(t('تم حفظ التعديلات ✓ بتظهر لما الزبائن يعيدوا فتح المتجر.'))}
+    else er.textContent=errMsg(r&&r.error)}
+  catch(e){er.textContent=t('ما قدرنا نتأكد إنو الطلب وصل. تأكد من الإنترنت أو ابعت طلبك عبر واتساب.')}
+  finally{b.disabled=false;b.textContent=old}};
+$("#edX").onclick=()=>edlg.close();edlg.addEventListener("click",e=>{if(e.target===edlg)edlg.close()});
+$("#joinPro").onclick=()=>openJoin(sel);$("#editPro").onclick=openEdit;
+$("#plist").onclick=e=>{if(e.target.closest("[data-join]"))openJoin(sel);const b=e.target.closest("[data-shop]");if(b)openShop(b.dataset.shop)};
+$("#editPro").hidden=!SHEET_URL;
 openFromHash();
 </script>
 </body>

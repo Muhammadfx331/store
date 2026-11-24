@@ -1032,9 +1032,9 @@ $("#jf").onchange=e=>onPhoto('j',e.target.files[0]);$("#ef").onchange=e=>onPhoto
 async function postJSON(o){const ac=window.AbortController?new AbortController():null,tm=setTimeout(()=>ac&&ac.abort(),60000);
   let r,txt;
   try{r=await fetch(SHEET_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(o),signal:ac?ac.signal:undefined});txt=await r.text()}finally{clearTimeout(tm)}
-  try{return JSON.parse(txt)}catch(e){return{ok:false,error:'server'}} /* وصلنا رد بس مو JSON: غالباً خطأ بالسكربت (صلاحيات Drive أو نشر قديم) */}
+  try{return JSON.parse(txt)}catch(e){return{ok:false,error:'server',msg:'HTTP '+r.status+' '+String(txt).replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').slice(0,120)}} /* وصلنا رد بس مو JSON: غالباً خطأ بالسكربت (صلاحيات Drive أو نشر قديم) */}
 const ERRS={invalid:'تأكد من البيانات (الاسم، الهاتف، الرمز).',rate:'محاولات كتير. جرّب بعد ساعة.',exists:'هالرقم مسجّل من قبل. إذا هاد رقمك، تواصل معنا لنعطيك رمز التعديل.',name:'هالاسم مستعمل. غيّر الاسم شوي.',photo:'الصورة غير صالحة. جرّب صورة تانية.',auth:'الرقم أو الرمز غير صحيح.',server:'وصلنا للسيرفر بس ما قدر يحفظ (مو مشكلة إنترنت). جرّب بعد شوي، وإذا استمرت بلّغ صاحب المتجر.',share:'تعذّر نشر الصورة. بلّغ صاحب المتجر.'};
-const errMsg=c=>t(ERRS[c]||'صار خطأ. جرّب مرة تانية.');
+const errMsg=(c,m)=>t(ERRS[c]||'صار خطأ. جرّب مرة تانية.')+(c==='server'&&m?' ['+m+']':'');
 function getOwner(){try{return JSON.parse(localStorage.getItem('owner')||'null')}catch(e){return null}}
 function saveOwner(o){try{localStorage.setItem('owner',JSON.stringify(o))}catch(e){}}
 const cityOpts=blank=>(blank?`<option value="">${t('— بدون تغيير —')}</option>`:'')+Object.keys(SHIP).map(g=>`<option value="${g}">${g}</option>`).join('');
@@ -1057,7 +1057,7 @@ $("#jsend").onclick=async()=>{
   try{const r=await postJSON(d);
     if(r&&r.ok){saveOwner({ph:d.phone,code:d.code,name:d.name});osLogin(d.phone);updPushBtn();$("#jCode").textContent=fmtCode(d.code);$("#jForm").hidden=true;$("#jDone").hidden=false;tr(jdlg);
       $("#jWa").onclick=()=>window.open("https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(`تقديم جديد بدليل ${STORE}\nالاسم: ${d.name}\nالهاتف: ${d.phone}\n(أُرسل من النموذج وينتظر الموافقة)`),"_blank");}
-    else er.textContent=errMsg(r&&r.error)}
+    else er.textContent=errMsg(r&&r.error,r&&r.msg)}
   catch(e){er.textContent=t('ما قدرنا نتأكد إنو الطلب وصل. تأكد من الإنترنت أو ابعت طلبك عبر واتساب.');$("#jFallback").hidden=false;$("#jWaFb").onclick=()=>joinWA(d)}
   finally{b.disabled=false;b.textContent=old}};
 $("#jCopy").onclick=async()=>{const c=$("#jCode").textContent;let ok=false;try{await navigator.clipboard.writeText(c);ok=true}catch(e){try{const r=document.createRange();r.selectNodeContents($("#jCode"));const s=getSelection();s.removeAllRanges();s.addRange(r);ok=document.execCommand('copy')}catch(_){}}
@@ -1078,7 +1078,7 @@ $("#esend").onclick=async()=>{
   er.textContent='';const b=$("#esend"),old=b.textContent;b.disabled=true;b.textContent=t('جاري الإرسال…');
   try{const r=await postJSON(d);
     if(r&&r.ok){saveOwner({ph:ph,code:code,name:(getOwner()||{}).name||''});osLogin(ph);edlg.close();applyEdit(d,r);toast(t('تم حفظ التعديلات ✓'))}
-    else er.textContent=errMsg(r&&r.error)}
+    else er.textContent=errMsg(r&&r.error,r&&r.msg)}
   catch(e){er.textContent=t('ما قدرنا نتأكد إنو الطلب وصل. تأكد من الإنترنت أو ابعت طلبك عبر واتساب.')}
   finally{b.disabled=false;b.textContent=old}};
 $("#edX").onclick=()=>edlg.close();edlg.addEventListener("click",e=>{if(e.target===edlg)edlg.close()});
@@ -1143,13 +1143,13 @@ $("#wasend").onclick=async()=>{
   try{const r=await postJSON(d);
     if(r&&r.ok){const x=PROS.find(y=>last9(y.ph)===last9(o.ph));if(x){x.w=[{id:String(r.id),u:imgURL(r.url,400),b:imgURL(r.url,1000),c:d.caption}].concat(x.w||[]);persistPros()}
       wadlg.close();if(curU)showProfile(curU);toast(t('انضافت الصورة ✓'))}
-    else er.textContent=r&&r.error==='full'?t('وصلت للحد الأقصى (12 صورة). احذف صورة قديمة.'):errMsg(r&&r.error)}
+    else er.textContent=r&&r.error==='full'?t('وصلت للحد الأقصى (12 صورة). احذف صورة قديمة.'):errMsg(r&&r.error,r&&r.msg)}
   catch(e){er.textContent=t('ما قدرنا نتأكد إنو الطلب وصل. تأكد من الإنترنت أو ابعت طلبك عبر واتساب.')}
   finally{b.disabled=false;b.textContent=old}};
 async function removeWork(id){const o=getOwner();if(!o)return;
   try{const r=await postJSON({action:'delwork',phone:o.ph,code:o.code,id:id});
     if(r&&r.ok){const x=PROS.find(y=>last9(y.ph)===last9(o.ph));if(x){x.w=(x.w||[]).filter(g=>g.id!==id);persistPros()}if(curU)showProfile(curU);toast(t('انحذفت الصورة ✓'))}
-    else toast(errMsg(r&&r.error))}
+    else toast(errMsg(r&&r.error,r&&r.msg))}
   catch(e){toast(t('ما قدرنا نتأكد إنو الطلب وصل. تأكد من الإنترنت أو ابعت طلبك عبر واتساب.'))}}
 /* ربط الجهاز بالملف (لصاحب الملف على جهاز جديد) */
 $("#elink").onclick=async()=>{
@@ -1157,7 +1157,7 @@ $("#elink").onclick=async()=>{
   if(!chkAuth(ph,code,er))return;
   try{const r=await postJSON({action:'update',phone:ph,code:code});
     if(r&&r.ok){const x=PROS.find(y=>last9(y.ph)===last9(ph));saveOwner({ph:ph,code:code,name:x?x.n:''});osLogin(ph);edlg.close();updOwnNote();if(curU)showProfile(curU);toast(t('تم ربط الجهاز بملفك ✓'))}
-    else er.textContent=errMsg(r&&r.error)}
+    else er.textContent=errMsg(r&&r.error,r&&r.msg)}
   catch(e){er.textContent=t('ما قدرنا نتأكد إنو الطلب وصل. تأكد من الإنترنت أو ابعت طلبك عبر واتساب.')}};
 /* بطاقة "ملفي" بتبويب الدليل لصاحب الملف */
 function updOwnNote(){const o=getOwner(),el=$("#ownNote");if(!o||!SHEET_URL){el.hidden=true;return}

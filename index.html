@@ -134,7 +134,10 @@ h1,h2,h3,.logo,.price,.tile .tn{font-family:Cairo,Tajawal,"Segoe UI",Tahoma,Aria
 header{gap:8px}
 .pill,.cartbtn,.logo{white-space:nowrap}
 .logo{min-width:0;overflow:hidden;text-overflow:ellipsis}
-@media (max-width:360px){.logo{font-size:1.1rem}header{gap:4px;padding:8px}.pill{padding:2px 7px;font-size:.8rem}#theme{padding:2px 6px}.cartbtn{padding:4px 9px;font-size:.82rem}}
+#bell{position:relative;padding:4px 9px}#bell[data-n]::after{content:attr(data-n);position:absolute;top:-6px;inset-inline-end:-4px;min-width:17px;height:17px;border-radius:9px;background:#d33;color:#fff;font-size:.68rem;line-height:17px;text-align:center;padding:0 4px;font-weight:700}
+.nl{list-style:none;margin:0;padding:0;display:grid;gap:8px}.nl li{background:var(--field);border:1px solid var(--glass-line);border-radius:14px;padding:10px 12px}.nl small{display:block;color:var(--mute);margin-top:2px}.nl li.nw{border-color:var(--accent)}
+.btn.cx{background:transparent;border:1.5px solid #c0392b;color:#c0392b}
+@media (max-width:360px){#bell{padding:2px 6px}.logo{font-size:1.1rem}header{gap:4px;padding:8px}.pill{padding:2px 7px;font-size:.8rem}#theme{padding:2px 6px}.cartbtn{padding:4px 9px;font-size:.82rem}}
 @media (max-width:440px){.logo{font-size:1.25rem}header{gap:6px;padding:8px 10px}.pill{padding:3px 9px;font-size:.88rem}#theme{padding:3px 8px}.cartbtn{padding:5px 11px;font-size:.9rem}}
 .seg{display:flex;gap:4px;padding:4px;margin:4px 0 16px;border-radius:999px;background:var(--glass);border:1px solid var(--glass-line);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
 .seg button{flex:1;border:0;background:transparent;border-radius:999px;padding:9px 10px;font-weight:700;transition:background .2s,color .2s}
@@ -362,6 +365,7 @@ button.btn{border:0;cursor:pointer;font-family:inherit}
 <div class="bg" aria-hidden="true"><i></i><i></i><i></i></div>
 <header>
   <div class="logo" id="storeName"></div>
+  <button class="pill" id="bell" aria-label="الإشعارات">🔔</button>
   <button class="pill" id="theme" aria-label="الوضع"></button>
   <button class="pill" id="lang">Kurdî</button>
   <button class="pill" id="cur" aria-label="تبديل العملة"></button>
@@ -541,6 +545,14 @@ button.btn{border:0;cursor:pointer;font-family:inherit}
     <p class="note">ضاع الرمز؟ تواصل معنا على واتساب ونعطيك رمز جديد.</p>
   </div>
 </dialog>
+<dialog id="ndlg" aria-labelledby="ndT">
+  <div class="ah"><h2 id="ndT">الإشعارات</h2><button class="pill" id="ndX" style="color:var(--ink)">إغلاق</button></div>
+  <div class="ab">
+    <button class="send" id="ndEnable" hidden>فعّل إشعارات الجوال</button>
+    <ul class="nl" id="nlist"></ul>
+    <button class="ghost" id="ndClear" style="margin-top:10px">مسح الإشعارات</button>
+  </div>
+</dialog>
 <div id="toast" popover="manual" role="status" aria-live="polite"></div>
 
 <script>
@@ -650,7 +662,7 @@ $("#send").onclick=()=>{
   const sub=ids.reduce((a,i)=>a+find(i).p*cart[i],0),sh=SHIP[$("#gov").value];
   const lines=ids.map(i=>`• ${find(i).n} × ${cart[i]} = ${money(find(i).p*cart[i])}`).join("\n");
   const sig=JSON.stringify([ids.map(i=>[i,cart[i]]),$("#gov").value]),lastO=orders[0];
-  let no;if(lastO&&lastO.sig===sig&&Date.now()-lastO.t<600000)no=lastO.no;else{no=mkNo();orders.unshift({no,t:Date.now(),sig,st:'قيد المراجعة',un:0,total:sub+sh,items:ids.map(i=>({n:find(i).n,q:cart[i]}))});saveOrders()}
+  let no;if(lastO&&lastO.sig===sig&&Date.now()-lastO.t<600000)no=lastO.no;else{no=mkNo();orders.unshift({no,t:Date.now(),sig,ph:last9(ph),st:'قيد المراجعة',un:0,total:sub+sh,items:ids.map(i=>({n:find(i).n,q:cart[i]}))});saveOrders()}
   const note=$("#ordNote");note.innerHTML=L('رقم طلبك: ','Hejmara fermana te: ')+'<b dir="ltr">'+no+'</b> — '+L('احتفظ فيه لتتبّع طلبك من تبويب «طلباتي».','ji bo şopandina fermanê di «Fermanên min» de biparêze.');note.hidden=false;
   const msg=`طلب جديد من ${STORE}\nرقم الطلب: ${no}\n\n${lines}\n\nالمجموع: ${money(sub)}\nالتوصيل (${$("#gov").value}): ${money(sh)}\nالإجمالي: ${money(sub+sh)}\n\nالاسم: ${fn}\nالهاتف: ${ph}\nالعنوان: ${ad}\nالدفع: ${$("#pay").value}`;
   try{osLogin(ph)}catch(e){}
@@ -799,7 +811,7 @@ function mkNo(){const d=new Date(),p=n=>String(n).padStart(2,'0'),A='ABCDEFGHJKL
 const normNo=v=>nd(String(v||'')).toUpperCase().replace(/[^A-Z0-9-]/g,'');
 const waAsk=no=>`<a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/${WHATSAPP}?text=${encodeURIComponent(L('أريد الاستفسار عن طلبي رقم ','Ez dixwazim li ser fermana xwe bi hejmara ')+no)}">تواصل عبر واتساب</a>`;
 function renderOrders(){
-  $("#mine").innerHTML=orders.length?orders.map(o=>`<article class="pro"><div class="pe" aria-hidden="true">🧾</div><div class="pi"><h3 dir="ltr" style="text-align:start">${esc(o.no)}</h3><small>${o.st?`<span class="stp">${esc(t(o.st))}</span> · `:''}${new Date(o.t).toLocaleDateString(lang==='ku'?'en-GB':'ar-SY')} · ${money(o.total)} · ${esc(o.items.map(i=>i.n+' ×'+i.q).join('، '))}</small></div><div class="acts"><button class="btn call" data-trk="${esc(o.no)}">تتبّع</button></div></article>`).join(''):`<p class="empty">ما في طلبات محفوظة على هالجهاز بعد.</p>`;
+  $("#mine").innerHTML=orders.length?orders.map(o=>`<article class="pro"><div class="pe" aria-hidden="true">🧾</div><div class="pi"><h3 dir="ltr" style="text-align:start">${esc(o.no)}</h3><small>${o.st?`<span class="stp">${esc(t(o.st))}</span> · `:''}${new Date(o.t).toLocaleDateString(lang==='ku'?'en-GB':'ar-SY')} · ${money(o.total)} · ${esc(o.items.map(i=>i.n+' ×'+i.q).join('، '))}</small></div><div class="acts"><button class="btn call" data-trk="${esc(o.no)}">تتبّع</button>${(o.st==='قيد المراجعة'||o.st==='تم التأكيد')&&SHEET_URL?`<button class="btn cx" data-cx="${esc(o.no)}">إلغاء الطلب</button>`:''}</div></article>`).join(''):`<p class="empty">ما في طلبات محفوظة على هالجهاز بعد.</p>`;
   $("#ono").placeholder="261123-K7F";tr($("#orders"))}
 function showTrack(h){const o=$("#trkOut");o.innerHTML=h;tr(o)}
 async function track(raw){
@@ -824,7 +836,17 @@ async function track(raw){
 }
 $("#trkBtn").onclick=()=>track($("#ono").value);
 $("#ono").addEventListener("keydown",e=>{if(e.key==="Enter")track($("#ono").value)});
-$("#mine").addEventListener("click",e=>{const b=e.target.closest("[data-trk]");if(b){track(b.dataset.trk);$("#trkOut").scrollIntoView({block:"nearest",behavior:"smooth"})}});
+$("#mine").addEventListener("click",async e=>{
+  const cx=e.target.closest("[data-cx]");
+  if(cx){const o=orders.find(x=>x.no===cx.dataset.cx);if(!o)return;if(!confirm(t('تلغي هالطلب؟ رح نبلّغ صاحب المتجر فوراً.')))return;
+    let ph=o.ph;if(!ph){try{ph=last9((JSON.parse(localStorage.getItem('info')||'null')||{}).ph)}catch(_){}}
+    cx.disabled=true;
+    try{const r=await postJSON({action:'cancel',order:o.no,phone:ph||''});
+      if(r&&r.ok){o.st='ملغي';saveOrders();renderOrders();toast(t('انلغى الطلب ✓ وبلّغنا صاحب المتجر.'));addNotif(L('ألغيت طلبك رقم '+o.no,'Fermana te '+o.no+' hate betal kirin'))}
+      else{toast(errMsg(r&&r.error,r&&r.msg));cx.disabled=false}}
+    catch(_){toast(t('ما قدرنا نتأكد إنو الطلب وصل. تأكد من الإنترنت أو ابعت طلبك عبر واتساب.'));cx.disabled=false}
+    return}
+  const b=e.target.closest("[data-trk]");if(b){track(b.dataset.trk);$("#trkOut").scrollIntoView({block:"nearest",behavior:"smooth"})}});
 
 /* ===== سياسات (التوصيل والاسترجاع + الخصوصية) ===== */
 const ldlg=$("#ldlg"),ul=a=>`<ul>${a.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`;
@@ -1033,7 +1055,7 @@ async function postJSON(o){const ac=window.AbortController?new AbortController()
   let r,txt;
   try{r=await fetch(SHEET_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(o),signal:ac?ac.signal:undefined});txt=await r.text()}finally{clearTimeout(tm)}
   try{return JSON.parse(txt)}catch(e){return{ok:false,error:'server',msg:'HTTP '+r.status+' '+String(txt).replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').slice(0,120)}} /* وصلنا رد بس مو JSON: غالباً خطأ بالسكربت (صلاحيات Drive أو نشر قديم) */}
-const ERRS={invalid:'تأكد من البيانات (الاسم، الهاتف، الرمز).',rate:'محاولات كتير. جرّب بعد ساعة.',exists:'هالرقم مسجّل من قبل. إذا هاد رقمك، تواصل معنا لنعطيك رمز التعديل.',name:'هالاسم مستعمل. غيّر الاسم شوي.',photo:'الصورة غير صالحة. جرّب صورة تانية.',auth:'الرقم أو الرمز غير صحيح.',server:'وصلنا للسيرفر بس ما قدر يحفظ (مو مشكلة إنترنت). جرّب بعد شوي، وإذا استمرت بلّغ صاحب المتجر.',share:'تعذّر نشر الصورة. بلّغ صاحب المتجر.'};
+const ERRS={invalid:'تأكد من البيانات (الاسم، الهاتف، الرمز).',rate:'محاولات كتير. جرّب بعد ساعة.',exists:'هالرقم مسجّل من قبل. إذا هاد رقمك، تواصل معنا لنعطيك رمز التعديل.',name:'هالاسم مستعمل. غيّر الاسم شوي.',photo:'الصورة غير صالحة. جرّب صورة تانية.',auth:'الرقم أو الرمز غير صحيح.',server:'وصلنا للسيرفر بس ما قدر يحفظ (مو مشكلة إنترنت). جرّب بعد شوي، وإذا استمرت بلّغ صاحب المتجر.',share:'تعذّر نشر الصورة. بلّغ صاحب المتجر.',status:'الطلب صار قيد التجهيز أو التوصيل وما عاد ينلغى من هون. تواصل معنا على واتساب.',notfound:'ما لقينا الطلب بالجدول. إذا لسا ما وصل، تواصل معنا على واتساب.',mismatch:'رقم الهاتف ما بيطابق الطلب.'};
 const errMsg=(c,m)=>t(ERRS[c]||'صار خطأ. جرّب مرة تانية.')+(c==='server'&&m?' ['+m+']':'');
 function getOwner(){try{return JSON.parse(localStorage.getItem('owner')||'null')}catch(e){return null}}
 function saveOwner(o){try{localStorage.setItem('owner',JSON.stringify(o))}catch(e){}}
@@ -1162,6 +1184,7 @@ $("#elink").onclick=async()=>{
 /* بطاقة "ملفي" بتبويب الدليل لصاحب الملف */
 function updOwnNote(){const o=getOwner(),el=$("#ownNote");if(!o||!SHEET_URL){el.hidden=true;return}
   const x=PROS.find(y=>last9(y.ph)===last9(o.ph));
+  if(x&&o){try{const k='ownOK_'+last9(o.ph);if(!localStorage.getItem(k)){localStorage.setItem(k,'1');addNotif('تمت الموافقة على ملفك «'+x.n+'» وصار ظاهر بالدليل ✓')}}catch(e){}}
   if(x){el.hidden=false;el.innerHTML=`<div class="pi"><h3>${esc(x.n)}</h3><small>${t('هاد ملفك. افتحو لتضيف صور من أعمالك.')}</small></div><div class="acts"><button class="btn call" data-shop="${esc(x.n)}">${t('افتح ملفي')}</button></div>`}
   else if(PROS_READY){el.hidden=false;el.innerHTML=`<div class="pi"><h3>${esc(o.name||'')}</h3><small>${t('طلبك قيد المراجعة. بيظهر ملفك لما نوافق عليه.')}</small></div>`}
   else{el.hidden=true;return}tr(el)}
@@ -1172,7 +1195,20 @@ function badge(){const n=orders.reduce((a,o)=>a+(o.un||0),0),b=$("#tabOrd");if(n
 function pushNotif(msg,tag){if(window.__osLogin)return;if(!('Notification' in window)||Notification.permission!=='granted')return;
   const o={body:msg,icon:'icon-192.png',tag:tag,dir:'auto'};
   try{if(navigator.serviceWorker&&navigator.serviceWorker.getRegistration){navigator.serviceWorker.getRegistration().then(rg=>{if(rg&&rg.showNotification)rg.showNotification(STORE,o);else new Notification(STORE,o)}).catch(()=>{})}else new Notification(STORE,o)}catch(e){}}
-function onStatus(o,s){const msg=L('طلبك رقم '+o.no+': '+s,'Fermana te '+o.no+': '+t(s));o.un=view==='orders'?0:(o.un||0)+1;toast(msg);pushNotif(msg,o.no)}
+/* ===== صندوق الإشعارات ===== */
+let NF=[];try{NF=JSON.parse(localStorage.getItem('notifs')||'[]');if(!Array.isArray(NF))NF=[]}catch(e){}
+function saveNF(){try{localStorage.setItem('notifs',JSON.stringify(NF.slice(0,30)))}catch(e){}}
+function bellBadge(){const n=NF.filter(x=>!x.r).length,b=$("#bell");if(n)b.setAttribute('data-n',String(n>9?'9+':n));else b.removeAttribute('data-n')}
+function addNotif(m){m=String(m||'').trim();if(!m)return;const now=Date.now();if(NF.some(x=>x.m===m&&now-x.ts<36e5))return;NF.unshift({m:m,ts:now,r:0});NF=NF.slice(0,30);saveNF();bellBadge();if(ndlg.open)renderNF()}
+const ndlg=$("#ndlg");
+function renderNF(){$("#nlist").innerHTML=NF.length?NF.map(x=>`<li class="${x.r?'':'nw'}">${esc(x.m)}<small>${new Date(x.ts).toLocaleString(lang==='ku'?'en-GB':'ar-SY',{hour:'2-digit',minute:'2-digit',day:'numeric',month:'numeric'})}</small></li>`).join(''):`<li><small>${t('ما في إشعارات بعد.')}</small></li>`;
+  $("#ndEnable").hidden=!(OS&&'Notification' in window&&Notification.permission==='default');tr(ndlg)}
+$("#bell").onclick=()=>{renderNF();ndlg.showModal();NF.forEach(x=>x.r=1);saveNF();bellBadge()};
+$("#ndX").onclick=()=>ndlg.close();ndlg.addEventListener("click",e=>{if(e.target===ndlg)ndlg.close()});
+$("#ndClear").onclick=()=>{NF=[];saveNF();bellBadge();renderNF()};
+$("#ndEnable").onclick=async()=>{await enablePush();renderNF()};
+addKU({'الإشعارات':'Agahdarî','فعّل إشعارات الجوال':'Agahdariyên têlefonê çalak bike','مسح الإشعارات':'Agahdariyan paqij bike','ما في إشعارات بعد.':'Hê agahdarî tune ne.','إلغاء الطلب':'Fermanê betal bike','تلغي هالطلب؟ رح نبلّغ صاحب المتجر فوراً.':'Fermanê betal bike? Em ê yekser ji xwediyê dikanê re bibêjin.','انلغى الطلب ✓ وبلّغنا صاحب المتجر.':'Ferman hate betal kirin ✓ û me ji xwediyê dikanê re got.','الطلب صار قيد التجهيز أو التوصيل وما عاد ينلغى من هون. تواصل معنا على واتساب.':'Ferman di amadekirinê an radestkirinê de ye û êdî nayê betal kirin. Bi WhatsApp bi me re têkilî daynî.','ما لقينا الطلب بالجدول. إذا لسا ما وصل، تواصل معنا على واتساب.':'Ferman di tabloyê de nehat dîtin. Bi WhatsApp bi me re têkilî daynî.','رقم الهاتف ما بيطابق الطلب.':'Hejmara telefonê bi fermanê re nagire.'});
+function onStatus(o,s){const msg=L('طلبك رقم '+o.no+': '+s,'Fermana te '+o.no+': '+t(s));o.un=view==='orders'?0:(o.un||0)+1;toast(msg);addNotif(msg);pushNotif(msg,o.no)}
 let polling=false;
 async function pollOrders(){
   if(!SHEET_URL||polling||document.hidden)return;
@@ -1193,18 +1229,19 @@ $("#notifBtn").onclick=enablePush;$("#jPush").onclick=enablePush;
 function updPushBtn(){$("#jPush").hidden=!(OS&&'Notification' in window&&Notification.permission==='default')}
 /* ===== إشعارات الجوال (OneSignal): بتوصل حتى لو المتجر مسكّر ===== */
 let OS=null;
-function osPhone(){try{const i=JSON.parse(localStorage.getItem('info')||'null');if(i&&i.ph)return last9(i.ph)}catch(e){}const o=getOwner();return o&&o.ph?last9(o.ph):''}
-function osLogin(ph){const id=last9(ph||'');if(!OS||!id||!('Notification' in window)||Notification.permission!=='granted')return;try{OS.login(id);window.__osLogin=true}catch(e){}}
+function osPhone(){try{const a=localStorage.getItem('adminAlias');if(a)return a}catch(e){}try{const i=JSON.parse(localStorage.getItem('info')||'null');if(i&&i.ph)return last9(i.ph)}catch(e){}const o=getOwner();return o&&o.ph?last9(o.ph):''}
+function osLogin(ph){const id=/^adm[a-f0-9]{16}$/.test(ph||'')?ph:last9(ph||'');if(!OS||!id||!('Notification' in window)||Notification.permission!=='granted')return;try{OS.login(id);window.__osLogin=true}catch(e){}}
 (function(){
   if(!ONESIGNAL_APP_ID||location.protocol!=='https:')return;
   const base=location.pathname.replace(/[^\/]*$/,'');
   window.OneSignalDeferred=window.OneSignalDeferred||[];
   OneSignalDeferred.push(async function(O){
     await O.init({appId:ONESIGNAL_APP_ID,serviceWorkerPath:base.slice(1)+'push/onesignal/OneSignalSDKWorker.js',serviceWorkerParam:{scope:base+'push/onesignal/'}});
-    OS=O;osLogin(osPhone());updNotifBox();updPushBtn()});
+    OS=O;osLogin(osPhone());updNotifBox();updPushBtn();try{O.Notifications.addEventListener('foregroundWillDisplay',ev=>{try{addNotif(ev.notification.body)}catch(_){}})}catch(_){}});
   const sc=document.createElement('script');sc.src='https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js';sc.defer=true;document.head.appendChild(sc);
 })();
-badge();setTimeout(pollOrders,2500);setInterval(pollOrders,120000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)pollOrders()});
+(function(){const m=/^#admin=(adm[a-f0-9]{16})$/.exec(location.hash);if(m){try{localStorage.setItem('adminAlias',m[1])}catch(e){}history.replaceState(null,'',location.pathname+location.search);setTimeout(()=>{osLogin(m[1]);toast('تم ربط هالجوال بإشعارات الإدارة. اضغط 🔔 وفعّل الإشعارات.')},1500)}})();
+bellBadge();badge();setTimeout(pollOrders,2500);setInterval(pollOrders,120000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)pollOrders()});
 updOwnNote();
 openFromHash();
 </script>

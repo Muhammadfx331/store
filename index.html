@@ -1198,6 +1198,8 @@ function pushNotif(msg,tag){if(window.__osLogin)return;if(!('Notification' in wi
 /* ===== صندوق الإشعارات ===== */
 let NF=[];try{NF=JSON.parse(localStorage.getItem('notifs')||'[]');if(!Array.isArray(NF))NF=[]}catch(e){}
 function saveNF(){try{localStorage.setItem('notifs',JSON.stringify(NF.slice(0,30)))}catch(e){}}
+function clearAppBadge(){try{navigator.clearAppBadge&&navigator.clearAppBadge()}catch(e){}try{caches.delete('store-badge')}catch(e){}}
+clearAppBadge();document.addEventListener('visibilitychange',()=>{if(!document.hidden)clearAppBadge()});
 function bellBadge(){const n=NF.filter(x=>!x.r).length,b=$("#bell");if(n)b.setAttribute('data-n',String(n>9?'9+':n));else b.removeAttribute('data-n')}
 function addNotif(m){m=String(m||'').trim();if(!m)return;const now=Date.now();if(NF.some(x=>x.m===m&&now-x.ts<36e5))return;NF.unshift({m:m,ts:now,r:0});NF=NF.slice(0,30);saveNF();bellBadge();if(ndlg.open)renderNF()}
 const ndlg=$("#ndlg");

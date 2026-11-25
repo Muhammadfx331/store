@@ -409,6 +409,24 @@ button.btn{border:0;cursor:pointer;font-family:inherit}
 .wprevs{display:flex;gap:6px;flex-wrap:wrap}.wprevs .av.sq{width:54px;height:54px;flex:none}
 #lbcap{position:absolute;z-index:2;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 86px);max-width:min(88vw,520px);padding:6px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.3);background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:#fff;font:600 .92rem Cairo,Tajawal,sans-serif;text-align:center}
 [data-gi]{cursor:zoom-in}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:10px}
+.pc{position:relative;display:flex;flex-direction:column;border-radius:22px;overflow:hidden;background:var(--glass);border:1px solid var(--glass-line);-webkit-backdrop-filter:blur(16px) saturate(160%);backdrop-filter:blur(16px) saturate(160%);box-shadow:0 10px 30px rgba(0,0,0,.08);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s}
+.pc:hover{transform:translateY(-3px);box-shadow:0 16px 38px rgba(0,0,0,.14)}
+.pc-i{position:relative;display:block;width:100%;aspect-ratio:1;padding:0;border:0;background:rgba(127,127,127,.12);cursor:zoom-in;overflow:hidden}
+.pc-i img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
+.pc:hover .pc-i img{transform:scale(1.05)}
+.pc-e{display:grid;place-items:center;height:100%;font-size:3.4rem}
+.pc-n,.pc-d{position:absolute;bottom:8px;inset-inline-start:8px;padding:2px 9px;border-radius:999px;font:700 .72rem Cairo,Tajawal,sans-serif;color:#fff;background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.pc-d{bottom:auto;top:8px;background:var(--accent);color:var(--accent-ink)}
+.pc-b{padding:10px 12px 12px;display:flex;flex-direction:column;gap:3px;flex:1}
+.pc-b h3{font-size:1rem;margin:0}
+.pc-b small{color:var(--mute)}
+.pc-f{margin-top:auto;padding-top:8px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.pc-p{font:700 1.05rem Cairo,Tajawal,sans-serif}
+.pc-o{border:1px solid var(--glass-line);background:var(--brand);color:var(--brand-ink);border-radius:999px;padding:5px 12px;font:700 .8rem Cairo,Tajawal,sans-serif;cursor:pointer}
+.pc .gx{top:8px;inset-inline-end:8px}
+.dng{color:#c0392b;border-color:rgba(192,57,43,.45)}
+.dng2{background:#c0392b!important;color:#fff!important}
 </style>
 </head>
 <body>
@@ -434,7 +452,7 @@ button.btn{border:0;cursor:pointer;font-family:inherit}
 <main>
   <div class="seg" role="tablist">
     <button role="tab" id="tabShop" aria-selected="true">المنتجات</button>
-    <button role="tab" id="tabPros" aria-selected="false">المعلمين والخدمات</button>
+    <button role="tab" id="tabPros" aria-selected="false">الخدمات وأصحاب المهن</button>
     <button role="tab" id="tabVeh" aria-selected="false">🚗 المركبات</button>
     <button role="tab" id="tabOrd" aria-selected="false">طلباتي</button>
   </div>
@@ -455,8 +473,8 @@ button.btn{border:0;cursor:pointer;font-family:inherit}
   </div>
   <div id="pros" hidden>
     <div class="prohead">
-      <button class="big" id="reqPro"><span aria-hidden="true">🛠️</span> اطلب معلم</button>
-      <button class="ghost" id="joinPro">سجّل كمعلم أو محل</button>
+      <button class="big" id="reqPro"><span aria-hidden="true">🛠️</span> اطلب خدمة</button>
+      <button class="ghost" id="joinPro">سجّل كصاحب مهنة أو محل</button>
       <button class="ghost" id="editPro">تعديل ملفي</button>
     </div>
     <div class="tgrid" id="tgrid"></div>
@@ -556,6 +574,33 @@ button.btn{border:0;cursor:pointer;font-family:inherit}
     <button class="send" id="wasend">ارفع الصور</button>
   </div>
 </dialog>
+<dialog id="padlg" aria-labelledby="paT">
+  <div class="ah"><h2 id="paT">أضف منتج لمحلك</h2><button class="pill" id="paX" style="color:var(--ink)">إغلاق</button></div>
+  <div class="ab">
+    <p class="note">المنتج بيظهر بعد ما نراجعو. الزبون بيطلبو من المتجر عندنا، مو من صفحة المحل.</p>
+    <label>اسم المنتج<input id="pan" maxlength="80"></label>
+    <label>السعر بالدولار<input id="pap" type="number" inputmode="decimal" min="0" step="0.01" dir="ltr"></label>
+    <label>السعر قبل الخصم (اختياري)<input id="pao" type="number" inputmode="decimal" min="0" step="0.01" dir="ltr"></label>
+    <label>وصف قصير (اختياري)<input id="pad" maxlength="160"></label>
+    <div class="photorow"><div class="wprevs" id="paPrev" aria-hidden="true"><span class="av sq"><b style="font-weight:400">📷</b></span></div><div><button type="button" class="ghost" id="paPick">اختر حتى 3 صور</button><p class="note">صور واضحة للمنتج.</p></div></div>
+    <input type="file" id="paf" accept="image/*" multiple hidden>
+    <div class="err" id="paerr" role="alert"></div>
+    <button class="send" id="pasend">أرسل المنتج للمراجعة</button>
+  </div>
+</dialog>
+
+<dialog id="ddlg" aria-labelledby="ddT">
+  <div class="ah"><h2 id="ddT">طلب حذف ملفي</h2><button class="pill" id="ddX" style="color:var(--ink)">إغلاق</button></div>
+  <div class="ab">
+    <p class="note">رح نراجع طلبك ونحذف الملف بعد ما نتأكد.</p>
+    <label>رقم الهاتف المسجّل<input id="ddp" type="tel" inputmode="tel" dir="ltr"></label>
+    <label>رمز التعديل<input id="ddc" dir="ltr" autocapitalize="characters" autocomplete="off" maxlength="24"></label>
+    <label>سبب الحذف<textarea id="ddr" rows="3" maxlength="300"></textarea></label>
+    <div class="err" id="dderr" role="alert"></div>
+    <button class="send dng2" id="ddsend">أرسل طلب الحذف</button>
+  </div>
+</dialog>
+
 <dialog id="jdlg" aria-labelledby="jdT">
   <div class="ah"><h2 id="jdT">سجّل ملفك بالدليل</h2><button class="pill" id="jdX" style="color:var(--ink)">إغلاق</button></div>
   <div class="ab">
@@ -600,6 +645,7 @@ button.btn{border:0;cursor:pointer;font-family:inherit}
     <button class="send" id="esend">احفظ التعديلات</button>
     <button class="ghost" id="elink" style="margin-top:8px">ربط هالجهاز بملفي بدون تعديل</button>
     <p class="note">ضاع الرمز؟ تواصل معنا على واتساب ونعطيك رمز جديد.</p>
+    <button class="ghost dng" id="edel" style="margin-top:8px">🗑️ حذف ملفي</button>
   </div>
 </dialog>
 <dialog id="ndlg" aria-labelledby="ndT">
@@ -648,16 +694,18 @@ let PRODUCTS = [
    {t:"plumb", n:"اسم المعلم", c:"المدينة", ph:"09xxxxxxxx", d:"وصف قصير اختياري"}
    قيم t: plumb صحية، elec كهرباء، build بناء، paint دهان، plaster زريقة، smith حداد، shops محلات */
 const TRADES=[
- {id:"plumb",n:"معلم صحية",e:"🚰"},
- {id:"elec",n:"معلم كهرباء",e:"⚡"},
- {id:"build",n:"معلم بناء",e:"🧱"},
- {id:"paint",n:"معلم دهان",e:"🎨"},
- {id:"plaster",n:"معلم زريقة",e:"🪣"},
- {id:"smith",n:"معلم حداد",e:"⚒️"},
+ {id:"sanelec",n:"صحية وكهرباء",e:"🔧"},
+ {id:"gypsum",n:"جبسين بورد ودهان",e:"🎨"},
+ {id:"build",n:"بناء",e:"🧱"},
+ {id:"plaster",n:"زريقة وتنعيم",e:"🪣"},
+ {id:"ceramic",n:"سيراميك",e:"🔳"},
+ {id:"super",n:"سوبر ماركت",e:"🛒"},
+ {id:"mini",n:"ميني ماركت",e:"🏪"},
+ {id:"clothes",n:"محلات البسة",e:"👗"},
  {id:"cars",n:"تاجر سيارات",e:"🚗"},
- {id:"bikes",n:"تاجر دراجات نارية",e:"🏍️"},
- {id:"shops",n:"محلات تجارية",e:"🏪"}
+ {id:"bikes",n:"تاجر دراجات نارية",e:"🏍️"}
 ];
+const SHOPT=["ceramic","super","mini","clothes","cars","bikes"],isShopT=t=>SHOPT.includes(t);
 let PROS=[],PROS_READY=!SHEET_URL||!SHEET_PRODUCTS,curU=null;
 /* سياسة التوصيل والاسترجاع: كل سطر بيظهر كنقطة. عدّلها حسب سياستك الفعلية قبل الإعلان */
 const POLICY_DELIVERY=["بعد ما ترسل الطلب منتواصل معك على واتساب لتأكيدو وتحديد موعد التوصيل.","أجرة التوصيل بتظهر بالسلة حسب مدينتك قبل ما ترسل الطلب."];
@@ -669,7 +717,7 @@ try{const s=JSON.parse(localStorage.getItem("cart")||"{}");if(s&&typeof s==="obj
 const save=()=>{try{localStorage.setItem("cart",JSON.stringify(cart));localStorage.setItem("cur",cur);localStorage.setItem("lang",lang)}catch(e){}};
 let lang='ar';try{lang=localStorage.getItem('lang')==='ku'?'ku':'ar'}catch(e){}
 const KU={'متجري':'Firoşgeha min','السلة':'Selik','ل.س':'SYP','منتجات سورية وأخرى مختارة، توصلك لباب البيت':'Hilberên sûrî û yên hilbijartî, heta ber deriyê malê','اطلب بدقيقتين، وادفع عند الاستلام أو عبر المحافظ الإلكترونية. نوصل للدرباسية وقامشلو وعامودا وديرك وغيرها.':'Di du deqeyan de ferman bide, di wergirtinê de bide an bi berîka elektronîk. Em digihînin Derbasiyê, Qamişlo, Amûdê, Dêrik û bajarên din.','الدفع عند الاستلام':'Dayîn dema wergirtinê','سيريتل كاش وMTN كاش وشام كاش':'Syriatel Cash, MTN Cash û Sham Cash','توصيل داخل محافظة الحسكة':'Gihandin li parêzgeha Hesekê','الكل':'Hemû','مواد غذائية وطبيعية':'Xwarin û hilberên xwezayî','إلكترونيات':'Elektronîk','أدوات منزلية':'Amûrên malê','صابون غار حلبي':'Sabûna defnê ya Helebê','قطعة 200 غ، تخمير سنوات':'Perçeyek 200 g, bi salan hatiye gihandin','زيت زيتون بكر':'Rûnê zeytûnê yê saf','عبوة 1 لتر':'Pakêtek 1 lître','زعتر بلدي':'Zahterê herêmî','برطمان 500 غ':'Kavilek 500 g','سماعات بلوتوث':'Guhekên Bluetooth','بطارية 20 ساعة':'Bataryaya 20 demjimêran','شاحن سريع 30 واط':'Şarjkera bilez 30 waat','مع كبل Type-C':'Bi kabloya Type-C','باور بانك 20000':'Power bank 20000','منفذان USB + Type-C':'Du dergehên USB + Type-C','طقم أكواب زجاج':'Setek qedehên cama','6 قطع':'6 perçe','مصباح LED قابل للشحن':'Lampeya LED ya şarjkirî','يضيء 8 ساعات':'8 saetan ronî dike','أضف للسلة':'Têxe selikê','ما في منتجات بهذا التصنيف حالياً.':'Niha di vê beşê de hilber tune ne.','السلة فارغة. أضف منتجاً من القائمة لتبدأ.':'Selik vala ye. Ji lîsteyê hilberek lê zêde bike.','سلتك':'Selika te','إغلاق':'Bigire','بيانات التوصيل':'Agahiyên gihandinê','الاسم الكامل':'Navê tevahî','رقم الهاتف':'Hejmara telefonê','المدينة':'Bajar','العنوان بالتفصيل (الحي، الشارع، أقرب معلم)':'Navnîşana berfireh (taxa, kolan, nîşana herî nêzîk)','طريقة الدفع':'Awayê dayînê','سيريتل كاش':'Syriatel Cash','MTN كاش':'MTN Cash','شام كاش':'Sham Cash','حوالة بنكية':'Rêkirina bankê','لو اخترت محفظة أو حوالة، نرسلك رقم الحساب على واتساب لتأكيد الطلب.':'Ger berîk an rêkirin hilbijêrî, em hejmara hesabê bi WhatsApp ji te re dişînin.','نحفظ بياناتك على جهازك فقط لتسهيل طلبك القادم.':'Em agahiyên te tenê li ser cîhaza te tomar dikin da ku fermana te ya din hêsan bibe.','المجموع':'Berhev','التوصيل':'Gihandin','الإجمالي':'Giştî','أرسل الطلب عبر واتساب':'Fermanê bi WhatsApp bişîne','– للتواصل واتساب:':'– Têkilî bi WhatsApp:','الدرباسية':'Derbasiyê','عامودا':'Amûdê','قامشلو':'Qamişlo','تربسبية':'Tirbespiyê','ديرك':'Dêrik','رميلان':'Rimêlan','تل تمر':'Til Temir','الحسكة':'Hesekê','السلة فارغة. أضف منتجاً أولاً.':'Selik vala ye. Pêşî hilberek lê zêde bike.','اكتب اسمك وعنوانك الكامل.':'Nav û navnîşana xwe ya tevahî binivîse.','رقم الهاتف غير صحيح. مثال: 0933123456':'Hejmara telefonê şaş e. Mînak: 0933123456'};
-Object.assign(KU,{'المنتجات':'Hilber','المعلمين والخدمات':'Usta û xizmet','اطلب معلم':'Ustayekî bixwaze','سجّل كمعلم أو محل':'Wekî usta an dikan tomar bibe','اختر مهنة لعرض الأرقام':'Pîşeyekê hilbijêre da ku hejmaran bibînî','ما في معلمين مسجلين بهالمهنة حالياً.':'Niha di vê pîşeyê de usta tomar nebûne.','إذا بتشتغل بهالمهنة، سجّل رقمك':'Ger tu di vê pîşeyê de dixebitî, hejmara xwe tomar bike','اتصال':'Telefon','واتساب':'WhatsApp','المهنة':'Pîşe','الاسم':'Nav','الاسم أو اسم المحل':'Nav an navê dikanê','وصف الشغل المطلوب':'Danasîna karê pêwîst','نبذة قصيرة (اختياري)':'Danasînek kurt (bi dilê xwe)','أرسل عبر واتساب':'Bi WhatsApp bişîne','سيفتح واتساب برسالة جاهزة، وتضغط إرسال.':'WhatsApp bi peyamek amade vedibe, tu tenê dikî Send.','اكتب اسمك.':'Navê xwe binivîse.','اكتب وصف الشغل المطلوب.':'Karê pêwîst binivîse.','معلم صحية':'Ustayê lûleyan','معلم كهرباء':'Ustayê elektrîkê','معلم بناء':'Ustayê avahiyê','معلم دهان':'Ustayê boyaxê','معلم زريقة':'Ustayê zirîqê','معلم حداد':'Ustayê hesinkar','محلات تجارية':'Dikanên bazirganî','كهرباء':'Elektrîk','صحية':'Tesîsat','قرطاسية':'Amûrên nivîsarê','عدة وأدوات':'Alav û amûr','دهان':'Boyax','كبل كهرباء نحاس 2.5 مم':'Kabloya elektrîkê ya sifir 2.5 mm','لفة 100 متر':'Pelek 100 metre','قاطع كهرباء 16 أمبير':'Qutkera elektrîkê 16 amper','قطعة واحدة':'Perçek','خلاط حمام':'Mixera hemamê','نحاس، ضمان سنة':'Sifir, garantiya salek','أنبوب PPR 25 مم':'Lûleya PPR 25 mm','عود 4 متر':'Çîpek 4 metre','دفتر 100 ورقة':'Defterek 100 rûpel','سطر، غلاف مقوى':'Bi rêzik, bi bergê req','طقم أقلام':'Setek pênûs','12 قلماً':'12 pênûs','مطرقة حديد':'Çekûcê hesin','500 غ، يد خشب':'500 g, destikê dar','شريط قياس 5 متر':'Metreya 5 metreyî','قفل أوتوماتيك':'Bi qufla otomatîk','دهان بلاستيك أبيض':'Boyaxa plastîk a spî','عبوة 18 لتر':'Pakêtek 18 lître','رولو دهان':'Roloya boyaxê','مع يد':'Bi destik'});
+Object.assign(KU,{'المنتجات':'Hilber','الخدمات وأصحاب المهن':'Xizmet û xwediyên pîşeyan','اطلب خدمة':'Xizmetekê bixwaze','سجّل كصاحب مهنة أو محل':'Wekî xwediyê pîşeyê an dikanê tomar bibe','اختر مهنة لعرض الأرقام':'Pîşeyekê hilbijêre da ku hejmaran bibînî','ما في أصحاب مهن مسجلين بهالقسم حالياً.':'Niha di vê pîşeyê de usta tomar nebûne.','إذا بتشتغل بهالمهنة، سجّل رقمك':'Ger tu di vê pîşeyê de dixebitî, hejmara xwe tomar bike','اتصال':'Telefon','واتساب':'WhatsApp','المهنة':'Pîşe','الاسم':'Nav','الاسم أو اسم المحل':'Nav an navê dikanê','وصف الشغل المطلوب':'Danasîna karê pêwîst','نبذة قصيرة (اختياري)':'Danasînek kurt (bi dilê xwe)','أرسل عبر واتساب':'Bi WhatsApp bişîne','سيفتح واتساب برسالة جاهزة، وتضغط إرسال.':'WhatsApp bi peyamek amade vedibe, tu tenê dikî Send.','اكتب اسمك.':'Navê xwe binivîse.','اكتب وصف الشغل المطلوب.':'Karê pêwîst binivîse.','معلم صحية':'Ustayê lûleyan','معلم كهرباء':'Ustayê elektrîkê','معلم بناء':'Ustayê avahiyê','معلم دهان':'Ustayê boyaxê','معلم زريقة':'Ustayê zirîqê','معلم حداد':'Ustayê hesinkar','محلات تجارية':'Dikanên bazirganî','كهرباء':'Elektrîk','صحية':'Tesîsat','قرطاسية':'Amûrên nivîsarê','عدة وأدوات':'Alav û amûr','دهان':'Boyax','كبل كهرباء نحاس 2.5 مم':'Kabloya elektrîkê ya sifir 2.5 mm','لفة 100 متر':'Pelek 100 metre','قاطع كهرباء 16 أمبير':'Qutkera elektrîkê 16 amper','قطعة واحدة':'Perçek','خلاط حمام':'Mixera hemamê','نحاس، ضمان سنة':'Sifir, garantiya salek','أنبوب PPR 25 مم':'Lûleya PPR 25 mm','عود 4 متر':'Çîpek 4 metre','دفتر 100 ورقة':'Defterek 100 rûpel','سطر، غلاف مقوى':'Bi rêzik, bi bergê req','طقم أقلام':'Setek pênûs','12 قلماً':'12 pênûs','مطرقة حديد':'Çekûcê hesin','500 غ، يد خشب':'500 g, destikê dar','شريط قياس 5 متر':'Metreya 5 metreyî','قفل أوتوماتيك':'Bi qufla otomatîk','دهان بلاستيك أبيض':'Boyaxa plastîk a spî','عبوة 18 لتر':'Pakêtek 18 lître','رولو دهان':'Roloya boyaxê','مع يد':'Bi destik'});
 const t=k=>lang==='ku'&&KU[k]||k;
 function tr(r){const w=document.createTreeWalker(r,NodeFilter.SHOW_TEXT);let n;while(n=w.nextNode()){if(n.parentNode.tagName==='SCRIPT')continue;if(n._o===undefined)n._o=n.nodeValue;const k=n._o.trim();n.nodeValue=lang==='ku'&&KU[k]?n._o.replace(k,KU[k]):n._o}}
 const money=u=>cur==='SYP'?Math.round(u*RATE).toLocaleString(lang==='ku'?'en-US':'ar-SY')+(lang==='ku'?' SYP':' ل.س'):'$'+(+u.toFixed(2)).toLocaleString('en-US');
@@ -760,7 +808,7 @@ function pros(){
   $("#tgrid").innerHTML=TRADES.map(x=>{const n=PROS.filter(y=>y.t===x.id).length;
     return `<button class="tile" aria-pressed="${sel===x.id}" data-t="${x.id}">${n?`<b class="tc">${n}</b>`:""}<span class="te" aria-hidden="true">${x.e}</span><span class="tn">${x.n}</span></button>`}).join("");
   const cur=TRADES.find(x=>x.id===sel),l=PROS.filter(x=>x.t===sel);
-  $("#plist").innerHTML=!cur?`<p class="empty">اختر مهنة لعرض الأرقام</p>`:l.length?l.map(x=>`<article class="pro">${avatar(x)}<div class="pi"><h3><a class="plink" href="#u=${encodeURIComponent(x.n)}">${esc(x.n)}</a></h3><small>${esc(x.c||"")}${x.d?" · "+esc(x.d):""}</small></div><div class="acts"><a class="btn call" href="tel:+${intl(x.ph)}">اتصال</a><a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/${intl(x.wa||x.ph)}">واتساب</a>${mapURL(x.m)?`<a class="btn map" target="_blank" rel="noopener" href="${esc(mapURL(x.m))}">${t('الخريطة')}</a>`:''}<button class="btn prod" data-shop="${esc(x.n)}">${t('الملف الشخصي')}</button></div></article>`).join(""):`<p class="empty">ما في معلمين مسجلين بهالمهنة حالياً.</p><button class="ghost" data-join>إذا بتشتغل بهالمهنة، سجّل رقمك</button>`;
+  $("#plist").innerHTML=!cur?`<p class="empty">اختر مهنة لعرض الأرقام</p>`:l.length?l.map(x=>`<article class="pro">${avatar(x)}<div class="pi"><h3><a class="plink" href="#u=${encodeURIComponent(x.n)}">${esc(x.n)}</a></h3><small>${esc(x.c||"")}${x.d?" · "+esc(x.d):""}</small></div><div class="acts"><a class="btn call" href="tel:+${intl(x.ph)}">اتصال</a><a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/${intl(x.wa||x.ph)}">واتساب</a>${mapURL(x.m)?`<a class="btn map" target="_blank" rel="noopener" href="${esc(mapURL(x.m))}">${t('الخريطة')}</a>`:''}<button class="btn prod" data-shop="${esc(x.n)}">${t('الملف الشخصي')}</button></div></article>`).join(""):`<p class="empty">ما في أصحاب مهن مسجلين بهالقسم حالياً.</p><button class="ghost" data-join>إذا بتشتغل بهالمهنة، سجّل رقمك</button>`;
 }
 function setView(v){view=v;$("#shop").hidden=v!=='shop';$("#pros").hidden=v!=='pros';$("#orders").hidden=v!=='orders';$("#veh").hidden=v!=='veh';$("#tabVeh").setAttribute('aria-selected',v==='veh');
   $("#tabShop").setAttribute('aria-selected',v==='shop');$("#tabPros").setAttribute('aria-selected',v==='pros');$("#tabOrd").setAttribute('aria-selected',v==='orders');
@@ -774,7 +822,7 @@ function openDlg(m,tid){mode=m;
   if(tid)$("#dt").value=tid;
   $("#dc").innerHTML=Object.keys(SHIP).map(g=>`<option value="${g}">${g}</option>`).join("");
   try{const i=JSON.parse(localStorage.getItem('info')||'null');if(i&&m==='req'){if(!$('#dn').value)$('#dn').value=i.fn||'';if(!$('#dp').value)$('#dp').value=i.ph||'';if(SHIP[i.g])$('#dc').value=i.g}}catch(e){}
-  $("#dlgT").textContent=m==='req'?'اطلب معلم':'سجّل كمعلم أو محل';
+  $("#dlgT").textContent=m==='req'?'اطلب خدمة':'سجّل كصاحب مهنة أو محل';
   $("#dnl").textContent=m==='req'?'الاسم':'الاسم أو اسم المحل';
   $("#ddl").textContent=m==='req'?'وصف الشغل المطلوب':'نبذة قصيرة (اختياري)';
   $("#dml").hidden=m==='req';$("#derr").textContent="";tr(dlg);dlg.showModal()}
@@ -788,7 +836,7 @@ $("#dsend").onclick=()=>{
   if(!/^(\+?963|0)?9\d{8}$/.test(ph.replace(/[\s-]/g,""))){er.textContent=t('رقم الهاتف غير صحيح. مثال: 0933123456');return}
   if(mode==='req'&&!d){er.textContent=t('اكتب وصف الشغل المطلوب.');return}
   er.textContent="";
-  const msg=mode==='req'?`طلب معلم من ${STORE}\n\nالمهنة: ${tn}\nالمدينة: ${c}\nالاسم: ${n}\nالهاتف: ${ph}\nالوصف: ${d}`:`طلب تسجيل بدليل المعلمين والمحلات - ${STORE}\n\nالمهنة/النوع: ${tn}\nالاسم: ${n}\nالمدينة: ${c}\nالهاتف: ${ph}\nنبذة: ${d||"-"}\nالخريطة: ${$("#dm").value.trim()||"-"}`;
+  const msg=mode==='req'?`طلب خدمة من ${STORE}\n\nالمهنة: ${tn}\nالمدينة: ${c}\nالاسم: ${n}\nالهاتف: ${ph}\nالوصف: ${d}`:`طلب تسجيل بدليل الخدمات وأصحاب المهن - ${STORE}\n\nالمهنة/النوع: ${tn}\nالاسم: ${n}\nالمدينة: ${c}\nالهاتف: ${ph}\nنبذة: ${d||"-"}\nالخريطة: ${$("#dm").value.trim()||"-"}`;
   window.open("https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(msg),"_blank");
 };
 /* ===== مزايا جديدة: بحث وفلاتر، صفحة منتج، طلباتي، سياسات، تثبيت ===== */
@@ -915,7 +963,7 @@ const ldlg=$("#ldlg"),ul=a=>`<ul>${a.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
 function docHTML(k){
   if(k==='ship')return `<h3>التوصيل</h3>${ul(POLICY_DELIVERY)}<h3>أجور التوصيل</h3><ul>${Object.entries(SHIP).map(([c,v])=>`<li>${esc(c)}: ${money(v)}${c==='ريف الدرباسية'?' (تتغير حسب مكان الزبون، ونأكدها معك على واتساب قبل التوصيل)':''}</li>`).join('')}</ul><h3>الدفع</h3>${ul(["الدفع عند الاستلام، أو سيريتل كاش وMTN كاش وشام كاش أو حوالة بنكية.","لو اخترت محفظة أو حوالة، منرسلك رقم الحساب على واتساب لتأكيد الطلب. لا تدفع لأي حساب ما وصلك منا على واتساب."])}<h3>الاسترجاع</h3>${ul(POLICY_RETURNS)}`;
   return `<p class="note">آخر تحديث: 2026-11-25</p><p>توضّح هذه السياسة كيف يجمع متجر «${esc(STORE)}» بياناتك ويستخدمها ويحميها. تنطبق على الموقع وعلى التطبيق المثبّت من المتصفح (PWA).</p>
-<h3>البيانات التي نجمعها</h3>${ul(["عند إرسال طلب: الاسم، رقم الهاتف، المدينة، عنوان التوصيل، المنتجات المطلوبة، وطريقة الدفع.","عند التسجيل بدليل المعلمين والمحلات: الاسم أو اسم المحل، النوع، المدينة، رقم الهاتف وواتساب، رابط الخريطة والنبذة (اختياريان)، والصور التي ترفعها. تظهر هذه البيانات علناً بالدليل بعد موافقتنا.","رمز التعديل الخاص بك: نخزّنه مشفّراً (لا نستطيع قراءته)، ونحفظ نسخة منه على جهازك فقط.","الإشعارات (إذا فعّلتها): نربط جهازك بآخر 9 أرقام من رقم هاتفك لنرسل لك تحديثات طلبك أو موافقة الدليل.","بيانات تقنية: عنوان IP ونوع المتصفح تراها خدمات الاستضافة وجوجل عند فتح المتجر وتحميل الصور."])}
+<h3>البيانات التي نجمعها</h3>${ul(["عند إرسال طلب: الاسم، رقم الهاتف، المدينة، عنوان التوصيل، المنتجات المطلوبة، وطريقة الدفع.","عند التسجيل بدليل الخدمات وأصحاب المهن: الاسم أو اسم المحل، النوع، المدينة، رقم الهاتف وواتساب، رابط الخريطة والنبذة (اختياريان)، والصور التي ترفعها. تظهر هذه البيانات علناً بالدليل بعد موافقتنا.","رمز التعديل الخاص بك: نخزّنه مشفّراً (لا نستطيع قراءته)، ونحفظ نسخة منه على جهازك فقط.","الإشعارات (إذا فعّلتها): نربط جهازك بآخر 9 أرقام من رقم هاتفك لنرسل لك تحديثات طلبك أو موافقة الدليل.","بيانات تقنية: عنوان IP ونوع المتصفح تراها خدمات الاستضافة وجوجل عند فتح المتجر وتحميل الصور."])}
 <h3>كيف نستخدم البيانات</h3>${ul(["تجهيز طلبك وتوصيله والتواصل معك بخصوصه عبر واتساب.","إرسال إشعارات بتغيّر حالة الطلب أو بالموافقة على ملفك بالدليل.","مراجعة طلبات التسجيل بالدليل وعرض الملفات المقبولة.","حماية المتجر ومنع الطلبات الوهمية والإساءة."])}
 <p>لا نبيع بياناتك، ولا نستخدمها للإعلانات، ولا نشاركها مع أي جهة إلا بالقدر اللازم لتنفيذ طلبك أو إذا طلب القانون ذلك.</p>
 <h3>أين تُحفظ بياناتك</h3>${ul(["على جدول بيانات خاص بنا على Google Sheets، وصور الدليل على Google Drive.","على جهازك أنت: السلة ومعلوماتك وطلباتك السابقة وصندوق الإشعارات، لتسهيل طلبك القادم. يمكنك مسحها من إعدادات المتصفح، أو حذف الطلبات المنتهية من تبويب طلباتي.","خدمات تساعدنا بالتشغيل: استضافة GitHub Pages، وجوجل (الجدول والصور)، وOneSignal (الإشعارات)، وواتساب (التواصل)، وخدمات الخطوط وسعر الصرف التي لا نرسل لها بيانات طلبك."])}
@@ -973,7 +1021,7 @@ document.addEventListener("pointerdown",e=>{
 
 /* ===== كتابة متحركة بالهيرو ===== */
 (function(){const el=$("#typed");if(!el)return;
-  const PH={ar:["كهرباء وصحية وقرطاسية","مواد غذائية وإلكترونيات","معلم لكل مهنة","توصيل لباب البيت"],ku:["Elektrîk, tesîsat û amûrên nivîsarê","Xwarin û elektronîk","Ustayek ji bo her pîşeyê","Gihandin heta ber deriyê malê"]};
+  const PH={ar:["كهرباء وصحية وقرطاسية","مواد غذائية وإلكترونيات","صاحب مهنة لكل خدمة","توصيل لباب البيت"],ku:["Elektrîk, tesîsat û amûrên nivîsarê","Xwarin û elektronîk","Ustayek ji bo her pîşeyê","Gihandin heta ber deriyê malê"]};
   let i=0,j=0,del=false;
   function step(){const ph=PH[lang]||PH.ar,w=ph[i%ph.length];
     if(RMo){el.textContent=ph[0];return}
@@ -1022,8 +1070,8 @@ sdlg.addEventListener("click",e=>{if(e.target===sdlg){sdlg.close();return}const 
 /* الدليل (معلمين ومحلات) من تبويب "الدليل" بجدول Google */
 (function(){
   if(!SHEET_URL||!SHEET_PRODUCTS)return;
-  const K='sheetPros',T={'صحية':'plumb','كهرباء':'elec','بناء':'build','دهان':'paint','زريقة':'plaster','حداد':'smith','سيارات':'cars','دراجات':'bikes','محلات':'shops'};
-  const tid=v=>{v=String(v||'').trim();if(TRADES.some(x=>x.id===v))return v;for(const k in T)if(v.includes(k))return T[k];return null};
+  const K='sheetPros',RULES=[['البسة','clothes'],['ملابس','clothes'],['ميني','mini'],['سوبر','super'],['سيراميك','ceramic'],['جبسين','gypsum'],['دهان','gypsum'],['زريقة','plaster'],['تنعيم','plaster'],['بناء','build'],['صحية','sanelec'],['كهرباء','sanelec'],['دراج','bikes'],['سيار','cars'],['محلات','mini']],OLD={plumb:'sanelec',elec:'sanelec',paint:'gypsum',shops:'mini'};
+  const tid=v=>{v=String(v||'').trim();if(TRADES.some(x=>x.id===v))return v;if(OLD[v])return OLD[v];for(const r of RULES)if(v.includes(r[0]))return r[1];return null};
   const num=v=>String(v||'').replace(/[^\d+]/g,'').slice(0,16);
   const mk=r=>{const t=tid(r.type);if(!t||!r.name||!num(r.phone))return null;return{t:t,n:String(r.name).trim().slice(0,60),c:String(r.city||'').slice(0,40),ph:num(r.phone),wa:num(r.wa),m:String(r.map||'').trim().slice(0,300),d:String(r.desc||'').slice(0,160),i:imgURL(r.img),w:(Array.isArray(r.works)?r.works:[]).map(w=>({id:String(w.id||''),u:imgURL(w.u,400),b:imgURL(w.u,1000),c:String(w.c||'').slice(0,80)})).filter(w=>w.id&&w.u)}};
   try{const c=JSON.parse(localStorage.getItem(K)||'null');if(Array.isArray(c))PROS=c}catch(e){}
@@ -1034,6 +1082,47 @@ sdlg.addEventListener("click",e=>{if(e.target===sdlg){sdlg.close();return}const 
     pros();tr($("#pros"));grid();tr($("#shop"));updOwnNote()}).catch(()=>{}).then(()=>{PROS_READY=true;if(curU)showProfile(curU);updOwnNote()});
 })();
 addKU({'الخريطة':'Nexşe','منتجاته':'Hilberên wî','الشراء من منتجات المحل يتم عن طريقنا فقط: أضف للسلة وأرسل الطلب.':'Kirîna hilberên vê dikanê tenê bi riya me ye: têxe selikê û fermanê bişîne.','رابط موقع المحل على خرائط جوجل (اختياري)':'Lînka cihê dikanê li Google Maps (bijare)'});
+/* ===== منتجات المحل: السعر والصور (بتنعرض بالبروفايل، والطلب من المتجر فقط) ===== */
+const padlg=$("#padlg");let PS=[];
+function renderPPrev(){$("#paPrev").innerHTML=PS.length?PS.map(u=>`<span class="av sq ld"><img src="${u}" alt=""></span>`).join(''):'<span class="av sq"><b style="font-weight:400">📷</b></span>'}
+function openAddProd(){['#pan','#pap','#pao','#pad'].forEach(i=>$(i).value='');$("#paf").value='';PS=[];renderPPrev();$("#paerr").textContent='';$("#pasend").disabled=false;tr(padlg);padlg.showModal()}
+$("#paPick").onclick=()=>$("#paf").click();
+$("#paf").onchange=async e=>{const er=$("#paerr"),all=[...e.target.files],fs=all.slice(0,3);er.textContent='';PS=[];
+  for(const f of fs){try{PS.push(await shrinkImage(f,{max:900,square:false,lim:150000}))}catch(x){er.textContent=t('تعذّر قراءة الصورة. جرّب صورة تانية.')}}
+  if(all.length>3)er.textContent=t('اخترنا أول 3 صور بس.');renderPPrev();e.target.value=''};
+$("#paX").onclick=()=>padlg.close();padlg.addEventListener("click",e=>{if(e.target===padlg)padlg.close()});
+$("#pasend").onclick=async()=>{
+  const er=$("#paerr"),o=getOwner(),name=$("#pan").value.trim(),price=parseFloat($("#pap").value),old=parseFloat($("#pao").value)||0;
+  if(!o){er.textContent=t('الرقم أو الرمز غير صحيح.');return}
+  if(name.length<2){er.textContent=t('اكتب اسم المنتج.');return}
+  if(!(price>0)){er.textContent=t('اكتب سعر صحيح بالدولار.');return}
+  if(!PS.length){er.textContent=t('اختر صورة وحدة على الأقل.');return}
+  const b=$("#pasend"),oldT=b.textContent;b.disabled=true;b.textContent=t('جاري الإرسال…');er.textContent='';
+  try{const r=await postJSON({action:'addprod',phone:o.ph,code:o.code,name:name,price:price,old:old,desc:$("#pad").value.trim(),photos:PS});
+    if(r&&r.ok){padlg.close();toast(t('وصل منتجك للمراجعة، بيظهر بعد موافقتنا ✓'))}
+    else er.textContent=r&&r.error==='full'?t('وصلت للحد الأقصى من المنتجات. احذف منتج قديم.'):errMsg(r&&r.error,r&&r.msg)}
+  catch(e){er.textContent=t('ما قدرنا نتأكد إنو الطلب وصل. تأكد من الإنترنت أو ابعت طلبك عبر واتساب.')}
+  finally{b.disabled=false;b.textContent=oldT}};
+async function removeProd(id){const o=getOwner();if(!o)return;
+  try{const r=await postJSON({action:'delprod',phone:o.ph,code:o.code,id:id});
+    if(r&&r.ok){PRODUCTS=PRODUCTS.filter(p=>String(p.id)!==String(id));try{localStorage.setItem('sheetProducts',JSON.stringify(PRODUCTS))}catch(e){}if(curU)showProfile(curU);grid();toast(t('انحذف المنتج ✓'))}
+    else toast(errMsg(r&&r.error,r&&r.msg))}
+  catch(e){toast(t('ما قدرنا نتأكد إنو الطلب وصل. تأكد من الإنترنت أو ابعت طلبك عبر واتساب.'))}}
+/* ===== طلب حذف الملف (مع السبب) ===== */
+const ddlg=$("#ddlg");
+$("#edel").onclick=()=>{const o=getOwner();$("#ddp").value=$("#ep").value||(o?o.ph:'');$("#ddc").value=$("#ec").value||(o?fmtCode(o.code):'');$("#ddr").value='';$("#dderr").textContent='';$("#ddsend").disabled=false;edlg.close();tr(ddlg);ddlg.showModal()};
+$("#ddX").onclick=()=>ddlg.close();ddlg.addEventListener("click",e=>{if(e.target===ddlg)ddlg.close()});
+$("#ddsend").onclick=async()=>{
+  const er=$("#dderr"),ph=cleanPh($("#ddp").value),code=cleanCode($("#ddc").value),reason=$("#ddr").value.trim();
+  if(!chkAuth(ph,code,er))return;
+  if(reason.length<5){er.textContent=t('اكتب سبب الحذف (5 أحرف على الأقل).');return}
+  const b=$("#ddsend"),old=b.textContent;b.disabled=true;b.textContent=t('جاري الإرسال…');er.textContent='';
+  try{const r=await postJSON({action:'delreq',phone:ph,code:code,reason:reason});
+    if(r&&r.ok){ddlg.close();toast(t('وصلنا طلب الحذف، بنراجعو ونحذف ملفك ✓'))}
+    else er.textContent=errMsg(r&&r.error,r&&r.msg)}
+  catch(e){er.textContent=t('ما قدرنا نتأكد إنو الطلب وصل. تأكد من الإنترنت أو ابعت طلبك عبر واتساب.')}
+  finally{b.disabled=false;b.textContent=old}};
+addKU({'الخدمات وأصحاب المهن':'Xizmet û xwediyên pîşeyan','صحية وكهرباء':'Tesîsat û elektrîk','جبسين بورد ودهان':'Gypsum board û boyax','بناء':'Avahîsazî','زريقة وتنعيم':'Zirîqe û nermkirin','سيراميك':'Seramîk','سوبر ماركت':'Supermarket','ميني ماركت':'Mini market','محلات البسة':'Dikanên cil û berg','تاجر سيارات':'Bazirganê erebeyan','تاجر دراجات نارية':'Bazirganê motorsîkletan','➕ أضف منتج':'➕ Hilberekê zêde bike','➕ أضف صور من أعمالك':'➕ Wêneyên karên xwe zêde bike','اطلب من المتجر':'Ji firoşgehê bixwaze','الطلب بيتم من المتجر فقط: اضغط اطلب من المتجر على المنتج.':'Ferman tenê ji firoşgehê ye: li ser hilberê "Ji firoşgehê bixwaze" bitikîne.','أضف أول منتج لمحلك.':'Hilbera xwe ya yekem zêde bike.','تحذف هالمنتج؟':'Tu vê hilberê jê dibî?','انحذف المنتج ✓':'Hilber hat jêbirin ✓','أضف منتج لمحلك':'Hilberekê li dikana xwe zêde bike','المنتج بيظهر بعد ما نراجعو. الزبون بيطلبو من المتجر عندنا، مو من صفحة المحل.':'Hilber piştî nirxandina me xuya dibe. Xerîdar ji firoşgeha me dixwaze, ne ji rûpela dikanê.','اسم المنتج':'Navê hilberê','السعر بالدولار':'Biha bi dolarê','السعر قبل الخصم (اختياري)':'Biha berî daxistinê (bijare)','وصف قصير (اختياري)':'Danasîna kurt (bijare)','صور واضحة للمنتج.':'Wêneyên zelal ên hilberê.','أرسل المنتج للمراجعة':'Hilberê ji bo nirxandinê bişîne','اكتب اسم المنتج.':'Navê hilberê binivîse.','اكتب سعر صحيح بالدولار.':'Bihayek rast bi dolarê binivîse.','اختر صورة وحدة على الأقل.':'Herî kêm wêneyek hilbijêre.','وصل منتجك للمراجعة، بيظهر بعد موافقتنا ✓':'Hilbera te gihîşt nirxandinê, piştî erêkirina me xuya dibe ✓','وصلت للحد الأقصى من المنتجات. احذف منتج قديم.':'Gihîşt sînorê herî zêde yê hilberan. Hilberek kevn jê bibe.','🗑️ حذف ملفي':'🗑️ Profîla min jê bibe','طلب حذف ملفي':'Daxwaza jêbirina profîla min','رح نراجع طلبك ونحذف الملف بعد ما نتأكد.':'Em ê daxwaza te binirxînin û piştî piştrastkirinê profîlê jê bibin.','سبب الحذف':'Sedema jêbirinê','أرسل طلب الحذف':'Daxwaza jêbirinê bişîne','اكتب سبب الحذف (5 أحرف على الأقل).':'Sedema jêbirinê binivîse (herî kêm 5 tîp).','وصلنا طلب الحذف، بنراجعو ونحذف ملفك ✓':'Daxwaza jêbirinê gihîşt me, em ê binirxînin û profîla te jê bibin ✓','عندك طلب حذف قيد المراجعة.':'Daxwazeke jêbirinê ya te di nirxandinê de ye.','هالميزة لأصحاب المحال بس.':'Ev taybetî tenê ji bo xwediyên dikanan e.','اطلب خدمة':'Xizmetekê bixwaze'});
 addKU({'جميع الحقوق محفوظة':'Hemû maf parastî ne'});
 addKU({'أضف صور من أعمالك':'Wêneyên karên xwe zêde bike','اختر حتى 3 صور':'Heta 3 wêneyan hilbijêre','صور واضحة من شغلك أو من منتجات محلك (3 صور كحد أقصى كل مرة).':'Wêneyên zelal ji karê xwe an ji hilberên dikana xwe (herî zêde 3 wêne her car).','ارفع الصور':'Wêneyan bar bike','جاري الرفع':'Tê barkirin','انضافت الصور ✓':'Wêne hatin zêdekirin ✓','انضافت بعض الصور':'Hin wêne hatin zêdekirin','اخترنا أول 3 صور بس.':'Tenê 3 wêneyên pêşî hatin hilbijartin.'});
 
@@ -1078,7 +1167,7 @@ $("#vconds").onclick=e=>{const b=e.target.closest("[data-vc]");if(b){vc=b.datase
 (function(){
   if(!SHEET_URL)return;
   const K='sheetVeh',mk=r=>{const n=String(r.name||'').trim().slice(0,80);if(!n)return null;
-    const im=String(r.images||'').split(/[\s,]+/).filter(u=>/^(https:\/\/|images\/)/i.test(u)).slice(0,6);
+    const im=String(r.images||'').split(/[\s,]+/).map(u=>imgURL(u,900)).filter(Boolean).slice(0,6);
     return{n:n,k:/دراج|bike|moto/i.test(String(r.type))?'bike':'car',s:/جديد|new/i.test(String(r.cond))?'new':'used',y:String(r.year||'').replace(/[^\d]/g,'').slice(0,4),p:Number(r.price)||0,km:Number(String(r.km||'').replace(/[^\d]/g,''))||0,c:String(r.city||'').slice(0,40),ph:String(r.phone||'').replace(/[^\d+]/g,'').slice(0,16),wa:String(r.wa||'').replace(/[^\d+]/g,'').slice(0,16),d:String(r.desc||'').slice(0,200),dl:String(r.dealer||'').trim().slice(0,60),im:im}};
   try{const c=JSON.parse(localStorage.getItem(K)||'null');if(Array.isArray(c))VEH=c}catch(e){}
   fetch(SHEET_URL+(SHEET_URL.includes('?')?'&':'?')+'vehicles=1').then(r=>r.json()).then(d=>{
@@ -1092,7 +1181,7 @@ $("#vconds").onclick=e=>{const b=e.target.closest("[data-vc]");if(b){vc=b.datase
   const mk=(r,i)=>{const p=Number(r.price);if(!r.name||!isFinite(p)||p<=0)return null;
     const o={id:Number(r.id)||i+1,n:esc(String(r.name).slice(0,80)),d:esc(String(r.desc||'').slice(0,160)),p:p,c:String(r.cat||'أخرى').replace(/[&<>"']/g,'').slice(0,40),e:String(r.emoji||'🛍️').slice(0,4),bg:BG[i%BG.length],shop:String(r.shop||'').trim().slice(0,60)};
     const old=Number(r.old);if(old>p)o.old=old;
-    const im=String(r.images||'').split(/[\s,]+/).filter(u=>/^(https:\/\/|images\/)/i.test(u)).slice(0,6);if(im.length)o.imgs=im;
+    const im=String(r.images||'').split(/[\s,]+/).map(u=>imgURL(u,900)).filter(Boolean).slice(0,6);if(im.length)o.imgs=im;
     return o};
   const apply=a=>{PRODUCTS=a;if(cat!=='الكل'&&!a.some(x=>x.c===cat))cat='الكل';chips();render()};
   let c=null;try{c=JSON.parse(localStorage.getItem(KEYP)||'null')}catch(e){}
@@ -1178,7 +1267,7 @@ async function postJSON(o){const ac=window.AbortController?new AbortController()
   let r,txt;
   try{r=await fetch(SHEET_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(o),signal:ac?ac.signal:undefined});txt=await r.text()}finally{clearTimeout(tm)}
   try{return JSON.parse(txt)}catch(e){if(/^\s*(ok|dup)\s*$/i.test(txt))return{ok:false,error:'oldserver'};return{ok:false,error:'server',msg:'HTTP '+r.status+' '+String(txt).replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').slice(0,120)}} /* وصلنا رد بس مو JSON: غالباً خطأ بالسكربت (صلاحيات Drive أو نشر قديم) */}
-const ERRS={invalid:'تأكد من البيانات (الاسم، الهاتف، الرمز).',rate:'محاولات كتير. جرّب بعد ساعة.',exists:'هالرقم مسجّل من قبل. إذا هاد رقمك، تواصل معنا لنعطيك رمز التعديل.',name:'هالاسم مستعمل. غيّر الاسم شوي.',photo:'الصورة غير صالحة. جرّب صورة تانية.',auth:'الرقم أو الرمز غير صحيح.',oldserver:'هالميزة مو جاهزة بالسيرفر حالياً. تواصل معنا على واتساب لنلغي طلبك.',server:'وصلنا للسيرفر بس ما قدر يحفظ (مو مشكلة إنترنت). جرّب بعد شوي، وإذا استمرت بلّغ صاحب المتجر.',share:'تعذّر نشر الصورة. بلّغ صاحب المتجر.',status:'الطلب صار قيد التجهيز أو التوصيل وما عاد ينلغى من هون. تواصل معنا على واتساب.',notfound:'ما لقينا الطلب بالجدول. إذا لسا ما وصل، تواصل معنا على واتساب.',mismatch:'رقم الهاتف ما بيطابق الطلب.'};
+const ERRS={pending:'عندك طلب حذف قيد المراجعة.',type:'هالميزة لأصحاب المحال بس.',invalid:'تأكد من البيانات (الاسم، الهاتف، الرمز).',rate:'محاولات كتير. جرّب بعد ساعة.',exists:'هالرقم مسجّل من قبل. إذا هاد رقمك، تواصل معنا لنعطيك رمز التعديل.',name:'هالاسم مستعمل. غيّر الاسم شوي.',photo:'الصورة غير صالحة. جرّب صورة تانية.',auth:'الرقم أو الرمز غير صحيح.',oldserver:'هالميزة مو جاهزة بالسيرفر حالياً. تواصل معنا على واتساب لنلغي طلبك.',server:'وصلنا للسيرفر بس ما قدر يحفظ (مو مشكلة إنترنت). جرّب بعد شوي، وإذا استمرت بلّغ صاحب المتجر.',share:'تعذّر نشر الصورة. بلّغ صاحب المتجر.',status:'الطلب صار قيد التجهيز أو التوصيل وما عاد ينلغى من هون. تواصل معنا على واتساب.',notfound:'ما لقينا الطلب بالجدول. إذا لسا ما وصل، تواصل معنا على واتساب.',mismatch:'رقم الهاتف ما بيطابق الطلب.'};
 const errMsg=(c,m)=>t(ERRS[c]||'صار خطأ. جرّب مرة تانية.')+(c==='server'&&m?' ['+m+']':'');
 function getOwner(){try{return JSON.parse(localStorage.getItem('owner')||'null')}catch(e){return null}}
 function saveOwner(o){try{localStorage.setItem('owner',JSON.stringify(o))}catch(e){}}
@@ -1191,7 +1280,7 @@ function openJoin(tid){
   $("#jerr").textContent='';$("#jForm").hidden=false;$("#jDone").hidden=true;$("#jFallback").hidden=true;$("#jsend").disabled=false;
   tr(jdlg);jdlg.showModal()}
 function joinWA(d){const tn=(TRADES.find(x=>x.id===d.type)||{}).n||d.type;
-  const msg=`طلب تسجيل بدليل المعلمين والمحلات - ${STORE}\n\nالمهنة/النوع: ${tn}\nالاسم: ${d.name}\nالمدينة: ${d.city}\nالهاتف: ${d.phone}\nنبذة: ${d.desc||"-"}`;
+  const msg=`طلب تسجيل بدليل الخدمات وأصحاب المهن - ${STORE}\n\nالمهنة/النوع: ${tn}\nالاسم: ${d.name}\nالمدينة: ${d.city}\nالهاتف: ${d.phone}\nنبذة: ${d.desc||"-"}`;
   window.open("https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(msg),"_blank")}
 $("#jsend").onclick=async()=>{
   const er=$("#jerr"),d={action:'apply',type:$("#jt").value,name:$("#jn").value.trim(),city:$("#jc").value,phone:cleanPh($("#jp").value),wa:cleanPh($("#jw").value),map:$("#jm").value.trim(),desc:$("#jd").value.trim(),photo:PH.j||'',website:$("#jweb").value};
@@ -1239,18 +1328,20 @@ function persistPros(){try{localStorage.setItem('sheetPros',JSON.stringify(PROS)
 function isOwnerOf(x){const o=getOwner();return !!(o&&x&&last9(o.ph)&&last9(o.ph)===last9(x.ph))}
 function openShop(name){if(pdlg.open)pdlg.close();if(sdlg.open)sdlg.close();location.hash='u='+encodeURIComponent(name)}
 function hideProfile(){curU=null;if(!ppage.hidden){ppage.hidden=true;document.body.style.overflow=''}}
+function pcard(p,own){const im=(p.imgs&&p.imgs[0])||'',d=p.old&&p.old>p.p?Math.round((1-p.p/p.old)*100):0;
+  return `<article class="pc"><button class="pc-i" data-pi="${p.id}" aria-label="${esc(String(p.n).replace(/<[^>]*>/g,''))}">${im?`<img src="${esc(im)}" data-alt="${esc(altURL(im))}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="imgFb(this)">`:`<span class="pc-e" aria-hidden="true">${p.e}</span>`}${p.imgs&&p.imgs.length>1?`<span class="pc-n">${p.imgs.length} 📷</span>`:''}${d?`<span class="pc-d">-${d}%</span>`:''}</button><div class="pc-b"><h3>${p.n}</h3>${p.d?`<small>${p.d}</small>`:''}<div class="pc-f"><span class="pc-p">${money(p.p)}</span><button class="pc-o" data-po="${p.id}">${t('اطلب من المتجر')}</button></div></div>${own?`<button class="gx" data-pd="${p.id}" aria-label="حذف">✕</button>`:''}</article>`}
 function showProfile(name){
   curU=name;const x=PROS.find(y=>y.n===name);ppage.hidden=false;document.body.style.overflow='hidden';
   if(!x){$("#ppBody").innerHTML=`<p class="empty">${t(PROS_READY?'ما لقينا هالملف.':'جاري التحميل…')}</p>`;tr(ppage);return}
-  const T=TRADES.find(z=>z.id===x.t)||{},prods=PRODUCTS.filter(p=>p.shop===x.n),mu=mapURL(x.m),own=isOwnerOf(x),isShop=x.t==='shops',w=x.w||[];
+  const T=TRADES.find(z=>z.id===x.t)||{},prods=PRODUCTS.filter(p=>p.shop===x.n),mu=mapURL(x.m),own=isOwnerOf(x),isShop=isShopT(x.t),w=x.w||[];
   $("#ppBody").innerHTML=`<div class="pp-cover"></div><div class="pp-head">${avatar(x,'xl')}<h1>${esc(x.n)}</h1></div>
   <div class="pp-meta"><span>${T.e||''} ${esc(T.n||'')}</span>${x.c?`<span>📍 ${esc(x.c)}</span>`:''}</div>
   ${x.d?`<p class="pp-d">${esc(x.d)}</p>`:''}
   <div class="acts pp-acts"><a class="btn call" href="tel:+${intl(x.ph)}">اتصال</a><a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/${intl(x.wa||x.ph)}">واتساب</a>${mu?`<a class="btn map" target="_blank" rel="noopener" href="${esc(mu)}">${t('الخريطة')}</a>`:''}</div>
-  ${own?`<div class="ownbox"><b>${t('هاد القسم بيظهر إلك بس')}</b><div class="dact"><button class="send" id="ppAddWork">${t('➕ أضف صورة من أعمالك')}</button><button class="ghost" id="ppEdit">${t('✏️ عدّل بياناتي')}</button></div></div>`:''}
+  ${own?`<div class="ownbox"><b>${t('هاد القسم بيظهر إلك بس')}</b><div class="dact">${isShop?`<button class="send" id="ppAddProd">${t('➕ أضف منتج')}</button>`:''}<button class="send" id="ppAddWork">${t('➕ أضف صور من أعمالك')}</button><button class="ghost" id="ppEdit">${t('✏️ عدّل بياناتي')}</button></div></div>`:''}
   <h2 class="pp-sec">${t(isShop?'صور من المحل ومنتجاته':'صور من أعمالنا')}</h2>
   ${w.length?`<div class="gal">${w.map((g,i)=>`<div class="g"><button class="gb" data-gi="${i}" aria-label="${esc(g.c||'')}"><img src="${esc(g.u)}" data-alt="${esc(altURL(g.u))}" alt="${esc(g.c||'')}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="imgFb(this)">${g.c?`<span class="gc">${esc(g.c)}</span>`:''}</button>${own?`<button class="gx" data-wd="${esc(g.id)}" aria-label="حذف">✕</button>`:''}</div>`).join('')}</div>`:`<p class="empty">${own?t('أضف أول صورة من شغلك ليشوفها الزبائن.'):t('ما في صور بعد.')}</p>`}
-  ${prods.length?`<h2 class="pp-sec">${t('منتجات المحل')}</h2><p class="note">${t('الشراء من منتجات المحل يتم عن طريقنا فقط: أضف للسلة وأرسل الطلب.')}</p>`+prods.map(p=>`<div class="row"><span class="e">${p.imgs?`<img src="${esc(p.imgs[0])}" alt="" width="44" height="44" style="border-radius:12px;object-fit:cover">`:p.e}</span><div class="n"><a class="plink" href="#p=${p.id}">${p.n}</a><br><small>${money(p.p)}</small></div><button class="btn call" data-add="${p.id}">${t('أضف للسلة')}</button></div>`).join(''):''}`;
+  ${prods.length||(own&&isShop)?`<h2 class="pp-sec">${t('منتجات المحل')}</h2><p class="note">${t('الطلب بيتم من المتجر فقط: اضغط اطلب من المتجر على المنتج.')}</p>${prods.length?`<div class="pgrid">${prods.map(p=>pcard(p,own)).join('')}</div>`:`<p class="empty">${t('أضف أول منتج لمحلك.')}</p>`}`:''}`;
   tr(ppage);ppage.scrollTop=0}
 $("#ppBack").onclick=()=>{hideProfile();if(location.hash)history.replaceState(null,"",location.pathname+location.search)};
 $("#ppCart").onclick=()=>$("#openCart").click();
@@ -1270,6 +1361,11 @@ wdlg.addEventListener("keydown",e=>{if(e.key==="ArrowLeft")$("#wNext").click();i
 $("#ppBody").addEventListener("click",async e=>{
   const gb=e.target.closest("[data-gi]");
   if(gb){const x=PROS.find(y=>y.n===curU),l=(x&&x.w)||[];if(l.length)openLB(l.map(g=>({s:g.b,a:altURL(g.b),c:g.c})),+gb.dataset.gi);return}
+  const pi=e.target.closest("[data-pi]");
+  if(pi){const p=PRODUCTS.find(y=>String(y.id)===pi.dataset.pi);if(p){if(p.imgs&&p.imgs.length)openLB(p.imgs.map(u=>({s:u,a:altURL(u),c:String(p.n).replace(/<[^>]*>/g,'')})),0);else location.hash='#p='+p.id}return}
+  const po=e.target.closest("[data-po]");if(po){location.hash='#p='+po.dataset.po;return}
+  const pd=e.target.closest("[data-pd]");if(pd){if(!confirm(t('تحذف هالمنتج؟')))return;await removeProd(pd.dataset.pd);return}
+  if(e.target.closest("#ppAddProd")){openAddProd();return}
   const wd=e.target.closest("[data-wd]");
   if(wd){if(!confirm(t('تحذف هالصورة؟')))return;await removeWork(wd.dataset.wd);return}
   const ad=e.target.closest("[data-add]");

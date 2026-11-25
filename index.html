@@ -811,7 +811,7 @@ function mkNo(){const d=new Date(),p=n=>String(n).padStart(2,'0'),A='ABCDEFGHJKL
 const normNo=v=>nd(String(v||'')).toUpperCase().replace(/[^A-Z0-9-]/g,'');
 const waAsk=no=>`<a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/${WHATSAPP}?text=${encodeURIComponent(L('أريد الاستفسار عن طلبي رقم ','Ez dixwazim li ser fermana xwe bi hejmara ')+no)}">تواصل عبر واتساب</a>`;
 function renderOrders(){
-  $("#mine").innerHTML=orders.length?orders.map(o=>`<article class="pro"><div class="pe" aria-hidden="true">🧾</div><div class="pi"><h3 dir="ltr" style="text-align:start">${esc(o.no)}</h3><small>${o.st?`<span class="stp">${esc(t(o.st))}</span> · `:''}${new Date(o.t).toLocaleDateString(lang==='ku'?'en-GB':'ar-SY')} · ${money(o.total)} · ${esc(o.items.map(i=>i.n+' ×'+i.q).join('، '))}</small></div><div class="acts"><button class="btn call" data-trk="${esc(o.no)}">تتبّع</button>${(o.st==='قيد المراجعة'||o.st==='تم التأكيد')&&SHEET_URL?`<button class="btn cx" data-cx="${esc(o.no)}">إلغاء الطلب</button>`:''}</div></article>`).join(''):`<p class="empty">ما في طلبات محفوظة على هالجهاز بعد.</p>`;
+  $("#mine").innerHTML=orders.length?orders.map(o=>`<article class="pro"><div class="pe" aria-hidden="true">🧾</div><div class="pi"><h3 dir="ltr" style="text-align:start">${esc(o.no)}</h3><small>${o.st?`<span class="stp">${esc(t(o.st))}</span> · `:''}${new Date(o.t).toLocaleDateString(lang==='ku'?'en-GB':'ar-SY')} · ${money(o.total)} · ${esc(o.items.map(i=>i.n+' ×'+i.q).join('، '))}</small></div><div class="acts"><button class="btn call" data-trk="${esc(o.no)}">تتبّع</button>${(o.st==='قيد المراجعة'||o.st==='تم التأكيد')&&SHEET_URL?`<button class="btn cx" data-cx="${esc(o.no)}">إلغاء الطلب</button>`:''}${(o.st==='تم التسليم'||o.st==='ملغي')?`<button class="ghost" data-rm="${esc(o.no)}">حذف من القائمة</button>`:''}</div></article>`).join('')+(orders.some(o=>o.st==='تم التسليم'||o.st==='ملغي')?`<div class="acts" style="margin-top:10px"><button class="ghost" data-rmall>مسح الطلبات المنتهية</button></div>`:''):`<p class="empty">ما في طلبات محفوظة على هالجهاز بعد.</p>`;
   $("#ono").placeholder="261123-K7F";tr($("#orders"))}
 function showTrack(h){const o=$("#trkOut");o.innerHTML=h;tr(o)}
 async function track(raw){
@@ -837,6 +837,9 @@ async function track(raw){
 $("#trkBtn").onclick=()=>track($("#ono").value);
 $("#ono").addEventListener("keydown",e=>{if(e.key==="Enter")track($("#ono").value)});
 $("#mine").addEventListener("click",async e=>{
+  const rm=e.target.closest("[data-rm]");
+  if(rm){if(!confirm(t('تحذف هالطلب من قائمتك؟')))return;orders=orders.filter(x=>x.no!==rm.dataset.rm);saveOrders();badge();renderOrders();toast(t('انحذف من قائمتك ✓'));return}
+  if(e.target.closest("[data-rmall]")){if(!confirm(t('تمسح كل الطلبات المنتهية (المستلمة والملغية) من قائمتك؟')))return;orders=orders.filter(x=>x.st!=='تم التسليم'&&x.st!=='ملغي');saveOrders();badge();renderOrders();toast(t('انمسحت الطلبات المنتهية ✓'));return}
   const cx=e.target.closest("[data-cx]");
   if(cx){const o=orders.find(x=>x.no===cx.dataset.cx);if(!o)return;if(!confirm(t('تلغي هالطلب؟ رح نبلّغ صاحب المتجر فوراً.')))return;
     let ph=o.ph;if(!ph){try{ph=last9((JSON.parse(localStorage.getItem('info')||'null')||{}).ph)}catch(_){}}
@@ -1209,6 +1212,7 @@ $("#bell").onclick=()=>{renderNF();ndlg.showModal();NF.forEach(x=>x.r=1);saveNF(
 $("#ndX").onclick=()=>ndlg.close();ndlg.addEventListener("click",e=>{if(e.target===ndlg)ndlg.close()});
 $("#ndClear").onclick=()=>{NF=[];saveNF();bellBadge();renderNF()};
 $("#ndEnable").onclick=async()=>{await enablePush();renderNF()};
+addKU({'حذف من القائمة':'Ji lîsteyê jê bibe','مسح الطلبات المنتهية':'Fermanên qediyayî paqij bike','تحذف هالطلب من قائمتك؟':'Ev ferman ji lîsteya te jê bibe?','انحذف من قائمتك ✓':'Ji lîsteya te hate jêbirin ✓','تمسح كل الطلبات المنتهية (المستلمة والملغية) من قائمتك؟':'Hemû fermanên qediyayî (hatine radest kirin û betal kirin) ji lîsteya te paqij bike?','انمسحت الطلبات المنتهية ✓':'Fermanên qediyayî hatin paqij kirin ✓'});
 addKU({'الإشعارات':'Agahdarî','فعّل إشعارات الجوال':'Agahdariyên têlefonê çalak bike','مسح الإشعارات':'Agahdariyan paqij bike','ما في إشعارات بعد.':'Hê agahdarî tune ne.','إلغاء الطلب':'Fermanê betal bike','تلغي هالطلب؟ رح نبلّغ صاحب المتجر فوراً.':'Fermanê betal bike? Em ê yekser ji xwediyê dikanê re bibêjin.','انلغى الطلب ✓ وبلّغنا صاحب المتجر.':'Ferman hate betal kirin ✓ û me ji xwediyê dikanê re got.','الطلب صار قيد التجهيز أو التوصيل وما عاد ينلغى من هون. تواصل معنا على واتساب.':'Ferman di amadekirinê an radestkirinê de ye û êdî nayê betal kirin. Bi WhatsApp bi me re têkilî daynî.','ما لقينا الطلب بالجدول. إذا لسا ما وصل، تواصل معنا على واتساب.':'Ferman di tabloyê de nehat dîtin. Bi WhatsApp bi me re têkilî daynî.','رقم الهاتف ما بيطابق الطلب.':'Hejmara telefonê bi fermanê re nagire.'});
 function onStatus(o,s){const msg=L('طلبك رقم '+o.no+': '+s,'Fermana te '+o.no+': '+t(s));o.un=view==='orders'?0:(o.un||0)+1;toast(msg);addNotif(msg);pushNotif(msg,o.no)}
 let polling=false;

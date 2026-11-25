@@ -406,6 +406,9 @@ button.btn{border:0;cursor:pointer;font-family:inherit}
 .vp{font-weight:800;font-size:1.15rem;color:var(--brand)}
 .vd{color:var(--mute);font-size:.9rem;margin:0}
 @media (max-width:440px){.seg button{font-size:.8rem;padding:8px 3px}}
+.wprevs{display:flex;gap:6px;flex-wrap:wrap}.wprevs .av.sq{width:54px;height:54px;flex:none}
+#lbcap{position:absolute;z-index:2;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 86px);max-width:min(88vw,520px);padding:6px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.3);background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:#fff;font:600 .92rem Cairo,Tajawal,sans-serif;text-align:center}
+[data-gi]{cursor:zoom-in}
 </style>
 </head>
 <body>
@@ -477,7 +480,7 @@ button.btn{border:0;cursor:pointer;font-family:inherit}
   </div>
 </main>
 
-<dialog id="lbx" aria-label="معرض الصور"><div id="lbs"><img id="lbi" alt="" draggable="false"></div><button class="lbb" id="lbc" aria-label="إغلاق">✕</button><button class="lbb" id="lbP" aria-label="السابق">‹</button><button class="lbb" id="lbN" aria-label="التالي">›</button><div class="lbt"><button class="lbb" id="lbm" aria-label="تصغير">−</button><span id="lbn"></span><button class="lbb" id="lbz" aria-label="تكبير">+</button><button class="lbb" id="lbr" aria-label="الحجم الأصلي">⟲</button></div></dialog>
+<dialog id="lbx" aria-label="معرض الصور"><div id="lbs"><img id="lbi" alt="" draggable="false"></div><button class="lbb" id="lbc" aria-label="إغلاق">✕</button><button class="lbb" id="lbP" aria-label="السابق">‹</button><button class="lbb" id="lbN" aria-label="التالي">›</button><div id="lbcap" hidden></div><div class="lbt"><button class="lbb" id="lbm" aria-label="تصغير">−</button><span id="lbn"></span><button class="lbb" id="lbz" aria-label="تكبير">+</button><button class="lbb" id="lbr" aria-label="الحجم الأصلي">⟲</button></div></dialog>
 <footer>© <span id="yr"></span> <span id="fName"></span>. <span>جميع الحقوق محفوظة</span>.<div class="flinks"><button class="lnk" data-doc="ship">سياسة التوصيل والاسترجاع</button> · <button class="lnk" data-doc="priv">سياسة الخصوصية</button></div><div id="rateNote" dir="ltr" hidden style="margin-top:6px;font-size:.8rem;opacity:.75"></div></footer>
 
 <aside id="cart" aria-label="السلة" aria-hidden="true">
@@ -544,13 +547,13 @@ button.btn{border:0;cursor:pointer;font-family:inherit}
   <div class="wn"><button class="ghost" id="wPrev">‹</button><span id="wCnt"></span><button class="ghost" id="wNext">›</button><button class="ghost" id="wX">إغلاق</button></div></div>
 </dialog>
 <dialog id="wadlg" aria-labelledby="waT">
-  <div class="ah"><h2 id="waT">أضف صورة من أعمالك</h2><button class="pill" id="waX" style="color:var(--ink)">إغلاق</button></div>
+  <div class="ah"><h2 id="waT">أضف صور من أعمالك</h2><button class="pill" id="waX" style="color:var(--ink)">إغلاق</button></div>
   <div class="ab">
-    <div class="photorow"><span class="av sq" id="waPrev" aria-hidden="true"><b style="font-weight:400">📷</b></span><div><button type="button" class="ghost" id="waPick">اختر صورة</button><p class="note">صورة واضحة من شغلك أو من منتجات محلك.</p></div></div>
-    <input type="file" id="waf" accept="image/*" hidden>
+    <div class="photorow"><div class="wprevs" id="waPrev" aria-hidden="true"><span class="av sq"><b style="font-weight:400">📷</b></span></div><div><button type="button" class="ghost" id="waPick">اختر حتى 3 صور</button><p class="note">صور واضحة من شغلك أو من منتجات محلك (3 صور كحد أقصى كل مرة).</p></div></div>
+    <input type="file" id="waf" accept="image/*" multiple hidden>
     <label>وصف قصير (اختياري)<input id="wac" maxlength="80"></label>
     <div class="err" id="waerr" role="alert"></div>
-    <button class="send" id="wasend">ارفع الصورة</button>
+    <button class="send" id="wasend">ارفع الصور</button>
   </div>
 </dialog>
 <dialog id="jdlg" aria-labelledby="jdT">
@@ -981,15 +984,16 @@ document.addEventListener("pointerdown",e=>{
 
 /* ===== عارض الصور: تكبير وتصغير وتمرير ===== */
 (function(){
-  const d=$("#lbx"),im=$("#lbi"),st=$("#lbs"),cn=$("#lbn");im.onload=im.onerror=()=>{im.style.opacity=1};
-  let L=[],i=0,sc=1,tx=0,ty=0,d0=0,s0=1,sx=0,sy=0,mv=false,lt=0;const P=new Map();
+  const d=$("#lbx"),im=$("#lbi"),st=$("#lbs"),cn=$("#lbn");im.onload=()=>{im.style.opacity=1};im.onerror=()=>{const a=LA[i];if(a&&im.getAttribute('src')!==a){LA[i]='';im.src=a}else im.style.opacity=1};
+  let L=[],LA=[],LC=[],i=0,sc=1,tx=0,ty=0,d0=0,s0=1,sx=0,sy=0,mv=false,lt=0;const P=new Map();
   const ap=()=>{im.style.transform=`translate(${tx}px,${ty}px) scale(${sc})`;st.classList.toggle("zm",sc>1)};
   const cl=()=>{if(sc<=1){sc=1;tx=ty=0;return}const w=im.clientWidth*(sc-1)/2,h=im.clientHeight*(sc-1)/2;tx=Math.max(-w,Math.min(w,tx));ty=Math.max(-h,Math.min(h,ty))};
-  const show=n=>{i=(n+L.length)%L.length;sc=1;tx=ty=0;im.style.opacity=0;im.src=L[i];cn.textContent=(i+1)+" / "+L.length;d.classList.toggle("one",L.length<2);ap()};
+  const show=n=>{i=(n+L.length)%L.length;sc=1;tx=ty=0;im.style.opacity=0;im.src=L[i];cn.textContent=(i+1)+" / "+L.length;const cp=$("#lbcap");cp.textContent=LC[i]||"";cp.hidden=!LC[i];d.classList.toggle("one",L.length<2);ap()};
   const zoom=f=>{sc=Math.max(1,Math.min(5,sc*f));cl();ap()};
   const dist=()=>{const a=[...P.values()];return Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)};
   document.addEventListener("click",e=>{const s=e.target.closest("#pdB .sl,#vlist .sl");if(!s)return;const a=[...s.querySelectorAll("img")];if(!a.length)return;
-    L=a.map(x=>x.getAttribute("src"));show(Math.max(0,a.findIndex(x=>x.classList.contains("on"))));if(!d.open)d.showModal()});
+    L=a.map(x=>x.getAttribute("src"));LA=[];LC=[];show(Math.max(0,a.findIndex(x=>x.classList.contains("on"))));if(!d.open)d.showModal()});
+  window.openLB=(items,start)=>{L=items.map(x=>x.s);LA=items.map(x=>x.a||"");LC=items.map(x=>x.c||"");if(!L.length)return;show(start||0);if(!d.open)d.showModal()};
   $("#lbc").onclick=()=>d.close();$("#lbP").onclick=()=>show(i-1);$("#lbN").onclick=()=>show(i+1);
   $("#lbz").onclick=()=>zoom(1.5);$("#lbm").onclick=()=>zoom(1/1.5);$("#lbr").onclick=()=>{sc=1;cl();ap()};
   st.addEventListener("wheel",e=>{e.preventDefault();zoom(e.deltaY<0?1.15:1/1.15)},{passive:false});
@@ -1031,6 +1035,7 @@ sdlg.addEventListener("click",e=>{if(e.target===sdlg){sdlg.close();return}const 
 })();
 addKU({'الخريطة':'Nexşe','منتجاته':'Hilberên wî','الشراء من منتجات المحل يتم عن طريقنا فقط: أضف للسلة وأرسل الطلب.':'Kirîna hilberên vê dikanê tenê bi riya me ye: têxe selikê û fermanê bişîne.','رابط موقع المحل على خرائط جوجل (اختياري)':'Lînka cihê dikanê li Google Maps (bijare)'});
 addKU({'جميع الحقوق محفوظة':'Hemû maf parastî ne'});
+addKU({'أضف صور من أعمالك':'Wêneyên karên xwe zêde bike','اختر حتى 3 صور':'Heta 3 wêneyan hilbijêre','صور واضحة من شغلك أو من منتجات محلك (3 صور كحد أقصى كل مرة).':'Wêneyên zelal ji karê xwe an ji hilberên dikana xwe (herî zêde 3 wêne her car).','ارفع الصور':'Wêneyan bar bike','جاري الرفع':'Tê barkirin','انضافت الصور ✓':'Wêne hatin zêdekirin ✓','انضافت بعض الصور':'Hin wêne hatin zêdekirin','اخترنا أول 3 صور بس.':'Tenê 3 wêneyên pêşî hatin hilbijartin.'});
 
 /* ===== خلفية الواجهة المتحركة: جيب، عمارة، حقائب، ملابس، عطور (تظهر ضبابية وبعدين بتتوضح) ===== */
 (function(){
@@ -1264,7 +1269,7 @@ $("#wX").onclick=()=>wdlg.close();wdlg.addEventListener("click",e=>{if(e.target=
 wdlg.addEventListener("keydown",e=>{if(e.key==="ArrowLeft")$("#wNext").click();if(e.key==="ArrowRight")$("#wPrev").click()});
 $("#ppBody").addEventListener("click",async e=>{
   const gb=e.target.closest("[data-gi]");
-  if(gb){const x=PROS.find(y=>y.n===curU);viewer={l:(x&&x.w)||[],i:+gb.dataset.gi};if(viewer.l.length){showViewer();wdlg.showModal()}return}
+  if(gb){const x=PROS.find(y=>y.n===curU),l=(x&&x.w)||[];if(l.length)openLB(l.map(g=>({s:g.b,a:altURL(g.b),c:g.c})),+gb.dataset.gi);return}
   const wd=e.target.closest("[data-wd]");
   if(wd){if(!confirm(t('تحذف هالصورة؟')))return;await removeWork(wd.dataset.wd);return}
   const ad=e.target.closest("[data-add]");
@@ -1272,20 +1277,29 @@ $("#ppBody").addEventListener("click",async e=>{
   if(e.target.closest("#ppAddWork")){openAddWork();return}
   if(e.target.closest("#ppEdit"))openEdit()});
 /* إضافة / حذف صورة من الأعمال (بس لصاحب الملف) */
-function openAddWork(){$("#wac").value='';$("#waf").value='';PH.w=null;setPrev('w',null);$("#waerr").textContent='';$("#wasend").disabled=false;tr(wadlg);wadlg.showModal()}
-$("#waPick").onclick=()=>$("#waf").click();$("#waf").onchange=e=>onPhoto('w',e.target.files[0]);
+const WMAX=3;let WS=[];
+function renderWPrev(){$("#waPrev").innerHTML=WS.length?WS.map(u=>`<span class="av sq ld"><img src="${u}" alt=""></span>`).join(''):'<span class="av sq"><b style="font-weight:400">📷</b></span>'}
+function openAddWork(){$("#wac").value='';$("#waf").value='';WS=[];renderWPrev();$("#waerr").textContent='';$("#wasend").disabled=false;$("#wasend").textContent=t('ارفع الصور');tr(wadlg);wadlg.showModal()}
+$("#waPick").onclick=()=>$("#waf").click();
+$("#waf").onchange=async e=>{const er=$("#waerr"),all=[...e.target.files],fs=all.slice(0,WMAX);er.textContent='';WS=[];
+  for(const f of fs){try{WS.push(await shrinkImage(f,{max:720,square:false,lim:150000}))}catch(x){er.textContent=t('تعذّر قراءة الصورة. جرّب صورة تانية.')}}
+  if(all.length>WMAX)er.textContent=t('اخترنا أول 3 صور بس.');
+  renderWPrev();e.target.value=''};
 $("#waX").onclick=()=>wadlg.close();wadlg.addEventListener("click",e=>{if(e.target===wadlg)wadlg.close()});
 $("#wasend").onclick=async()=>{
   const er=$("#waerr"),o=getOwner();if(!o){er.textContent=t('الرقم أو الرمز غير صحيح.');return}
-  if(!PH.w){er.textContent=t('اختر صورة أول.');return}
-  const d={action:'addwork',phone:o.ph,code:o.code,photo:PH.w,caption:$("#wac").value.trim()},b=$("#wasend"),old=b.textContent;
-  b.disabled=true;b.textContent=t('جاري الإرسال…');er.textContent='';
-  try{const r=await postJSON(d);
-    if(r&&r.ok){const x=PROS.find(y=>last9(y.ph)===last9(o.ph));if(x){x.w=[{id:String(r.id),u:imgURL(r.url,400),b:imgURL(r.url,1000),c:d.caption}].concat(x.w||[]);persistPros()}
-      wadlg.close();if(curU)showProfile(curU);toast(t('انضافت الصورة ✓'))}
-    else er.textContent=r&&r.error==='full'?t('وصلت للحد الأقصى (12 صورة). احذف صورة قديمة.'):errMsg(r&&r.error,r&&r.msg)}
-  catch(e){er.textContent=t('ما قدرنا نتأكد إنو الطلب وصل. تأكد من الإنترنت أو ابعت طلبك عبر واتساب.')}
-  finally{b.disabled=false;b.textContent=old}};
+  if(!WS.length){er.textContent=t('اختر صورة أول.');return}
+  const b=$("#wasend"),old=b.textContent,cap=$("#wac").value.trim(),list=WS.slice().reverse();let ok=0,fail=null;
+  b.disabled=true;er.textContent='';
+  for(let k=0;k<list.length;k++){
+    b.textContent=t('جاري الرفع')+' '+(k+1)+'/'+list.length+'…';
+    try{const r=await postJSON({action:'addwork',phone:o.ph,code:o.code,photo:list[k],caption:cap});
+      if(r&&r.ok){ok++;const x=PROS.find(y=>last9(y.ph)===last9(o.ph));if(x){x.w=[{id:String(r.id),u:imgURL(r.url,400),b:imgURL(r.url,1000),c:cap}].concat(x.w||[]);persistPros()}}
+      else{fail=r&&r.error==='full'?t('وصلت للحد الأقصى (12 صورة). احذف صورة قديمة.'):errMsg(r&&r.error,r&&r.msg);break}}
+    catch(e){fail=t('ما قدرنا نتأكد إنو الطلب وصل. تأكد من الإنترنت أو ابعت طلبك عبر واتساب.');break}}
+  b.disabled=false;b.textContent=old;
+  if(ok){if(curU)showProfile(curU);toast(ok===list.length?t('انضافت الصور ✓'):t('انضافت بعض الصور'))}
+  if(fail){er.textContent=(ok?ok+'/'+list.length+' — ':'')+fail;WS=WS.slice(0,WS.length-ok);renderWPrev()}else wadlg.close()};
 async function removeWork(id){const o=getOwner();if(!o)return;
   try{const r=await postJSON({action:'delwork',phone:o.ph,code:o.code,id:id});
     if(r&&r.ok){const x=PROS.find(y=>last9(y.ph)===last9(o.ph));if(x){x.w=(x.w||[]).filter(g=>g.id!==id);persistPros()}if(curU)showProfile(curU);toast(t('انحذفت الصورة ✓'))}

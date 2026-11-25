@@ -364,6 +364,33 @@ button.btn{border:0;cursor:pointer;font-family:inherit}
 .wv .wn{display:flex;gap:8px;justify-content:center;align-items:center;padding:0 12px 14px;flex-wrap:wrap}
 #tabOrd[data-n]::after{content:attr(data-n);display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;margin-inline-start:6px;border-radius:9px;background:var(--accent);color:var(--accent-ink);font-size:.72rem;font-weight:800}
 .stp{display:inline-block;background:var(--glass);border:1px solid var(--glass-line);border-radius:999px;padding:0 10px;font-size:.78rem;font-weight:700}
+
+/* ===== خلفية متحركة بالواجهة: حقائب وسيارات وعقارات ===== */
+.hero{position:relative;overflow:hidden}
+.herobg{position:absolute;inset:0;z-index:0;pointer-events:none;color:var(--brand);-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.hr{position:absolute;left:0;display:flex;gap:70px;padding-right:70px;width:max-content;animation:hrm 55s linear infinite}
+.hr1{top:6%;opacity:.17}.hr2{bottom:4%;opacity:.11;animation-duration:70s;animation-direction:reverse}
+.hr svg{width:120px;height:80px;flex:none;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;animation:hrb 6s ease-in-out infinite}
+.hr svg:nth-child(even){animation-delay:-3s}
+.hr2 svg{width:96px;height:64px}
+@keyframes hrm{to{transform:translateX(-50%)}}
+@keyframes hrb{50%{transform:translateY(-8px)}}
+.hero>*:not(.herobg){position:relative;z-index:1}
+.lite .hr2{display:none}
+/* ===== المركبات ===== */
+#tabVeh{white-space:nowrap}
+.vf{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 10px}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.vcard{border-radius:22px;overflow:hidden;background:var(--glass);border:1px solid var(--glass-line);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.vcard .thumb{aspect-ratio:4/3;border-radius:0}
+.vb{padding:12px 14px 14px;display:grid;gap:6px}
+.vb h3{margin:0;font-size:1.05rem}
+.vtags{display:flex;gap:6px;flex-wrap:wrap}
+.vtag{padding:2px 10px;border-radius:99px;font-size:.78rem;font-weight:700;background:var(--field);border:1px solid var(--glass-line)}
+.vtag.new{background:var(--brand);color:var(--brand-ink);border-color:transparent}
+.vp{font-weight:800;font-size:1.15rem;color:var(--brand)}
+.vd{color:var(--mute);font-size:.9rem;margin:0}
+@media (max-width:440px){.seg button{font-size:.8rem;padding:8px 3px}}
 </style>
 </head>
 <body>
@@ -378,6 +405,7 @@ button.btn{border:0;cursor:pointer;font-family:inherit}
 </header>
 
 <section class="hero">
+  <div class="herobg" dir="ltr" aria-hidden="true"><div class="hr hr1" id="hr1"></div><div class="hr hr2" id="hr2"></div></div>
   <h1>منتجات سورية وأخرى مختارة، توصلك لباب البيت</h1>
   <div class="typer" aria-hidden="true"><span id="typed"></span><i class="caret"></i></div>
   <p>اطلب بدقيقتين، وادفع عند الاستلام أو عبر المحافظ الإلكترونية. نوصل للدرباسية وقامشلو وعامودا وديرك وغيرها.</p>
@@ -389,6 +417,7 @@ button.btn{border:0;cursor:pointer;font-family:inherit}
   <div class="seg" role="tablist">
     <button role="tab" id="tabShop" aria-selected="true">المنتجات</button>
     <button role="tab" id="tabPros" aria-selected="false">المعلمين والخدمات</button>
+    <button role="tab" id="tabVeh" aria-selected="false">🚗 المركبات</button>
     <button role="tab" id="tabOrd" aria-selected="false">طلباتي</button>
   </div>
   <div id="shop">
@@ -415,6 +444,11 @@ button.btn{border:0;cursor:pointer;font-family:inherit}
     <div class="tgrid" id="tgrid"></div>
     <div class="pro" id="ownNote" hidden></div>
     <div id="plist"></div>
+  </div>
+  <div id="veh" hidden>
+    <div class="vf" id="vtypes" role="group" aria-label="النوع"></div>
+    <div class="vf" id="vconds" role="group" aria-label="الحالة"></div>
+    <div class="vgrid" id="vlist"></div>
   </div>
   <div id="orders" hidden>
     <div class="pro" id="notifBox" hidden><div class="pi"><h3>إشعارات الطلب</h3><small>بنبلّغك لما تتغيّر حالة طلبك. بتوصلك الإشعارات والمتجر مفتوح أو مثبّت كتطبيق.</small></div><div class="acts"><button class="btn call" id="notifBtn">فعّل الإشعارات</button></div></div>
@@ -602,6 +636,8 @@ const TRADES=[
  {id:"paint",n:"معلم دهان",e:"🎨"},
  {id:"plaster",n:"معلم زريقة",e:"🪣"},
  {id:"smith",n:"معلم حداد",e:"⚒️"},
+ {id:"cars",n:"تاجر سيارات",e:"🚗"},
+ {id:"bikes",n:"تاجر دراجات نارية",e:"🏍️"},
  {id:"shops",n:"محلات تجارية",e:"🏪"}
 ];
 let PROS=[],PROS_READY=!SHEET_URL||!SHEET_PRODUCTS,curU=null;
@@ -708,10 +744,10 @@ function pros(){
   const cur=TRADES.find(x=>x.id===sel),l=PROS.filter(x=>x.t===sel);
   $("#plist").innerHTML=!cur?`<p class="empty">اختر مهنة لعرض الأرقام</p>`:l.length?l.map(x=>`<article class="pro">${avatar(x)}<div class="pi"><h3><a class="plink" href="#u=${encodeURIComponent(x.n)}">${esc(x.n)}</a></h3><small>${esc(x.c||"")}${x.d?" · "+esc(x.d):""}</small></div><div class="acts"><a class="btn call" href="tel:+${intl(x.ph)}">اتصال</a><a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/${intl(x.wa||x.ph)}">واتساب</a>${mapURL(x.m)?`<a class="btn map" target="_blank" rel="noopener" href="${esc(mapURL(x.m))}">${t('الخريطة')}</a>`:''}<button class="btn prod" data-shop="${esc(x.n)}">${t('الملف الشخصي')}</button></div></article>`).join(""):`<p class="empty">ما في معلمين مسجلين بهالمهنة حالياً.</p><button class="ghost" data-join>إذا بتشتغل بهالمهنة، سجّل رقمك</button>`;
 }
-function setView(v){view=v;$("#shop").hidden=v!=='shop';$("#pros").hidden=v!=='pros';$("#orders").hidden=v!=='orders';
+function setView(v){view=v;$("#shop").hidden=v!=='shop';$("#pros").hidden=v!=='pros';$("#orders").hidden=v!=='orders';$("#veh").hidden=v!=='veh';$("#tabVeh").setAttribute('aria-selected',v==='veh');
   $("#tabShop").setAttribute('aria-selected',v==='shop');$("#tabPros").setAttribute('aria-selected',v==='pros');$("#tabOrd").setAttribute('aria-selected',v==='orders');
-  if(v==='shop')reveal();if(v==='orders'){orders.forEach(o=>{o.un=0});saveOrders();badge();renderOrders();pollOrders();updNotifBox()}else if(v==='pros')updOwnNote()}
-$("#tabShop").onclick=()=>setView('shop');$("#tabPros").onclick=()=>setView('pros');$("#tabOrd").onclick=()=>setView('orders');
+  if(v==='shop')reveal();if(v==='orders'){orders.forEach(o=>{o.un=0});saveOrders();badge();renderOrders();pollOrders();updNotifBox()}else if(v==='pros')updOwnNote();else if(v==='veh')vehicles()}
+$("#tabShop").onclick=()=>setView('shop');$("#tabPros").onclick=()=>setView('pros');$("#tabOrd").onclick=()=>setView('orders');$("#tabVeh").onclick=()=>setView('veh');$("#tabVeh").hidden=!SHEET_URL;
 $("#tgrid").onclick=e=>{const b=e.target.closest("[data-t]");if(b){sel=sel===b.dataset.t?null:b.dataset.t;pros();tr($("#pros"))}};
 $("#plist").onclick=e=>{if(e.target.closest("[data-join]"))openDlg('join',sel);const b=e.target.closest("[data-shop]");if(b)openShop(b.dataset.shop)};
 const dlg=$("#dlg");
@@ -937,7 +973,7 @@ document.addEventListener("pointerdown",e=>{
   const show=n=>{i=(n+L.length)%L.length;sc=1;tx=ty=0;im.style.opacity=0;im.src=L[i];cn.textContent=(i+1)+" / "+L.length;d.classList.toggle("one",L.length<2);ap()};
   const zoom=f=>{sc=Math.max(1,Math.min(5,sc*f));cl();ap()};
   const dist=()=>{const a=[...P.values()];return Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)};
-  document.addEventListener("click",e=>{const s=e.target.closest("#pdB .sl");if(!s)return;const a=[...s.querySelectorAll("img")];if(!a.length)return;
+  document.addEventListener("click",e=>{const s=e.target.closest("#pdB .sl,#vlist .sl");if(!s)return;const a=[...s.querySelectorAll("img")];if(!a.length)return;
     L=a.map(x=>x.getAttribute("src"));show(Math.max(0,a.findIndex(x=>x.classList.contains("on"))));if(!d.open)d.showModal()});
   $("#lbc").onclick=()=>d.close();$("#lbP").onclick=()=>show(i-1);$("#lbN").onclick=()=>show(i+1);
   $("#lbz").onclick=()=>zoom(1.5);$("#lbm").onclick=()=>zoom(1/1.5);$("#lbr").onclick=()=>{sc=1;cl();ap()};
@@ -967,7 +1003,7 @@ sdlg.addEventListener("click",e=>{if(e.target===sdlg){sdlg.close();return}const 
 /* الدليل (معلمين ومحلات) من تبويب "الدليل" بجدول Google */
 (function(){
   if(!SHEET_URL||!SHEET_PRODUCTS)return;
-  const K='sheetPros',T={'صحية':'plumb','كهرباء':'elec','بناء':'build','دهان':'paint','زريقة':'plaster','حداد':'smith','محلات':'shops'};
+  const K='sheetPros',T={'صحية':'plumb','كهرباء':'elec','بناء':'build','دهان':'paint','زريقة':'plaster','حداد':'smith','سيارات':'cars','دراجات':'bikes','محلات':'shops'};
   const tid=v=>{v=String(v||'').trim();if(TRADES.some(x=>x.id===v))return v;for(const k in T)if(v.includes(k))return T[k];return null};
   const num=v=>String(v||'').replace(/[^\d+]/g,'').slice(0,16);
   const mk=r=>{const t=tid(r.type);if(!t||!r.name||!num(r.phone))return null;return{t:t,n:String(r.name).trim().slice(0,60),c:String(r.city||'').slice(0,40),ph:num(r.phone),wa:num(r.wa),m:String(r.map||'').trim().slice(0,300),d:String(r.desc||'').slice(0,160),i:imgURL(r.img),w:(Array.isArray(r.works)?r.works:[]).map(w=>({id:String(w.id||''),u:imgURL(w.u,400),b:imgURL(w.u,1000),c:String(w.c||'').slice(0,80)})).filter(w=>w.id&&w.u)}};
@@ -980,6 +1016,53 @@ sdlg.addEventListener("click",e=>{if(e.target===sdlg){sdlg.close();return}const 
 })();
 addKU({'الخريطة':'Nexşe','منتجاته':'Hilberên wî','الشراء من منتجات المحل يتم عن طريقنا فقط: أضف للسلة وأرسل الطلب.':'Kirîna hilberên vê dikanê tenê bi riya me ye: têxe selikê û fermanê bişîne.','رابط موقع المحل على خرائط جوجل (اختياري)':'Lînka cihê dikanê li Google Maps (bijare)'});
 addKU({'جميع الحقوق محفوظة':'Hemû maf parastî ne'});
+
+/* ===== خلفية الواجهة المتحركة (رسومات أصلية: حقائب، سيارات، عقارات، دراجات) ===== */
+(function(){
+  const A={
+    bagW:'<path d="M22 34h76l8 38H14z" fill="currentColor" fill-opacity=".12"/><path d="M42 34c0-16 8-24 18-24s18 8 18 24"/><circle cx="60" cy="50" r="4" fill="currentColor"/>',
+    bagM:'<rect x="14" y="26" width="92" height="46" rx="8" fill="currentColor" fill-opacity=".12"/><path d="M44 26v-8a6 6 0 0 1 6-6h20a6 6 0 0 1 6 6v8"/><path d="M14 46h92"/><rect x="54" y="42" width="12" height="10" rx="2" fill="currentColor"/>',
+    car:'<path d="M8 58V46q0-5 5-6l17-4 14-16h38l14 16 12 4q4 1 4 6v12z" fill="currentColor" fill-opacity=".12"/><path d="M46 36l8-12h12v12zM70 24h10l10 12H70z"/><circle cx="32" cy="60" r="9" fill="#0000" /><circle cx="90" cy="60" r="9"/>',
+    house:'<path d="M12 40L60 8l48 32"/><path d="M22 34v38h76V34" fill="currentColor" fill-opacity=".12"/><rect x="50" y="48" width="20" height="24" rx="2"/><rect x="28" y="44" width="14" height="12" rx="1.5"/><rect x="78" y="44" width="14" height="12" rx="1.5"/>',
+    tower:'<rect x="32" y="8" width="56" height="64" rx="3" fill="currentColor" fill-opacity=".12"/><path d="M44 20h8M68 20h8M44 34h8M68 34h8M44 48h8M68 48h8"/><rect x="54" y="58" width="12" height="14" rx="1.5"/>',
+    bike:'<circle cx="26" cy="56" r="14"/><circle cx="96" cy="56" r="14"/><path d="M26 56l20-16h24l26 16M46 40l-4-8h18M62 32q12-4 18 6M84 36l8-10h10M96 56l-8-22"/>'
+  };
+  const mk=k=>`<svg viewBox="0 0 120 80" aria-hidden="true">${A[k]}</svg>`;
+  const row=(ks)=>{const one=ks.map(mk).join('');return one+one};
+  const a=$("#hr1"),b=$("#hr2");
+  if(a)a.innerHTML=row(['bagW','car','house','bagM','bike','tower']);
+  if(b)b.innerHTML=row(['bike','tower','bagM','car','bagW','house']);
+})();
+/* ===== المركبات: سيارات ودراجات نارية (جديدة ومستعملة) من تبويب "المركبات" بالجدول ===== */
+let VEH=[],VEH_READY=!SHEET_URL,vt='all',vc='all';
+const VBG=['#dfeee0','#dbe6f3','#f3e5d4','#e3e0f2','#e0eef2','#f6ecc9'];
+addKU({'المركبات':'Wesayît','🚗 المركبات':'🚗 Wesayît','🚗 سيارات':'🚗 Erebe','🏍️ دراجات نارية':'🏍️ Motorsîklêt','جديدة':'Nû','مستعملة':'Bikarhatî','كم':'km','السعر عند التواصل':'Biha bi têkiliyê','ما في إعلانات حالياً.':'Niha reklam tune ne.','سيارة':'Erebe','دراجة نارية':'Motorsîklêt','مرحباً، مهتم بـ':'Silav, bala min li','اتصال':'Bang bike','واتساب':'WhatsApp'});
+function vehicles(){
+  const T=[['all','الكل'],['car','🚗 سيارات'],['bike','🏍️ دراجات نارية']],C=[['all','الكل'],['new','جديدة'],['used','مستعملة']];
+  $("#vtypes").innerHTML=T.map(([k,l])=>`<button class="chip" aria-pressed="${vt===k}" data-vt="${k}">${l}</button>`).join('');
+  $("#vconds").innerHTML=C.map(([k,l])=>`<button class="chip" aria-pressed="${vc===k}" data-vc="${k}">${l}</button>`).join('');
+  const l=VEH.filter(v=>(vt==='all'||v.k===vt)&&(vc==='all'||v.s===vc));
+  $("#vlist").innerHTML=l.length?l.map((v,i)=>{
+    const dl=v.dl?PROS.find(x=>x.n===v.dl):null,ph=v.ph||(dl&&dl.ph)||'',wa=v.wa||(dl&&(dl.wa||dl.ph))||ph;
+    const th=thumbHTML({imgs:v.im.length?v.im:null,e:v.k==='bike'?'🏍️':'🚗',bg:VBG[i%VBG.length],n:esc(v.n)});
+    const msg=encodeURIComponent(L2('مرحباً، مهتم بـ '+v.n+' المعروض بمتجر '+STORE,'Silav, bala min li '+v.n+' e ku li '+STORE+' hatiye nîşandan'));
+    return `<article class="vcard">${th}<div class="vb"><h3>${esc(v.n)}</h3><div class="vtags"><span class="vtag ${v.s==='new'?'new':''}">${v.s==='new'?'جديدة':'مستعملة'}</span><span class="vtag">${v.k==='bike'?'دراجة نارية':'سيارة'}</span>${v.y?`<span class="vtag">${esc(v.y)}</span>`:''}${v.km?`<span class="vtag">${Number(v.km).toLocaleString('en-US')} كم</span>`:''}${v.c?`<span class="vtag">📍 ${esc(v.c)}</span>`:''}</div>
+    <div class="vp">${v.p>0?money(v.p):'السعر عند التواصل'}</div>${v.d?`<p class="vd">${esc(v.d)}</p>`:''}${dl?`<small>${v.k==='bike'?'🏍️':'🚗'} <a class="plink" href="#u=${encodeURIComponent(dl.n)}">${esc(dl.n)}</a></small>`:v.dl?`<small>${esc(v.dl)}</small>`:''}
+    <div class="acts">${ph?`<a class="btn call" href="tel:+${intl(ph)}">اتصال</a>`:''}<a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/${intl(wa||WHATSAPP)}?text=${msg}">واتساب</a></div></div></article>`}).join(''):`<p class="empty">${VEH_READY?'ما في إعلانات حالياً.':'جاري التحميل…'}</p>`;
+  tr($("#veh"))}
+const L2=(a,k)=>lang==='ku'?k:a;
+$("#vtypes").onclick=e=>{const b=e.target.closest("[data-vt]");if(b){vt=b.dataset.vt;vehicles()}};
+$("#vconds").onclick=e=>{const b=e.target.closest("[data-vc]");if(b){vc=b.dataset.vc;vehicles()}};
+(function(){
+  if(!SHEET_URL)return;
+  const K='sheetVeh',mk=r=>{const n=String(r.name||'').trim().slice(0,80);if(!n)return null;
+    const im=String(r.images||'').split(/[\s,]+/).filter(u=>/^(https:\/\/|images\/)/i.test(u)).slice(0,6);
+    return{n:n,k:/دراج|bike|moto/i.test(String(r.type))?'bike':'car',s:/جديد|new/i.test(String(r.cond))?'new':'used',y:String(r.year||'').replace(/[^\d]/g,'').slice(0,4),p:Number(r.price)||0,km:Number(String(r.km||'').replace(/[^\d]/g,''))||0,c:String(r.city||'').slice(0,40),ph:String(r.phone||'').replace(/[^\d+]/g,'').slice(0,16),wa:String(r.wa||'').replace(/[^\d+]/g,'').slice(0,16),d:String(r.desc||'').slice(0,200),dl:String(r.dealer||'').trim().slice(0,60),im:im}};
+  try{const c=JSON.parse(localStorage.getItem(K)||'null');if(Array.isArray(c))VEH=c}catch(e){}
+  fetch(SHEET_URL+(SHEET_URL.includes('?')?'&':'?')+'vehicles=1').then(r=>r.json()).then(d=>{
+    if(!d||!Array.isArray(d.vehicles))return;
+    VEH=d.vehicles.map(mk).filter(Boolean).reverse();try{localStorage.setItem(K,JSON.stringify(VEH))}catch(e){}}).catch(()=>{}).then(()=>{VEH_READY=true;if(view==='veh')vehicles()})
+})();
 /* ===== المنتجات من جدول Google ===== */
 (function(){
   if(!SHEET_URL||!SHEET_PRODUCTS)return;

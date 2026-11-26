@@ -442,6 +442,41 @@ button.btn{border:0;cursor:pointer;font-family:inherit}
   .badge{top:10px;inset-inline-start:10px;font-size:.7rem;padding:2px 8px}
   .thumb{border-radius:14px}
 }
+
+/* ===== عداد الصور + تأثير المنتجات المخفّضة + التقييمات + المشابهة ===== */
+.imgc{position:absolute;z-index:3;bottom:8px;inset-inline-end:8px;display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:999px;font:700 .72rem Cairo,Tajawal,sans-serif;color:#fff;background:rgba(0,0,0,.48);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);pointer-events:none}
+.card.off{border-color:rgba(240,138,60,.55);animation:offglow 3.2s ease-in-out infinite}
+.card.off .thumb::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.6) 50%,transparent 65%);transform:translateX(-130%);animation:offshine 4.6s ease-in-out infinite}
+.card.off .badge{animation:offpulse 1.8s ease-in-out infinite}
+.card.off .price{color:#d4691b}
+:root[data-theme="dark"] .card.off .price{color:#f4a261}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .card.off .price{color:#f4a261}}
+@keyframes offglow{0%,100%{box-shadow:var(--glass-shadow),0 0 0 1px rgba(240,138,60,.35),0 8px 26px rgba(240,138,60,.2)}50%{box-shadow:var(--glass-shadow),0 0 0 2px rgba(240,138,60,.55),0 12px 38px rgba(240,138,60,.42)}}
+@keyframes offshine{0%,50%{transform:translateX(-130%)}100%{transform:translateX(130%)}}
+@keyframes offpulse{50%{transform:scale(1.08)}}
+.lite .card.off{animation:none}.lite .card.off .thumb::after{display:none}.lite .card.off .badge{animation:none}
+.stars{color:#f5b301;letter-spacing:1px;font-size:.88rem;white-space:nowrap}
+.rt-m{display:flex;align-items:center;gap:6px;margin:2px 0}
+.rt-n{color:var(--mute);font-size:.78rem}
+.rt-sum{display:flex;align-items:center;gap:8px;margin:4px 0 6px}
+.rt-big{font:800 1.6rem Cairo,Tajawal,sans-serif}
+.rv{margin-top:8px;padding:9px 12px;border-radius:14px;background:var(--glass);border:1px solid var(--glass-line)}
+.rv p{margin:4px 0 0;font-size:.9rem}
+.rv-h{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.rv-h small{color:var(--mute)}
+.rt-form{margin-top:8px}#rtOpen{margin-top:12px}
+.rs{display:flex;gap:2px;direction:ltr;justify-content:center;margin:6px 0}
+.rs button{background:none;border:0;font-size:2rem;line-height:1;color:#c9c9c9;cursor:pointer;padding:2px 4px;transition:transform .15s}
+.rs button.on{color:#f5b301}.rs button:active{transform:scale(1.2)}
+.pd-shop{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pd-shop .vs{padding:6px 14px;font-size:.85rem}
+.sim{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}
+.sm{display:flex;flex-direction:column;gap:3px;padding:6px;border-radius:16px;background:var(--glass);border:1px solid var(--glass-line);color:inherit;text-decoration:none;text-align:center;transition:transform .2s}
+.sm:hover{transform:translateY(-2px)}
+.sm .si{aspect-ratio:1;border-radius:12px;overflow:hidden;display:grid;place-items:center;font-size:2.2rem;background:var(--field)}
+.sm .si img{width:100%;height:100%;object-fit:cover;display:block}
+.sm b{font-size:.78rem;line-height:1.3;max-height:2.6em;overflow:hidden}
+.sm .sp{font-size:.8rem;font-weight:800}
 </style>
 </head>
 <body>
@@ -870,8 +905,12 @@ function filtered(){
   let l=PRODUCTS.filter(p=>(cat==='الكل'||p.c===cat)&&(!offersOnly||isOffer(p))&&(!nq||norm(p.n+' '+p.d+' '+p.c).includes(nq))&&(pmin==null||p.p>=toUSD(pmin)-1e-9)&&(pmax==null||p.p<=toUSD(pmax)+1e-9));
   if(sort==='asc')l=[...l].sort((a,b)=>a.p-b.p);else if(sort==='desc')l=[...l].sort((a,b)=>b.p-a.p);
   return l}
+let RT={};try{RT=JSON.parse(localStorage.getItem('ratings')||'{}')||{}}catch(e){RT={}}
+let RS=0;
+const stars=a=>{const k=Math.max(0,Math.min(5,Math.round(a)));return '★'.repeat(k)+'☆'.repeat(5-k)};
+function rtMini(p){const r=RT[p.id];return r&&r.n?`<div class="rt-m" aria-label="${r.a}/5"><span class="stars">${stars(r.a)}</span> <span class="rt-n">${Number(r.a).toFixed(1)} (${r.n})</span></div>`:''}
 function cardHTML(p){const d=discOf(p);
-  return `<article class="card" data-id="${p.id}">${d?`<span class="badge">${t('خصم')} ${d}%</span>`:''}${thumbHTML(p)}<div class="b"><h3><a class="plink" href="#p=${p.id}">${p.n}</a></h3><small>${p.d}</small>${shopChip(p.shop)}<div class="price">${money(p.p)}${d?` <s class="old">${money(p.old)}</s>`:''}</div><button class="add" data-add="${p.id}">أضف للسلة</button></div></article>`}
+  return `<article class="card${d?' off':''}" data-id="${p.id}">${d?`<span class="badge">${t('خصم')} ${d}%</span>`:''}${thumbHTML(p)}<div class="b"><h3><a class="plink" href="#p=${p.id}">${p.n}</a></h3><small>${p.d}</small>${rtMini(p)}${shopChip(p.shop)}<div class="price">${money(p.p)}${d?` <s class="old">${money(p.old)}</s>`:''}</div><button class="add" data-add="${p.id}">أضف للسلة</button></div></article>`}
 const refreshGrid=()=>{grid();tr($("#shop"))};
 addKU({'خصم':'Daxistin'});
 $("#q").addEventListener("input",e=>{q=e.target.value.trim();refreshGrid()});
@@ -897,11 +936,25 @@ function toast(m){tt.textContent=m;tt.classList.add("on");try{if(!tt.matches(":p
 /* ===== صفحة المنتج + رابط مشاركة (#p=رقم) ===== */
 const pdlg=$("#pdlg");
 const priceHTML=p=>money(p.p)+(isOffer(p)?` <s class="old">${money(p.old)}</s> <span class="badge2">${t('خصم')} ${discOf(p)}%</span>`:'');
-function fillProduct(){const p=curP;if(!p)return;
+function rtBlock(p){
+  const r=RT[p.id]||{a:0,n:0,r:[]};let done=false;try{done=!!localStorage.getItem('rated_'+p.id)}catch(e){}
+  const list=(r.r||[]).map(x=>`<div class="rv"><div class="rv-h"><span class="stars">${stars(x.s)}</span> <b>${esc(x.n||t('زبون'))}</b> <small>${esc(x.d||'')}</small></div>${x.c?`<p>${esc(x.c)}</p>`:''}</div>`).join('');
+  return `<h3 class="sec">${t('تقييمات العملاء')}</h3>${r.n?`<div class="rt-sum"><span class="rt-big">${Number(r.a).toFixed(1)}</span><span class="stars">${stars(r.a)}</span><span class="rt-n">(${r.n})</span></div>${list}`:`<p class="empty">${t('ما في تقييمات لسا. كن أول من يقيّم!')}</p>`}${done?`<p class="note">${t('شكراً لتقييمك ✓')}</p>`:`<button class="ghost" id="rtOpen">${t('⭐ قيّم المنتج')}</button><div class="rt-form" id="rtForm" hidden><div class="rs" role="radiogroup" aria-label="${t('تقييمك')}">${[1,2,3,4,5].map(i=>`<button type="button" data-rs="${i}" aria-label="${i}">★</button>`).join('')}</div><input id="rtN" maxlength="30" placeholder="${t('اسمك (اختياري)')}"><textarea id="rtC" rows="2" maxlength="200" placeholder="${t('رأيك بالمنتج (اختياري)')}"></textarea><div class="err" id="rtE" role="alert"></div><button class="send" id="rtSend">${t('أرسل التقييم')}</button></div>`}`}
+function similar(p){const sc=x=>(x.c===p.c?4:0)+(p.shop&&x.shop===p.shop?3:0)+(1-Math.min(1,Math.abs(x.p-p.p)/Math.max(x.p,p.p,1)))*2;
+  return PRODUCTS.filter(x=>String(x.id)!==String(p.id)).map(x=>[sc(x),x]).sort((a,b)=>b[0]-a[0]).slice(0,3).map(a=>a[1])}
+function simHTML(p){const l=similar(p);return l.length?`<h3 class="sec">${t('منتجات مشابهة')}</h3><div class="sim">${l.map(x=>`<a class="sm" href="#p=${x.id}"><span class="si">${x.imgs&&x.imgs[0]?`<img src="${esc(x.imgs[0])}" alt="" loading="lazy" decoding="async">`:x.e}</span><b>${x.n}</b><span class="sp">${money(x.p)}</span></a>`).join('')}</div>`:''}
+function fillProduct(){const p=curP;if(!p)return;RS=0;
   $("#pdT").textContent=p.n;
-  const rel=PRODUCTS.filter(x=>x.c===p.c&&x.id!==p.id).slice(0,4);
-  $("#pdB").innerHTML=`${thumbHTML(p,true)}<p class="pd-c"><span class="chip" style="cursor:default">${p.c}</span></p><p class="pd-d">${p.d}</p>${p.shop?`<div class="pd-shop">${shopChip(p.shop)}</div>`:''}<div class="price pd-p">${priceHTML(p)}</div><div class="pd-a"><button class="send" data-add="${p.id}">أضف للسلة</button><button class="ghost" id="pdShare">شارك</button></div>${rel.length?`<h3 class="sec">منتجات مشابهة</h3><div class="rel">${rel.map(x=>`<a class="chip" href="#p=${x.id}">${x.e} ${x.n}</a>`).join('')}</div>`:''}`;
+  $("#pdB").innerHTML=`${thumbHTML(p,true)}<p class="pd-c"><span class="chip" style="cursor:default">${p.c}</span></p>${rtMini(p)}<p class="pd-d">${p.d}</p>${p.shop?`<div class="pd-shop">${shopChip(p.shop)}<button class="ghost vs" data-shopc="${esc(p.shop)}">🏪 ${t('زيارة المحل')}</button></div>`:''}<div class="price pd-p">${priceHTML(p)}</div><div class="pd-a"><button class="send" data-add="${p.id}">أضف للسلة</button><button class="ghost" id="pdShare">شارك</button></div>${rtBlock(p)}${simHTML(p)}`;
   tr(pdlg)}
+async function sendRating(){const p=curP,er=$("#rtE");if(!p)return;if(!RS){er.textContent=t('اختر عدد النجوم.');return}
+  const b=$("#rtSend"),old=b.textContent;b.disabled=true;b.textContent=t('جاري الإرسال…');er.textContent='';
+  let dev='';try{dev=localStorage.getItem('dev')||('d'+Math.random().toString(36).slice(2,10));localStorage.setItem('dev',dev)}catch(e){}
+  try{const r=await postJSON({action:'rate',pid:p.id,pname:String(p.n).replace(/<[^>]*>/g,'').slice(0,80),stars:RS,name:$("#rtN").value.trim(),comment:$("#rtC").value.trim(),dev:dev});
+    if(r&&r.ok){try{localStorage.setItem('rated_'+p.id,'1')}catch(e){}toast(t('شكراً! تقييمك بيظهر بعد المراجعة ✓'));fillProduct()}
+    else er.textContent=errMsg(r&&r.error,r&&r.msg)}
+  catch(e){er.textContent=t('ما قدرنا نتأكد إنو الطلب وصل. تأكد من الإنترنت أو ابعت طلبك عبر واتساب.')}
+  finally{b.disabled=false;b.textContent=old}}
 function openFromHash(){const um=/^#u=(.+)$/.exec(location.hash);if(um){let n="";try{n=decodeURIComponent(um[1])}catch(e){}if(n){if(pdlg.open)pdlg.close();showProfile(n);return}}
   if(!/^#p=/.test(location.hash))hideProfile();
   const m=/^#p=(\d+)$/.exec(location.hash);
@@ -915,6 +968,9 @@ pdlg.addEventListener("click",e=>{
   if(e.target===pdlg){pdlg.close();return}
   const sc=e.target.closest("[data-shopc]");if(sc){openShop(sc.dataset.shopc);return}
   const b=e.target.closest("[data-add]");if(b){cart[b.dataset.add]=(cart[b.dataset.add]||0)+1;render(true);toast(L('أضفناه للسلة ✓','Hate zêdekirin ✓'));return}
+  if(e.target.closest("#rtOpen")){const f=$("#rtForm");if(f)f.hidden=!f.hidden;return}
+  const rs=e.target.closest("[data-rs]");if(rs){RS=+rs.dataset.rs;pdlg.querySelectorAll("[data-rs]").forEach(x=>x.classList.toggle("on",+x.dataset.rs<=RS));return}
+  if(e.target.closest("#rtSend")){sendRating();return}
   if(e.target.closest("#pdShare"))shareP(curP)});
 async function shareP(p){
   const url=location.href.split("#")[0]+"#p="+p.id;
@@ -1013,7 +1069,7 @@ function thumbHTML(p,big){
   const im=Array.isArray(p.imgs)&&p.imgs.length?p.imgs:null,cls="thumb"+(big?" pd-th":"");
   const emo=`<span class="emo" aria-hidden="true">${p.e}</span>`;
   if(!im)return `<div class="${cls}" style="background:${p.bg}" aria-hidden="true">${emo}</div>`;
-  return `<div class="${cls} sl" style="background:${p.bg}" data-sl>${emo}${im.map((u,i)=>`<i class="bk${i?'':' on'}" style="background-image:url('${esc(u)}')"></i>`).join("")}${im.map((u,i)=>`<img src="${esc(u)}" alt="${esc(p.n)}" loading="lazy" decoding="async" class="${i?"":"on"}">`).join("")}${im.length>1?`<span class="dots" aria-hidden="true">${im.map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</span>`:""}</div>`}
+  return `<div class="${cls} sl" style="background:${p.bg}" data-sl>${emo}${im.map((u,i)=>`<i class="bk${i?'':' on'}" style="background-image:url('${esc(u)}')"></i>`).join("")}${im.map((u,i)=>`<img src="${esc(u)}" alt="${esc(p.n)}" loading="lazy" decoding="async" class="${i?"":"on"}">`).join("")}${im.length>1?`<span class="dots" aria-hidden="true">${im.map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</span><span class="imgc" aria-hidden="true">📷 ${im.length}</span>`:""}</div>`}
 function slGo(sl,d){const im=sl.querySelectorAll("img"),ds=sl.querySelectorAll(".dots i");if(im.length<2)return;let i=0;im.forEach((x,k)=>{if(x.classList.contains("on"))i=k});
   im[i].classList.remove("on");if(ds[i])ds[i].classList.remove("on");i=(i+d+im.length)%im.length;im[i].classList.add("on");if(ds[i])ds[i].classList.add("on");sl.querySelectorAll(".bk").forEach((x,k)=>x.classList.toggle("on",k===i))}
 const inView=el=>{const r=el.getBoundingClientRect();return r.width>0&&r.bottom>0&&r.top<innerHeight&&r.right>0&&r.left<innerWidth};
@@ -1139,6 +1195,7 @@ $("#ddsend").onclick=async()=>{
   finally{b.disabled=false;b.textContent=old}};
 addKU({'الخدمات وأصحاب المهن':'Xizmet û xwediyên pîşeyan','صحية وكهرباء':'Tesîsat û elektrîk','جبسين بورد ودهان':'Gypsum board û boyax','بناء':'Avahîsazî','زريقة وتنعيم':'Zirîqe û nermkirin','سيراميك':'Seramîk','سوبر ماركت':'Supermarket','ميني ماركت':'Mini market','محلات البسة':'Dikanên cil û berg','تاجر سيارات':'Bazirganê erebeyan','تاجر دراجات نارية':'Bazirganê motorsîkletan','➕ أضف منتج':'➕ Hilberekê zêde bike','➕ أضف صور من أعمالك':'➕ Wêneyên karên xwe zêde bike','اطلب من المتجر':'Ji firoşgehê bixwaze','الطلب بيتم من المتجر فقط: اضغط اطلب من المتجر على المنتج.':'Ferman tenê ji firoşgehê ye: li ser hilberê "Ji firoşgehê bixwaze" bitikîne.','أضف أول منتج لمحلك.':'Hilbera xwe ya yekem zêde bike.','تحذف هالمنتج؟':'Tu vê hilberê jê dibî?','انحذف المنتج ✓':'Hilber hat jêbirin ✓','أضف منتج لمحلك':'Hilberekê li dikana xwe zêde bike','المنتج بيظهر بعد ما نراجعو. الزبون بيطلبو من المتجر عندنا، مو من صفحة المحل.':'Hilber piştî nirxandina me xuya dibe. Xerîdar ji firoşgeha me dixwaze, ne ji rûpela dikanê.','اسم المنتج':'Navê hilberê','السعر بالدولار':'Biha bi dolarê','السعر قبل الخصم (اختياري)':'Biha berî daxistinê (bijare)','وصف قصير (اختياري)':'Danasîna kurt (bijare)','صور واضحة للمنتج.':'Wêneyên zelal ên hilberê.','أرسل المنتج للمراجعة':'Hilberê ji bo nirxandinê bişîne','اكتب اسم المنتج.':'Navê hilberê binivîse.','اكتب سعر صحيح بالدولار.':'Bihayek rast bi dolarê binivîse.','اختر صورة وحدة على الأقل.':'Herî kêm wêneyek hilbijêre.','وصل منتجك للمراجعة، بيظهر بعد موافقتنا ✓':'Hilbera te gihîşt nirxandinê, piştî erêkirina me xuya dibe ✓','وصلت للحد الأقصى من المنتجات. احذف منتج قديم.':'Gihîşt sînorê herî zêde yê hilberan. Hilberek kevn jê bibe.','🗑️ حذف ملفي':'🗑️ Profîla min jê bibe','طلب حذف ملفي':'Daxwaza jêbirina profîla min','رح نراجع طلبك ونحذف الملف بعد ما نتأكد.':'Em ê daxwaza te binirxînin û piştî piştrastkirinê profîlê jê bibin.','سبب الحذف':'Sedema jêbirinê','أرسل طلب الحذف':'Daxwaza jêbirinê bişîne','اكتب سبب الحذف (5 أحرف على الأقل).':'Sedema jêbirinê binivîse (herî kêm 5 tîp).','وصلنا طلب الحذف، بنراجعو ونحذف ملفك ✓':'Daxwaza jêbirinê gihîşt me, em ê binirxînin û profîla te jê bibin ✓','عندك طلب حذف قيد المراجعة.':'Daxwazeke jêbirinê ya te di nirxandinê de ye.','هالميزة لأصحاب المحال بس.':'Ev taybetî tenê ji bo xwediyên dikanan e.','اطلب خدمة':'Xizmetekê bixwaze'});
 addKU({'جميع الحقوق محفوظة':'Hemû maf parastî ne'});
+addKU({'تقييمات العملاء':'Nirxandinên xerîdaran','ما في تقييمات لسا. كن أول من يقيّم!':'Hêj nirxandin tune. Yekem tu binirxîne!','⭐ قيّم المنتج':'⭐ Hilberê binirxîne','تقييمك':'Nirxandina te','اسمك (اختياري)':'Navê te (bijare)','رأيك بالمنتج (اختياري)':'Ramana te li ser hilberê (bijare)','أرسل التقييم':'Nirxandinê bişîne','اختر عدد النجوم.':'Hejmara steyrkan hilbijêre.','شكراً لتقييمك ✓':'Spas ji bo nirxandina te ✓','شكراً! تقييمك بيظهر بعد المراجعة ✓':'Spas! Nirxandina te piştî kontrolê xuya dibe ✓','زبون':'Xerîdar','زيارة المحل':'Serdana dikanê','منتجات مشابهة':'Hilberên mîna wê'});
 addKU({'أضف صور من أعمالك':'Wêneyên karên xwe zêde bike','اختر حتى 3 صور':'Heta 3 wêneyan hilbijêre','صور واضحة من شغلك أو من منتجات محلك (3 صور كحد أقصى كل مرة).':'Wêneyên zelal ji karê xwe an ji hilberên dikana xwe (herî zêde 3 wêne her car).','ارفع الصور':'Wêneyan bar bike','جاري الرفع':'Tê barkirin','انضافت الصور ✓':'Wêne hatin zêdekirin ✓','انضافت بعض الصور':'Hin wêne hatin zêdekirin','اخترنا أول 3 صور بس.':'Tenê 3 wêneyên pêşî hatin hilbijartin.'});
 
 /* ===== خلفية الواجهة المتحركة: جيب، عمارة، حقائب، ملابس، عطور (تظهر ضبابية وبعدين بتتوضح) ===== */
@@ -1487,7 +1544,13 @@ function osLogin(ph){const id=/^adm[a-f0-9]{16}$/.test(ph||'')?ph:last9(ph||'');
   const sc=document.createElement('script');sc.src='https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js';sc.defer=true;document.head.appendChild(sc);
 })();
 (function(){const m=/^#admin=(adm[a-f0-9]{16})$/.exec(location.hash);if(m){try{localStorage.setItem('adminAlias',m[1])}catch(e){}history.replaceState(null,'',location.pathname+location.search);setTimeout(()=>{osLogin(m[1]);toast('تم ربط هالجوال بإشعارات الإدارة. اضغط 🔔 وفعّل الإشعارات.')},1500)}})();
-bellBadge();badge();setTimeout(pollOrders,2500);setInterval(pollOrders,120000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)pollOrders()});
+bellBadge();(function(){
+  if(!SHEET_URL||!SHEET_PRODUCTS)return;
+  fetch(SHEET_URL+(SHEET_URL.includes('?')?'&':'?')+'ratings=1').then(r=>r.json()).then(d=>{
+    if(!d||typeof d.ratings!=='object'||!d.ratings)return;RT=d.ratings;try{localStorage.setItem('ratings',JSON.stringify(RT))}catch(e){}
+    refreshGrid();const f=$("#rtForm");if(curP&&pdlg.open&&(!f||f.hidden))fillProduct()}).catch(()=>{});
+})();
+badge();setTimeout(pollOrders,2500);setInterval(pollOrders,120000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)pollOrders()});
 updOwnNote();
 openFromHash();
 </script>

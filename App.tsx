@@ -203,6 +203,9 @@ const CHANGED = [
   { icon: IcBike, t: "قافلة توصيل: دراجة ووراها شاحنة", d: "مندوب على دراجة يعبر الهيدر بعجلات تدور ومساعدات تقفز وخطوط سرعة وغبار — وبعده بـ 5 ثواني تطلع شاحنة توصيل شايلة لوقو المتجر على صندوقها بنفس الحركة، بدورة متكررة ما تخلص." },
   { icon: IcPin, t: "خريطة الحسكة المتحركة", d: "تحت الهيدر مباشرة: خريطة المحافظة ترسم نفسها ومدنها تنبض واحدة ورا التانية بأسهم توصيل متدفقة — والدراجة والشاحنة تتنقلان بين المدن واحدة واحدة (توقف عند كل مدينة)، وأسماء المدن تنقلب تلقائياً كل 3.6 ثانية بين العربية والكورمانجية (Qamişlo، Dêrik، Dirbêsiyê…). وعلى الموبايل الخريطة بتظهر كاملة بلا تمرير." },
   { icon: IcCode, t: "خانات أكمل لنشر المنتجات", d: "صاحب المحل صار ينشر منتجاته مع تصنيفها (اختيار من أقسام المتجر أو كتابة قسم جديد) وحتى 6 صور بدل 3 — بنفس نافذة المراجعة ورمز التعديل، والترجمة Kurdî شاملة." },
+  { icon: IcPhone, t: "شريط سفلي مثل تطبيقات الجوال", d: "لوحة تنقل زجاجية ثابتة تحت الشاشة: الرئيسية، المفضلة (مع عداد)، النشر (نافذة خيارات: منتج، مركبة، صور أعمال، تسجيل محل)، و«ملفي» — بتفتح ملف صاحب المحل مباشرة." },
+  { icon: IcBag, t: "مفضلة للزبون", d: "قلب على كل بطاقة منتج: ضغطة بتحفظ المنتج على الجهاز، ضغطة بتشيلا — مع نبضة حركة وعداد بالشريط السفلي، وتبويب المفضلة يعرض المحفوظات فقط." },
+  { icon: IcCar, t: "إصلاح حركة الخريطة على الموبايل", d: "القافلة (دراجة + شاحنة) صارت بمحرك JS بدل تقنية SMIL اللي ما بتعمل على بعض متصفحات الموبايل — الآن تتحرك وتنعطف وتنقلب صحيحاً على كل الأجهزة، وقلب أسماء المدن صار بحركة مضمونة (WAAPI)." },
   { icon: IcBag, t: "لوقو المتجر بحركات تركيبية", d: "الشعار يطفو ويتوهج بنبض برتقالي، الكيس يتمايل يميناً ويساراً، والشرارة تومض وتدور — وعند المرور فوقه يسرع رقصه." },
   { icon: IcCar, t: "نشر السيارات والدراجات النارية", d: "زر «أضف مركبة للبيع» بقسم المركبات: أصحاب المحلات ينشرون سيارة أو دراجة بكامل التفاصيل (موديل، سنة، حالة، سعر، كيلومتراج، مدينة، وصف) وحتى 10 صور — بنفس آلية المنتجات: مراجعة + تحقق برمز التعديل + ترجمة Kurdî كاملة." },
   { icon: IcPhone, t: "إصلاح الشريط العلوي للجوال", d: "على الشاشات الضيقة (320–430px) اسم «متجري» صار ياخد سطر كامل فوق والأزرار تحتو — لا قصّ ولا تداخل بأي مقاس." },
@@ -360,7 +363,7 @@ export default function App() {
                 سلايدر + قافلة توصيل + خريطة
               </span>
               <span className="floaty-slow absolute -left-3 top-24 hidden rounded-xl border border-mint/40 bg-deep/90 px-3 py-1.5 text-[11.5px] font-bold text-mint shadow-lg backdrop-blur md:block">
-                شعار متحرك · 87 أيقونة SVG
+                شريط سفلي · مفضلة · 87 أيقونة
               </span>
               <span className="floaty absolute -bottom-4 right-10 hidden rounded-xl border border-white/15 bg-deep/90 px-3 py-1.5 text-[11.5px] font-bold text-seafoam shadow-lg backdrop-blur md:block" dir="ltr">
                 Kurdî · عربي
@@ -611,6 +614,19 @@ export default function App() {
               <p>&nbsp;&nbsp;cond: <span className="text-gold">"new"|"used"</span>, km, city, desc, photos: [ …حتى 10 صور… ] {"}"}</p>
               <p className="mt-2 mb-1 text-[10px] uppercase tracking-wider text-sand">أعمدة تبويب «المركبات» (كما يقرأها المتجر)</p>
               <p>name · type · cond · year · price · km · city · phone · wa · desc · dealer · images</p>
+            </div>
+            <div className="mt-4 flex flex-wrap items-center gap-3">
+              <a
+                href="/vehicles.gs"
+                download="vehicles.gs"
+                className="sheen inline-flex items-center gap-2 rounded-xl bg-gradient-to-b from-[#f7d48a] to-gold px-5 py-3 font-display text-[13.5px] font-800 text-deep shadow-lg shadow-gold/25 hover:-translate-y-0.5 transition-all"
+              >
+                <IcDown className="w-4.5 h-4.5" />
+                حمّل الكود جاهز (vehicles.gs)
+              </a>
+              <p className="text-[12px] leading-5 text-sand">
+                فيه كل الدوال + شرح وين تلصق السطر الوحيد بجوا doPost + دوال القبول والرفض من محرر السكربت.
+              </p>
             </div>
             <p className="mt-3 text-[12.5px] leading-6 text-sand">
               ملاحظة: الطلبات والإشعارات ما بتتأثر إطلاقاً — addveh إضافة جديدة بالكامل، وإذا سكربتك بعد ما يعرف الأكشن بيرجع خطأ، الزبون بيشوف رسالة خطأ واضحة وما بيضيع شيء.

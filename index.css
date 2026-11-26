@@ -1,0 +1,241 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Noto Kufi Arabic", "IBM Plex Sans Arabic", sans-serif;
+  --font-body: "IBM Plex Sans Arabic", "Noto Kufi Arabic", sans-serif;
+  --font-latin: "Space Grotesk", "Noto Kufi Arabic", sans-serif;
+
+  --color-deep: #071f1b;
+  --color-pine: #0c2f29;
+  --color-moss: #12453c;
+  --color-mint: #58c2b0;
+  --color-seafoam: #9adfd2;
+  --color-amber: #f08a3c;
+  --color-flame: #d96f24;
+  --color-gold: #f4c46a;
+  --color-paper: #f2ece0;
+  --color-sand: #b9ae97;
+  --color-nightink: #e8f2ee;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--color-deep);
+  color: var(--color-nightink);
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(240, 138, 60, 0.45);
+}
+
+/* ---------- خلفية محيطية ---------- */
+.ambient {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(52vmax 40vmax at 88% -6%, rgba(88, 194, 176, 0.16), transparent 65%),
+    radial-gradient(46vmax 38vmax at 4% 34%, rgba(240, 138, 60, 0.1), transparent 62%),
+    radial-gradient(60vmax 50vmax at 60% 110%, rgba(18, 69, 60, 0.5), transparent 70%),
+    linear-gradient(168deg, #071f1b 0%, #0a2822 48%, #081d19 100%);
+}
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+}
+
+/* ---------- كشف عند التمرير ---------- */
+.rv {
+  opacity: 0;
+  transform: translateY(26px);
+}
+.rv.on {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) var(--d, 0s),
+    transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) var(--d, 0s);
+}
+
+/* ---------- كشف سطر العنوان (line-mask) ---------- */
+.line-mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.12em;
+}
+.line-mask > span {
+  display: block;
+  transform: translateY(110%);
+  animation: lineUp 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation-delay: var(--d, 0s);
+}
+@keyframes lineUp {
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* ---------- لمعان الأزرار ---------- */
+.sheen {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.4) 50%, transparent 62%);
+  transform: translateX(130%);
+  transition: transform 0.7s ease;
+  pointer-events: none;
+}
+.sheen:hover::after {
+  transform: translateX(-130%);
+}
+
+/* ---------- لوقو متحرك (حركات تركيبية) ---------- */
+.app-mark {
+  animation: appMarkFloat 5s ease-in-out infinite;
+}
+.app-mark .bm-bag {
+  transform-box: fill-box;
+  transform-origin: 50% 96%;
+  animation: appBagSway 3.6s ease-in-out infinite;
+}
+.app-mark .bm-spark {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: appSparkTwinkle 2.4s ease-in-out infinite;
+}
+@keyframes appMarkFloat {
+  50% {
+    transform: translateY(-2.5px) rotate(-2deg);
+  }
+}
+@keyframes appBagSway {
+  0%,
+  100% {
+    transform: rotate(-3.2deg);
+  }
+  50% {
+    transform: rotate(3.2deg);
+  }
+}
+@keyframes appSparkTwinkle {
+  0%,
+  100% {
+    transform: scale(0.45) rotate(0deg);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.18) rotate(95deg);
+    opacity: 1;
+  }
+}
+
+/* ---------- عناصر عائمة ---------- */
+@keyframes floaty {
+  50% {
+    transform: translateY(-9px) rotate(-1.5deg);
+  }
+}
+.floaty {
+  animation: floaty 5.5s ease-in-out infinite;
+}
+.floaty-slow {
+  animation: floaty 7.5s ease-in-out infinite;
+  animation-delay: -2.5s;
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(88, 194, 176, 0.55);
+  }
+  60% {
+    box-shadow: 0 0 0 9px rgba(88, 194, 176, 0);
+  }
+}
+.pulse-dot {
+  animation: pulse-dot 2.4s ease-out infinite;
+}
+
+/* ---------- شريط تمرير ---------- */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(88, 194, 176, 0.3);
+  border-radius: 99px;
+  border: 2.5px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(88, 194, 176, 0.55);
+  background-clip: padding-box;
+}
+
+/* ---------- إطار المعاينة ---------- */
+.device-frame {
+  transition: max-width 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.preview-glow {
+  position: absolute;
+  inset: -14%;
+  z-index: -1;
+  background: radial-gradient(50% 55% at 50% 42%, rgba(88, 194, 176, 0.22), transparent 70%);
+  filter: blur(10px);
+}
+
+/* ---------- بطاقة ملف ---------- */
+.file-card {
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.25s, box-shadow 0.25s;
+}
+.file-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(240, 138, 60, 0.5);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+}
+
+/* ---------- كود ---------- */
+.codebox-ui {
+  direction: ltr;
+  text-align: left;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+  line-height: 1.75;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rv {
+    opacity: 1;
+    transform: none;
+  }
+  .line-mask > span {
+    transform: none;
+    animation: none;
+  }
+  .floaty,
+  .floaty-slow,
+  .pulse-dot,
+  .sheen::after,
+  .app-mark,
+  .app-mark .bm-bag,
+  .app-mark .bm-spark {
+    animation: none !important;
+    transition: none !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}

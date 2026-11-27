@@ -925,6 +925,37 @@ footer{padding-bottom:calc(104px + env(safe-area-inset-bottom,0px))}
 header .logo{flex:none;min-width:0}
 @media (max-width:460px){header{gap:5px;padding-inline:8px}header .logo .brandmark{display:none}header .pill{padding-inline:8px}header .cartbtn{padding-inline:10px}}
 @media (max-width:370px){header{gap:4px;padding-inline:6px}header .pill{padding-inline:6px;font-size:.78rem}header .cartbtn{padding-inline:8px;font-size:.82rem}header .logo{font-size:1.05rem}}
+
+/* ===== الإعلانات (شكل مختلف عن المنتجات) + نافذة التأكيد ===== */
+.seg{overflow-x:auto;scrollbar-width:none}.seg::-webkit-scrollbar{display:none}.seg button{white-space:nowrap}
+.adgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+.ad{position:relative;display:grid;gap:8px;padding:14px 16px 14px;border-radius:20px 20px 20px 6px;background:var(--glass);border:1px solid var(--glass-line);border-inline-start:6px solid var(--brand);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 8px 26px rgba(0,0,0,.07);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s}
+.ad:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(0,0,0,.13)}
+.ad.ft{border-inline-start-color:var(--accent);background:linear-gradient(135deg,rgba(240,138,60,.18),var(--glass) 60%);box-shadow:0 10px 30px rgba(240,138,60,.2)}
+.ad-h{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.ad-tag,.ad-cat,.ad-star{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:99px;font:700 .75rem Cairo,Tajawal,sans-serif}
+.ad-tag .icn,.ad-star .icn{width:1em;height:1em}
+.ad-tag{background:var(--brand);color:var(--brand-ink)}
+.ad-cat{background:var(--field);border:1px solid var(--glass-line)}
+.ad-star{background:var(--accent);color:var(--accent-ink)}
+.ad-d{margin-inline-start:auto;color:var(--mute)}
+.ad h3{margin:0;font-size:1.08rem}
+.ad-t{margin:0;color:var(--mute);white-space:pre-line}
+.ad-im{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.ad-im img{width:92px;height:92px;flex:none;border-radius:14px;object-fit:cover;cursor:zoom-in;border:1px solid var(--glass-line)}
+.ad-m{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ad-p{font:800 1.1rem Cairo,Tajawal,sans-serif;color:var(--accent)}
+.ads-note{margin:2px 0 10px}
+dialog.spd{width:min(360px,calc(100% - 28px));text-align:center}
+.sp{padding:26px 22px 22px;display:grid;gap:10px;justify-items:center}
+.sp h2{margin:0}.sp p{margin:0;color:var(--mute);line-height:1.6}
+.sp-ic{width:78px;height:78px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,rgba(255,255,255,.6),rgba(255,255,255,.12));border:1px solid var(--glass-line);box-shadow:0 10px 30px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.7);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.sp-ic svg{width:40px;height:40px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.sp-ic.ok{color:#1b7a4b}.sp-ic.err{color:#c0392b}
+.sp-ic.ok path{stroke-dasharray:30;stroke-dashoffset:30;animation:spck .6s .15s ease forwards}
+.sp-ic .spin{width:34px;height:34px;border:3px solid rgba(127,127,127,.28);border-top-color:var(--brand);border-radius:50%;animation:spr .8s linear infinite}
+@keyframes spck{to{stroke-dashoffset:0}}@keyframes spr{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.sp-ic.ok path{animation:none;stroke-dashoffset:0}.sp-ic .spin{animation-duration:2s}}
 </style>
 </head>
 <body>
@@ -1048,6 +1079,7 @@ header .logo{flex:none;min-width:0}
     <button role="tab" id="tabShop" aria-selected="true">المنتجات</button>
     <button role="tab" id="tabPros" aria-selected="false">الخدمات وأصحاب المهن</button>
     <button role="tab" id="tabVeh" aria-selected="false"><svg xmlns="http://www.w3.org/2000/svg" class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 16.5H2.8V13l2.3-5A1.6 1.6 0 0 1 6.6 7h10.8a1.6 1.6 0 0 1 1.5 1l2.3 5v3.5H19"/><circle cx="7.3" cy="16.5" r="1.9"/><circle cx="16.7" cy="16.5" r="1.9"/><path d="M9.4 16.5h5.2M4.5 12.5h15"/></svg> المركبات</button>
+    <button role="tab" id="tabAds" aria-selected="false"><svg xmlns="http://www.w3.org/2000/svg" class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5v3a1 1 0 0 0 1 1H7l5.5 3.8V5.7L7 9.5H4.5a1 1 0 0 0-1 1Z"/><path d="M16 9a4 4 0 0 1 0 6M18.6 6.5a7.5 7.5 0 0 1 0 11"/></svg> الإعلانات</button>
     <button role="tab" id="tabOrd" aria-selected="false">طلباتي</button>
   </div>
   <div id="shop">
@@ -1080,6 +1112,12 @@ header .logo{flex:none;min-width:0}
     <div class="vf" id="vtypes" role="group" aria-label="النوع"></div>
     <div class="vf" id="vconds" role="group" aria-label="الحالة"></div>
     <div class="vgrid" id="vlist"></div>
+  </div>
+  <div id="ads" hidden>
+    <div class="prohead"><button class="big" id="addAd"><span aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5v3a1 1 0 0 0 1 1H7l5.5 3.8V5.7L7 9.5H4.5a1 1 0 0 0-1 1Z"/><path d="M16 9a4 4 0 0 1 0 6M18.6 6.5a7.5 7.5 0 0 1 0 11"/></svg></span> أرسل إعلانك</button></div>
+    <p class="note ads-note">الإعلانات من المستخدمين ومو من المتجر. شراء المنتجات بيتم عن طريق المتجر بس، أما الإعلانات فالتواصل فيها مباشر مع صاحب الإعلان — تأكد قبل ما تدفع أي مبلغ.</p>
+    <div class="vf" id="adcats" role="group" aria-label="القسم"></div>
+    <div class="adgrid" id="adlist"></div>
   </div>
   <div id="orders" hidden>
     <div class="pro" id="notifBox" hidden><div class="pi"><h3>إشعارات الطلب</h3><small>بنبلّغك لما تتغيّر حالة طلبك. بتوصلك الإشعارات والمتجر مفتوح أو مثبّت كتطبيق.</small></div><div class="acts"><button class="btn call" id="notifBtn">فعّل الإشعارات</button></div></div>
@@ -1204,6 +1242,28 @@ header .logo{flex:none;min-width:0}
   </div>
 </dialog>
 
+<dialog id="adlg" aria-labelledby="adT">
+  <div class="ah"><h2 id="adT">أرسل إعلانك</h2><button class="pill" id="adX" style="color:var(--ink)">إغلاق</button></div>
+  <div class="ab">
+    <p class="note">إعلانك بيظهر بقسم الإعلانات بعد ما نراجعو. ما لازم تسجّل ملف.</p>
+    <label>القسم<select id="adcat"><option>بيع</option><option>شراء</option><option>إيجار</option><option>خدمات</option><option>وظائف</option><option>أخرى</option></select></label>
+    <label>عنوان الإعلان<input id="adt" maxlength="80"></label>
+    <label>تفاصيل الإعلان<textarea id="add" rows="4" maxlength="400"></textarea></label>
+    <label>السعر بالدولار (اختياري)<input id="adp" type="number" inputmode="decimal" min="0" step="0.01" dir="ltr"></label>
+    <label>المدينة<select id="adcy"></select></label>
+    <label>رقم التواصل (هاتف وواتساب)<input id="adph" type="tel" inputmode="tel" dir="ltr" placeholder="09xxxxxxxx" autocomplete="tel"></label>
+    <label>اسمك (اختياري)<input id="adn" maxlength="40"></label>
+    <div class="photorow"><div class="wprevs" id="adPrev" aria-hidden="true"><span class="av sq"><b style="font-weight:400"><svg xmlns="http://www.w3.org/2000/svg" class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3.1L8.6 5.5h6.8L16.9 8H20a1.5 1.5 0 0 1 1.5 1.5V18A1.5 1.5 0 0 1 20 19.5H4A1.5 1.5 0 0 1 2.5 18V9.5A1.5 1.5 0 0 1 4 8Z"/><circle cx="12" cy="13.2" r="3.4"/></svg></b></span></div><div><button type="button" class="ghost" id="adPick">اختر حتى 3 صور (اختياري)</button><p class="note">صور واضحة بتزيد الاهتمام بإعلانك.</p></div></div>
+    <input type="file" id="adf" accept="image/*" multiple hidden>
+    <div class="err" id="aderr" role="alert"></div>
+    <button class="send" id="adsend">أرسل الإعلان</button>
+  </div>
+</dialog>
+
+<dialog id="spdlg" class="spd" aria-labelledby="spT">
+  <div class="sp"><div class="sp-ic" id="spIc" aria-hidden="true"></div><h2 id="spT"></h2><p id="spM"></p><button class="send" id="spOk" hidden>تمام</button></div>
+</dialog>
+
 <dialog id="ddlg" aria-labelledby="ddT">
   <div class="ah"><h2 id="ddT">طلب حذف ملفي</h2><button class="pill" id="ddX" style="color:var(--ink)">إغلاق</button></div>
   <div class="ab">
@@ -1291,6 +1351,7 @@ header .logo{flex:none;min-width:0}
       <button class="pubopt" id="pubProd"><span class="po-ic"><svg xmlns="http://www.w3.org/2000/svg" class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 7.5 12 3l8.5 4.5v9L12 21l-8.5-4.5Z"/><path d="M3.5 7.5 12 12l8.5-4.5M12 12v9"/></svg></span><span><b>أضف منتج لمحلك</b><small>اسم وسعر وتصنيف وحتى 6 صور</small></span></button>
       <button class="pubopt" id="pubVeh"><span class="po-ic"><svg xmlns="http://www.w3.org/2000/svg" class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 16.5H2.8V13l2.3-5A1.6 1.6 0 0 1 6.6 7h10.8a1.6 1.6 0 0 1 1.5 1l2.3 5v3.5H19"/><circle cx="7.3" cy="16.5" r="1.9"/><circle cx="16.7" cy="16.5" r="1.9"/><path d="M9.4 16.5h5.2M4.5 12.5h15"/></svg></span><span><b>أضف مركبة للبيع</b><small>حتى 10 صور مع كامل التفاصيل</small></span></button>
       <button class="pubopt" id="pubWork"><span class="po-ic"><svg xmlns="http://www.w3.org/2000/svg" class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3.1L8.6 5.5h6.8L16.9 8H20a1.5 1.5 0 0 1 1.5 1.5V18A1.5 1.5 0 0 1 20 19.5H4A1.5 1.5 0 0 1 2.5 18V9.5A1.5 1.5 0 0 1 4 8Z"/><circle cx="12" cy="13.2" r="3.4"/></svg></span><span><b>أضف صور من أعمالك</b><small>بتظهر بصفحة ملفك</small></span></button>
+      <button class="pubopt" id="pubAd"><span class="po-ic"><svg xmlns="http://www.w3.org/2000/svg" class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5v3a1 1 0 0 0 1 1H7l5.5 3.8V5.7L7 9.5H4.5a1 1 0 0 0-1 1Z"/><path d="M16 9a4 4 0 0 1 0 6M18.6 6.5a7.5 7.5 0 0 1 0 11"/></svg></span><span><b>أرسل إعلان</b><small>بيع، شراء، إيجار، وظائف… بقسم الإعلانات</small></span></button>
       <button class="pubopt" id="pubJoin"><span class="po-ic"><svg xmlns="http://www.w3.org/2000/svg" class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9 5.6 3.5h12.8L20 9"/><path d="M4 9a2.65 2.65 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0A2.65 2.65 0 0 0 20 9"/><path d="M5.5 12v8h13v-8"/><path d="M10 20v-5.5h4V20"/></svg></span><span><b>سجّل كصاحب مهنة أو محل</b><small>بيظهر اسمك وصورتك بالدليل</small></span></button>
     </div>
   </div>
@@ -1459,10 +1520,10 @@ function pros(){
   const cur=TRADES.find(x=>x.id===sel),l=PROS.filter(x=>x.t===sel);
   $("#plist").innerHTML=!cur?`<p class="empty">اختر مهنة لعرض الأرقام</p>`:l.length?l.map(x=>`<article class="pro">${avatar(x)}<div class="pi"><h3>${esc(x.n)}</h3><small>${esc(x.c||"")}${x.d?" · "+esc(x.d):""}</small></div><div class="acts"><a class="btn call" href="tel:+${intl(x.ph)}">اتصال</a><a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/${intl(x.wa||x.ph)}">واتساب</a>${mapURL(x.m)?`<a class="btn map" target="_blank" rel="noopener" href="${esc(mapURL(x.m))}">${t('الخريطة')}</a>`:''}</div></article>`).join(""):`<p class="empty">ما في أصحاب مهن مسجلين بهالقسم حالياً.</p><button class="ghost" data-join>إذا بتشتغل بهالمهنة، سجّل رقمك</button>`;
 }
-function setView(v){view=v;$("#shop").hidden=v!=='shop';$("#pros").hidden=v!=='pros';$("#orders").hidden=v!=='orders';$("#veh").hidden=v!=='veh';$("#tabVeh").setAttribute('aria-selected',v==='veh');
+function setView(v){view=v;$("#shop").hidden=v!=='shop';$("#pros").hidden=v!=='pros';$("#orders").hidden=v!=='orders';$("#veh").hidden=v!=='veh';$("#ads").hidden=v!=='ads';$("#tabAds").setAttribute('aria-selected',v==='ads');$("#tabVeh").setAttribute('aria-selected',v==='veh');
   $("#tabShop").setAttribute('aria-selected',v==='shop');$("#tabPros").setAttribute('aria-selected',v==='pros');$("#tabOrd").setAttribute('aria-selected',v==='orders');
-  if(v==='shop')reveal();if(v==='orders'){orders.forEach(o=>{o.un=0});saveOrders();badge();renderOrders();pollOrders();updNotifBox()}else if(v==='pros')updOwnNote();else if(v==='veh')vehicles()}
-$("#tabShop").onclick=()=>{favOnly=false;setView('shop');navSync()};$("#tabPros").onclick=()=>{setView('pros');navSync()};$("#tabOrd").onclick=()=>{setView('orders');navSync()};$("#tabVeh").onclick=()=>{setView('veh');navSync()};$("#tabVeh").hidden=!SHEET_URL;
+  if(v==='shop')reveal();if(v==='orders'){orders.forEach(o=>{o.un=0});saveOrders();badge();renderOrders();pollOrders();updNotifBox()}else if(v==='pros')updOwnNote();else if(v==='veh')vehicles();else if(v==='ads')ads()}
+$("#tabShop").onclick=()=>{favOnly=false;setView('shop');navSync()};$("#tabPros").onclick=()=>{setView('pros');navSync()};$("#tabOrd").onclick=()=>{setView('orders');navSync()};$("#tabVeh").onclick=()=>{setView('veh');navSync()};$("#tabAds").onclick=()=>{setView('ads');navSync()};$("#tabVeh").hidden=!SHEET_URL;$("#tabAds").hidden=!SHEET_URL;
 $("#tgrid").onclick=e=>{const b=e.target.closest("[data-t]");if(b){sel=sel===b.dataset.t?null:b.dataset.t;pros();tr($("#pros"))}};
 $("#plist").onclick=e=>{if(e.target.closest("[data-join]"))openDlg('join',sel);const b=e.target.closest("[data-shop]");if(b)openShop(b.dataset.shop)};
 const dlg=$("#dlg");
@@ -1788,12 +1849,71 @@ $("#ddsend").onclick=async()=>{
   if(reason.length<5){er.textContent=t('اكتب سبب الحذف (5 أحرف على الأقل).');return}
   const b=$("#ddsend"),old=b.textContent;b.disabled=true;b.textContent=t('جاري الإرسال…');er.textContent='';
   try{if(window.OS&&'Notification' in window&&Notification.permission==='default')await OS.Notifications.requestPermission();osLogin(ph)}catch(e){} /* حتى توصلو رسالة التأكيد كإشعار */
+  spShow('load',t('جاري إرسال طلبك…'),t('لا تسكّر الصفحة لحظات.'));
   try{const r=await postJSON({action:'delreq',phone:ph,code:code,reason:reason});
-    if(r&&r.ok){ddlg.close();toast(t('وصلنا طلب الحذف، بنراجعو ونحذف ملفك ✓'))}
-    else er.textContent=errMsg(r&&r.error,r&&r.msg)}
-  catch(e){er.textContent=t('ما قدرنا نتأكد إنو الطلب وصل. تأكد من الإنترنت أو ابعت طلبك عبر واتساب.')}
+    if(r&&r.ok){ddlg.close();let hint='';try{if(!('Notification' in window)||Notification.permission!=='granted')hint=' '+t('فعّل إشعارات المتصفح حتى توصلك رسالة التأكيد، وإلا بنتواصل معك على واتساب.')}catch(e){}
+      spShow('ok',t('وصل طلبك'),t('وصل طلب حذف ملفك لصاحب المتجر. رح يراجعو، وبتوصلك رسالة التأكيد بإشعار على جوالك.')+hint)}
+    else{spClose();er.textContent=errMsg(r&&r.error,r&&r.msg)}}
+  catch(e){spClose();er.textContent=t('ما قدرنا نتأكد إنو الطلب وصل. تأكد من الإنترنت أو ابعت طلبك عبر واتساب.')}
   finally{b.disabled=false;b.textContent=old}};
 addKU({'الخدمات وأصحاب المهن':'Xizmet û xwediyên pîşeyan','صحية وكهرباء':'Tesîsat û elektrîk','جبسين بورد ودهان':'Gypsum board û boyax','بناء':'Avahîsazî','زريقة وتنعيم':'Zirîqe û nermkirin','سيراميك':'Seramîk','سوبر ماركت':'Supermarket','ميني ماركت':'Mini market','محلات البسة':'Dikanên cil û berg','تاجر سيارات':'Bazirganê erebeyan','تاجر دراجات نارية':'Bazirganê motorsîkletan','<svg xmlns="http://www.w3.org/2000/svg" class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> أضف منتج':'<svg xmlns="http://www.w3.org/2000/svg" class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> Hilberekê zêde bike','<svg xmlns="http://www.w3.org/2000/svg" class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> أضف صور من أعمالك':'<svg xmlns="http://www.w3.org/2000/svg" class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> Wêneyên karên xwe zêde bike','اطلب من المتجر':'Ji firoşgehê bixwaze','الطلب بيتم من المتجر فقط: اضغط اطلب من المتجر على المنتج.':'Ferman tenê ji firoşgehê ye: li ser hilberê "Ji firoşgehê bixwaze" bitikîne.','أضف أول منتج لمحلك.':'Hilbera xwe ya yekem zêde bike.','تحذف هالمنتج؟':'Tu vê hilberê jê dibî?','انحذف المنتج ✓':'Hilber hat jêbirin ✓','أضف منتج لمحلك':'Hilberekê li dikana xwe zêde bike','المنتج بيظهر بعد ما نراجعو. الزبون بيطلبو من المتجر عندنا، مو من صفحة المحل.':'Hilber piştî nirxandina me xuya dibe. Xerîdar ji firoşgeha me dixwaze, ne ji rûpela dikanê.','اسم المنتج':'Navê hilberê','السعر بالدولار':'Biha bi dolarê','السعر قبل الخصم (اختياري)':'Biha berî daxistinê (bijare)','وصف قصير (اختياري)':'Danasîna kurt (bijare)','صور واضحة للمنتج.':'Wêneyên zelal ên hilberê.','أرسل المنتج للمراجعة':'Hilberê ji bo nirxandinê bişîne','اكتب اسم المنتج.':'Navê hilberê binivîse.','اكتب سعر صحيح بالدولار.':'Bihayek rast bi dolarê binivîse.','اختر صورة وحدة على الأقل.':'Herî kêm wêneyek hilbijêre.','وصل منتجك للمراجعة، بيظهر بعد موافقتنا ✓':'Hilbera te gihîşt nirxandinê, piştî erêkirina me xuya dibe ✓','وصلت للحد الأقصى من المنتجات. احذف منتج قديم.':'Gihîşt sînorê herî zêde yê hilberan. Hilberek kevn jê bibe.','<svg xmlns="http://www.w3.org/2000/svg" class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9.5 7V4.5h5V7M6.5 7l1 13.5h9l1-13.5"/><path d="M10 11v6M14 11v6"/></svg> حذف ملفي':'<svg xmlns="http://www.w3.org/2000/svg" class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9.5 7V4.5h5V7M6.5 7l1 13.5h9l1-13.5"/><path d="M10 11v6M14 11v6"/></svg> Profîla min jê bibe','طلب حذف ملفي':'Daxwaza jêbirina profîla min','رح نراجع طلبك ونحذف الملف بعد ما نتأكد.':'Em ê daxwaza te binirxînin û piştî piştrastkirinê profîlê jê bibin.','سبب الحذف':'Sedema jêbirinê','أرسل طلب الحذف':'Daxwaza jêbirinê bişîne','اكتب سبب الحذف (5 أحرف على الأقل).':'Sedema jêbirinê binivîse (herî kêm 5 tîp).','وصلنا طلب الحذف، بنراجعو ونحذف ملفك ✓':'Daxwaza jêbirinê gihîşt me, em ê binirxînin û profîla te jê bibin ✓','عندك طلب حذف قيد المراجعة.':'Daxwazeke jêbirinê ya te di nirxandinê de ye.','هالميزة لأصحاب المحال بس.':'Ev taybetî tenê ji bo xwediyên dikanan e.','اطلب خدمة':'Xizmetekê bixwaze'});
+/* ===== نافذة التأكيد المنبثقة (جاري الإرسال ← وصل طلبك) ===== */
+const spdlg=$("#spdlg");let spKind='';
+const SPOK='<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',SPERR='<svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></svg>';
+function spShow(kind,title,msg){spKind=kind;const ic=$("#spIc");ic.className='sp-ic '+kind;ic.innerHTML=kind==='load'?'<i class="spin"></i>':kind==='ok'?SPOK:SPERR;
+  $("#spT").textContent=title;$("#spM").textContent=msg||'';$("#spOk").hidden=kind==='load';if(!spdlg.open)spdlg.showModal()}
+function spClose(){spKind='';if(spdlg.open)spdlg.close()}
+$("#spOk").onclick=spClose;spdlg.addEventListener('cancel',e=>{if(spKind==='load')e.preventDefault()});
+/* ===== الإعلانات: المستخدم بيرسل إعلانو وبيظهر بقسم مميّز عن المنتجات بعد المراجعة ===== */
+let ADS=[],ADS_READY=false,adc='all';
+const AD_CATS=['بيع','شراء','إيجار','خدمات','وظائف','أخرى'];
+const AD_ICO='<svg xmlns="http://www.w3.org/2000/svg" class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5v3a1 1 0 0 0 1 1H7l5.5 3.8V5.7L7 9.5H4.5a1 1 0 0 0-1 1Z"/><path d="M16 9a4 4 0 0 1 0 6M18.6 6.5a7.5 7.5 0 0 1 0 11"/></svg>',AD_STAR='<svg xmlns="http://www.w3.org/2000/svg" class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9Z"/></svg>',AD_PIN='<svg xmlns="http://www.w3.org/2000/svg" class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/></svg>',AD_CAM='<svg xmlns="http://www.w3.org/2000/svg" class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3.1L8.6 5.5h6.8L16.9 8H20a1.5 1.5 0 0 1 1.5 1.5V18A1.5 1.5 0 0 1 20 19.5H4A1.5 1.5 0 0 1 2.5 18V9.5A1.5 1.5 0 0 1 4 8Z"/><circle cx="12" cy="13.2" r="3.4"/></svg>';
+function adAgo(d){if(!d)return'';const n=Math.floor((Date.now()-new Date(d+'T12:00:00').getTime())/864e5);if(!(n>=0))return'';return n<1?L2('اليوم','Îro'):n===1?L2('أمس','Duh'):L2('منذ '+n+' أيام','Berî '+n+' rojan')}
+function adCard(a){const msg=encodeURIComponent(L2('مرحباً، بخصوص إعلانك "'+a.t+'" على '+STORE,'Silav, derbarê reklama te "'+a.t+'" li '+STORE)),wa=a.wa||a.ph;
+  const imgs=a.im.length?`<div class="ad-im" data-adi="${esc(a.id)}">${a.im.map((u,k)=>`<img src="${esc(u)}" data-alt="${esc(altURL(u))}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="imgFb(this)" data-k="${k}">`).join('')}</div>`:'';
+  return `<article class="ad${a.f?' ft':''}"><div class="ad-h"><span class="ad-tag">${AD_ICO} ${t('إعلان')}</span><span class="ad-cat">${esc(t(a.cat))}</span>${a.f?`<span class="ad-star">${AD_STAR} ${t('مميز')}</span>`:''}<small class="ad-d">${esc(adAgo(a.d))}</small></div><h3>${esc(a.t)}</h3><p class="ad-t">${esc(a.d2)}</p>${imgs}<div class="ad-m">${a.p>0?`<span class="ad-p">${money(a.p)}</span>`:''}${a.c?`<span class="vtag">${AD_PIN} ${esc(a.c)}</span>`:''}</div><div class="acts">${a.ph?`<a class="btn call" href="tel:+${intl(a.ph)}">${t('اتصال')}</a>`:''}<a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/${intl(wa||a.ph)}?text=${msg}">${t('واتساب')}</a></div></article>`}
+function ads(){const cats=[['all','الكل']].concat(AD_CATS.map(c=>[c,c]));
+  $("#adcats").innerHTML=cats.map(([k,l])=>`<button class="chip" aria-pressed="${adc===k}" data-ac="${esc(k)}">${l}</button>`).join('');
+  const l=ADS.filter(a=>adc==='all'||a.cat===adc);
+  $("#adlist").innerHTML=l.length?l.map(adCard).join(''):`<p class="empty">${ADS_READY?'ما في إعلانات حالياً. كن أول من يرسل إعلان!':'جاري التحميل…'}</p>`;
+  tr($("#ads"))}
+$("#adcats").onclick=e=>{const b=e.target.closest("[data-ac]");if(b){adc=b.dataset.ac;ads()}};
+$("#adlist").onclick=e=>{const im=e.target.closest(".ad-im img");if(!im)return;const a=ADS.find(x=>String(x.id)===im.parentNode.dataset.adi);if(a&&a.im.length)openLB(a.im.map(u=>({s:u,a:altURL(u),c:a.t})),+im.dataset.k||0)};
+(function(){
+  if(!SHEET_URL)return;
+  const K='sheetAds',mk=r=>{const tt=String(r.title||'').trim().slice(0,80);if(!tt)return null;
+    return{id:String(r.id||''),t:tt,cat:String(r.cat||'أخرى').slice(0,20),d2:String(r.desc||'').slice(0,400),p:Number(r.price)||0,c:String(r.city||'').slice(0,40),ph:String(r.phone||'').replace(/[^\d+]/g,'').slice(0,16),wa:String(r.wa||'').replace(/[^\d+]/g,'').slice(0,16),im:String(r.images||'').split(/[\s,]+/).map(u=>imgURL(u,900)).filter(Boolean).slice(0,3),d:String(r.date||'').slice(0,10),f:r.featured===true||/^(نعم|yes|1|true)$/i.test(String(r.featured||''))}};
+  try{const c=JSON.parse(localStorage.getItem(K)||'null');if(Array.isArray(c))ADS=c}catch(e){}
+  fetch(SHEET_URL+(SHEET_URL.includes('?')?'&':'?')+'ads=1').then(r=>r.json()).then(d=>{if(!d||!Array.isArray(d.ads))return;ADS=d.ads.map(mk).filter(Boolean);try{localStorage.setItem(K,JSON.stringify(ADS))}catch(e){}}).catch(()=>{}).then(()=>{ADS_READY=true;if(view==='ads')ads()})
+})();
+(function(){
+  const adlg=$("#adlg");let AS=[];
+  const prev=()=>{$("#adPrev").innerHTML=AS.length?AS.map(u=>`<span class="av sq ld"><img src="${u}" alt=""></span>`).join(''):`<span class="av sq"><b style="font-weight:400">${AD_CAM}</b></span>`};
+  function openAd(){['#adt','#add','#adp','#adph','#adn'].forEach(i=>$(i).value='');$("#adcat").selectedIndex=0;$("#adcy").innerHTML=cityOpts(false);$("#adf").value='';AS=[];prev();$("#aderr").textContent='';$("#adsend").disabled=false;
+    try{const i=JSON.parse(localStorage.getItem('info')||'null');if(i&&i.ph)$("#adph").value=i.ph;if(i&&i.fn)$("#adn").value=i.fn}catch(e){}
+    tr(adlg);adlg.showModal()}
+  window.openAd=openAd;
+  $("#addAd").onclick=openAd;$("#adX").onclick=()=>adlg.close();adlg.addEventListener("click",e=>{if(e.target===adlg)adlg.close()});
+  $("#adPick").onclick=()=>$("#adf").click();
+  $("#adf").onchange=async e=>{const er=$("#aderr"),all=[...e.target.files],fs=all.slice(0,3);er.textContent='';AS=[];
+    for(const f of fs){try{AS.push(await shrinkImage(f,{max:800,square:false,lim:130000}))}catch(x){er.textContent=t('تعذّر قراءة الصورة. جرّب صورة تانية.')}}
+    if(all.length>3)er.textContent=t('اخترنا أول 3 صور بس.');prev();e.target.value=''};
+  $("#adsend").onclick=async()=>{
+    const er=$("#aderr"),title=$("#adt").value.trim(),desc=$("#add").value.trim(),ph=cleanPh($("#adph").value),price=parseFloat($("#adp").value)||0;
+    if(title.length<3){er.textContent=t('اكتب عنوان للإعلان.');return}
+    if(desc.length<10){er.textContent=t('اكتب تفاصيل الإعلان (10 أحرف على الأقل).');return}
+    if(!PHONE_RE.test(ph)){er.textContent=t('رقم الهاتف غير صحيح. مثال: 0933123456');return}
+    const b=$("#adsend");b.disabled=true;er.textContent='';
+    let dev='';try{dev=localStorage.getItem('dev')||('d'+Math.random().toString(36).slice(2,10));localStorage.setItem('dev',dev)}catch(e){}
+    try{if(window.OS&&'Notification' in window&&Notification.permission==='default')await OS.Notifications.requestPermission();osLogin(ph)}catch(e){}
+    spShow('load',t('جاري إرسال إعلانك…'),AS.length?t('رفع الصور ممكن ياخد لحظات.'):'');
+    try{const r=await postJSON({action:'sendad',title:title,cat:$("#adcat").value,desc:desc,price:price,city:$("#adcy").value,phone:ph,name:$("#adn").value.trim(),dev:dev,photos:AS});
+      if(r&&r.ok){adlg.close();spShow('ok',t('وصل إعلانك'),t('وصل إعلانك لصاحب المتجر، وبيظهر بقسم الإعلانات بعد المراجعة. بيوصلك إشعار لما نوافق عليه.'))}
+      else{spClose();er.textContent=errMsg(r&&r.error,r&&r.msg)}}
+    catch(e){spClose();er.textContent=t('ما قدرنا نتأكد إنو الطلب وصل. تأكد من الإنترنت وجرّب مرة تانية.')}
+    finally{b.disabled=false}};
+})();
+addKU({'الإعلانات':'Reklam','إعلان':'Reklam','مميز':'Taybet','أرسل إعلانك':'Reklama xwe bişîne','أرسل إعلان':'Reklamek bişîne','أرسل الإعلان':'Reklamê bişîne','بيع':'Firotin','شراء':'Kirîn','إيجار':'Kirê','خدمات':'Xizmet','وظائف':'Kar','أخرى':'Yên din','القسم':'Beş','عنوان الإعلان':'Sernavê reklamê','تفاصيل الإعلان':'Hûrguliyên reklamê','رقم التواصل (هاتف وواتساب)':'Hejmara têkiliyê (telefon û WhatsApp)','اسمك (اختياري)':'Navê te (bijare)','اختر حتى 3 صور (اختياري)':'Heta 3 wêneyan hilbijêre (bijare)','صور واضحة بتزيد الاهتمام بإعلانك.':'Wêneyên zelal eleqeyê zêde dikin.','إعلانك بيظهر بقسم الإعلانات بعد ما نراجعو. ما لازم تسجّل ملف.':'Reklama te piştî nirxandina me di beşa reklaman de xuya dibe. Pêdivî bi tomarkirina profîlê tune.','الإعلانات من المستخدمين ومو من المتجر. شراء المنتجات بيتم عن طريق المتجر بس، أما الإعلانات فالتواصل فيها مباشر مع صاحب الإعلان — تأكد قبل ما تدفع أي مبلغ.':'Reklam ji bikarhêneran in, ne ji firoşgehê. Kirîna hilberan tenê bi riya firoşgehê ye, lê di reklaman de têkilî rasterast bi xwediyê reklamê re ye — berî ku tu pereyekî bidî piştrast be.','بيع، شراء، إيجار، وظائف… بقسم الإعلانات':'Firotin, kirîn, kirê, kar… di beşa reklaman de','اكتب عنوان للإعلان.':'Sernavekî ji reklamê re binivîse.','اكتب تفاصيل الإعلان (10 أحرف على الأقل).':'Hûrguliyên reklamê binivîse (herî kêm 10 tîp).','جاري إرسال إعلانك…':'Reklama te tê şandin…','رفع الصور ممكن ياخد لحظات.':'Barkirina wêneyan dibe ku demekê bigire.','وصل إعلانك':'Reklama te gihîşt','وصل إعلانك لصاحب المتجر، وبيظهر بقسم الإعلانات بعد المراجعة. بيوصلك إشعار لما نوافق عليه.':'Reklama te gihîşt xwediyê firoşgehê û piştî nirxandinê di beşa reklaman de xuya dibe. Dema em erê bikin agahdarî ji te re tê.','ما قدرنا نتأكد إنو الطلب وصل. تأكد من الإنترنت وجرّب مرة تانية.':'Em nikarin piştrast bikin ku ferman gihîşt. Înternetê kontrol bike û dîsa biceribîne.','ما في إعلانات حالياً. كن أول من يرسل إعلان!':'Niha reklam tune ne. Yekem be ku reklamekê dişîne!','جاري إرسال طلبك…':'Daxwaza te tê şandin…','لا تسكّر الصفحة لحظات.':'Rûpelê ji bo çend kêliyan negire.','وصل طلبك':'Daxwaza te gihîşt','وصل طلب حذف ملفك لصاحب المتجر. رح يراجعو، وبتوصلك رسالة التأكيد بإشعار على جوالك.':'Daxwaza jêbirina profîla te gihîşt xwediyê firoşgehê. Ew ê binirxîne û peyama piştrastkirinê bi agahdariyê li ser telefona te tê.','فعّل إشعارات المتصفح حتى توصلك رسالة التأكيد، وإلا بنتواصل معك على واتساب.':'Agahdariyên geroka xwe çalak bike da ku peyama piştrastkirinê bigihîje te, wekî din em ê bi WhatsApp têkilî bi te re bikin.','تمام':'Baş e'});
 addKU({'جميع الحقوق محفوظة':'Hemû maf parastî ne'});
 addKU({'تقييمات العملاء':'Nirxandinên xerîdaran','ما في تقييمات لسا. كن أول من يقيّم!':'Hêj nirxandin tune. Yekem tu binirxîne!','<svg xmlns="http://www.w3.org/2000/svg" class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 2.7 5.6 6.2.8-4.5 4.3 1.1 6.1L12 16.9l-5.5 2.9 1.1-6.1L3.1 9.4l6.2-.8Z"/></svg> قيّم المنتج':'<svg xmlns="http://www.w3.org/2000/svg" class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 2.7 5.6 6.2.8-4.5 4.3 1.1 6.1L12 16.9l-5.5 2.9 1.1-6.1L3.1 9.4l6.2-.8Z"/></svg> Hilberê binirxîne','تقييمك':'Nirxandina te','اسمك (اختياري)':'Navê te (bijare)','رأيك بالمنتج (اختياري)':'Ramana te li ser hilberê (bijare)','أرسل التقييم':'Nirxandinê bişîne','اختر عدد النجوم.':'Hejmara steyrkan hilbijêre.','شكراً لتقييمك ✓':'Spas ji bo nirxandina te ✓','شكراً! تقييمك بيظهر بعد المراجعة ✓':'Spas! Nirxandina te piştî kontrolê xuya dibe ✓','زبون':'Xerîdar','زيارة المحل':'Serdana dikanê','منتجات مشابهة':'Hilberên mîna wê'});
 addKU({'أضف صور من أعمالك':'Wêneyên karên xwe zêde bike','اختر حتى 3 صور':'Heta 3 wêneyan hilbijêre','صور واضحة من شغلك أو من منتجات محلك (3 صور كحد أقصى كل مرة).':'Wêneyên zelal ji karê xwe an ji hilberên dikana xwe (herî zêde 3 wêne her car).','ارفع الصور':'Wêneyan bar bike','جاري الرفع':'Tê barkirin','انضافت الصور ✓':'Wêne hatin zêdekirin ✓','انضافت بعض الصور':'Hin wêne hatin zêdekirin','اخترنا أول 3 صور بس.':'Tenê 3 wêneyên pêşî hatin hilbijartin.'});
@@ -2262,6 +2382,7 @@ publg.addEventListener('click',function(e){if(e.target===publg)publg.close()});
 function ownerGate(fn){var o=getOwner();
   if(o){fn(o)}else{publg.close();toast(t('سجّل ملفك أول حتى تنشر.'));openJoin()}}
 $('#pubProd').onclick=function(){ownerGate(function(){publg.close();openAddProd()})};
+$('#pubAd').onclick=function(){publg.close();if(window.openAd)openAd()};
 $('#pubVeh').onclick=function(){ownerGate(function(){publg.close();if(window.__openAddVeh)__openAddVeh()})};
 $('#pubWork').onclick=function(){ownerGate(function(o){var me=PROS.find(function(p){return p.n===o.name});
   publg.close();

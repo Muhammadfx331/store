@@ -2363,7 +2363,7 @@ if(tour&&bike&&truck&&tour.getTotalLength){
       var g=$q('#fdGo');if(g)g.onclick=goShop;
       return;
     }
-    fdB.innerHTML='<p class="note" id="fdHint">'+esc(t('هاي المنتجات اللي حفظتها بهالجهاز. اضغط القلب لتشيل أي منتج.'))+'</p>'
+    fdB.innerHTML='<p class="note" id="fdHint">'+esc(t(' المنتجات اللي حفظتها بهالجهاز. اضغط القلب لتشيل أي منتج.'))+'</p>'
       +'<div class="grid fdg">'+l.map(cardHTML).join('')+'</div>';
     var one=l.reduce(function(a,p){return a+(+p.p||0)},0);
     var incart=l.reduce(function(a,p){return a+(+p.p||0)*(cart[p.id]||0)},0);

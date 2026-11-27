@@ -920,6 +920,11 @@ footer{padding-bottom:calc(104px + env(safe-area-inset-bottom,0px))}
 .vafb .note{margin-top:0}
 .pro .pi h3{font-size:1.06rem}
 @media (max-width:520px){#fdlg{width:calc(100% - 14px);border-radius:22px}#fdB .fdg{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}}
+
+/* إصلاح الشريط العلوي بالجوالات الضيقة: اسم المتجر كان ينضغط وتغطيه الأزرار */
+header .logo{flex:none;min-width:0}
+@media (max-width:460px){header{gap:5px;padding-inline:8px}header .logo .brandmark{display:none}header .pill{padding-inline:8px}header .cartbtn{padding-inline:10px}}
+@media (max-width:370px){header{gap:4px;padding-inline:6px}header .pill{padding-inline:6px;font-size:.78rem}header .cartbtn{padding-inline:8px;font-size:.82rem}header .logo{font-size:1.05rem}}
 </style>
 </head>
 <body>
@@ -1306,7 +1311,7 @@ function favBtn(id){return '<button class="fav'+(FAVS.has(+id)?' on':'')+'" data
 /* ===== إعدادات المتجر: عدّلها حسب متجرك ===== */
 const STORE   = "متجري";                 // اسم المتجر
 const WHATSAPP= "963936193191";          // رقم واتساب بصيغة دولية بدون + أو أصفار
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbza87CVglv96ldM2OZq9M5Mz-C_plb-Nk9q7_cfJbie4jKHH4x-vrossFkFE9dzaYZ_/exec"           // رابط Google Apps Script لتسجيل الطلبات (اتركه فارغاً لو ما استخدمته)
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbza87CVglv96ldM2OZq9M5Mz-C_plb-Nk9q7_cfJbie4jKHH4x-vrossFkFE9dzaYZ_/exec";                     // رابط Google Apps Script لتسجيل الطلبات (اتركه فارغاً لو ما استخدمته)
 const ONESIGNAL_APP_ID = "26b0ec9e-2732-44f3-96f7-2b1fdde5652e";               // الصق هون الـ App ID من OneSignal (مش سري). فاضي = إشعارات الجوال متوقفة
 const SHEET_PRODUCTS = true;              // true: المنتجات بتنقرأ من تبويب "المنتجات" بجدول Google (الأمثلة تحت بتصير احتياطية وما بتظهر)
 const RATE_FALLBACK = 120;               // سعر احتياطي: كم ليرة سورية = 1 دولار (بيُستعمل إذا فشل جلب السعر التلقائي)
@@ -1782,6 +1787,7 @@ $("#ddsend").onclick=async()=>{
   if(!chkAuth(ph,code,er))return;
   if(reason.length<5){er.textContent=t('اكتب سبب الحذف (5 أحرف على الأقل).');return}
   const b=$("#ddsend"),old=b.textContent;b.disabled=true;b.textContent=t('جاري الإرسال…');er.textContent='';
+  try{if(window.OS&&'Notification' in window&&Notification.permission==='default')await OS.Notifications.requestPermission();osLogin(ph)}catch(e){} /* حتى توصلو رسالة التأكيد كإشعار */
   try{const r=await postJSON({action:'delreq',phone:ph,code:code,reason:reason});
     if(r&&r.ok){ddlg.close();toast(t('وصلنا طلب الحذف، بنراجعو ونحذف ملفك ✓'))}
     else er.textContent=errMsg(r&&r.error,r&&r.msg)}
@@ -2363,7 +2369,7 @@ if(tour&&bike&&truck&&tour.getTotalLength){
       var g=$q('#fdGo');if(g)g.onclick=goShop;
       return;
     }
-    fdB.innerHTML='<p class="note" id="fdHint">'+esc(t(' المنتجات اللي حفظتها بهالجهاز. اضغط القلب لتشيل أي منتج.'))+'</p>'
+    fdB.innerHTML='<p class="note" id="fdHint">'+esc(t('هاي المنتجات اللي حفظتها بهالجهاز. اضغط القلب لتشيل أي منتج.'))+'</p>'
       +'<div class="grid fdg">'+l.map(cardHTML).join('')+'</div>';
     var one=l.reduce(function(a,p){return a+(+p.p||0)},0);
     var incart=l.reduce(function(a,p){return a+(+p.p||0)*(cart[p.id]||0)},0);

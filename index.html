@@ -897,6 +897,29 @@ footer{padding-bottom:calc(104px + env(safe-area-inset-bottom,0px))}
 .prohead .big{display:inline-flex;align-items:center;gap:8px}
 .prohead .big .icn{width:1.15em;height:1.15em}
 
+
+/* ===== تحديث الواجهة ٣: نافذة المفضلة + الدليل بدون ملف شخصي + رسالة المركبات ===== */
+#fdlg{width:min(920px,calc(100% - 24px))}
+#fdlg .ah{position:sticky;top:0;z-index:2;background:var(--glass-strong);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);border-start-start-radius:26px;border-start-end-radius:26px}
+#fdlg .ab{padding:14px 16px 6px;max-height:min(64vh,620px)}
+#fdB .fdg{display:grid;grid-template-columns:repeat(auto-fill,minmax(166px,1fr));gap:12px}
+#fdB .fdg .card{border-radius:16px}
+#fdB .fdg .card .thumb{aspect-ratio:1/1;font-size:3rem}
+#fdB .fdg .card h3{font-size:1rem;line-height:1.4}
+#fdB .empty{padding:30px 6px;text-align:center}
+.fdn{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 7px;margin-inline-start:8px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-size:.8rem;font-weight:800;vertical-align:middle;box-shadow:0 3px 10px rgba(240,138,60,.35)}
+#fdSum{flex-direction:column;align-items:stretch;gap:6px}
+#fdSum>div{display:flex;justify-content:space-between;align-items:center;gap:10px}
+#fdSum .tot{font-size:1.15rem}
+#fdActs{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+#fdActs .send,#fdActs .ghost{flex:1 1 150px;margin-top:0}
+#fdHint{margin:0 0 10px}
+.vahd{display:block;line-height:1.7}
+.vafb{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.vafb .send{margin-top:0}
+.vafb .note{margin-top:0}
+.pro .pi h3{font-size:1.06rem}
+@media (max-width:520px){#fdlg{width:calc(100% - 14px);border-radius:22px}#fdB .fdg{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}}
 </style>
 </head>
 <body>
@@ -1244,6 +1267,11 @@ footer{padding-bottom:calc(104px + env(safe-area-inset-bottom,0px))}
   </div>
 </dialog>
 <div id="toast" popover="manual" role="status" aria-live="polite"></div>
+<dialog id="fdlg" aria-labelledby="fdT">
+  <div class="ah"><h2 id="fdT">المفضلة</h2><button class="pill" id="fdX" style="color:var(--ink)">إغلاق</button></div>
+  <div class="ab" id="fdB"></div>
+  <div class="sum" id="fdSum" hidden></div>
+</dialog>
 <nav id="bnav" class="bnav" aria-label="التنقل">
   <button class="bn is-on" id="bnHome"><svg xmlns="http://www.w3.org/2000/svg" class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9v11h13V9"/><path d="M10 20v-5h4v5"/></svg><span>الرئيسية</span></button>
   <button class="bn" id="bnFav"><svg xmlns="http://www.w3.org/2000/svg" class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.6C7.2 16.5 3.6 13.1 3.6 9.4 3.6 6.7 5.7 4.8 8.1 4.8c1.5 0 3 .8 3.9 2 .9-1.2 2.4-2 3.9-2 2.4 0 4.5 1.9 4.5 4.6 0 3.7-3.6 7.1-8.4 11.2Z"/></svg><i class="bnav-badge" id="bnFavBadge" aria-hidden="true"></i><span>المفضلة</span></button>
@@ -1424,7 +1452,7 @@ function pros(){
   $("#tgrid").innerHTML=TRADES.map(x=>{const n=PROS.filter(y=>y.t===x.id).length;
     return `<button class="tile" aria-pressed="${sel===x.id}" data-t="${x.id}">${n?`<b class="tc">${n}</b>`:""}<span class="te" aria-hidden="true">${icn(x.e)}</span><span class="tn">${x.n}</span></button>`}).join("");
   const cur=TRADES.find(x=>x.id===sel),l=PROS.filter(x=>x.t===sel);
-  $("#plist").innerHTML=!cur?`<p class="empty">اختر مهنة لعرض الأرقام</p>`:l.length?l.map(x=>`<article class="pro">${avatar(x)}<div class="pi"><h3><a class="plink" href="#u=${encodeURIComponent(x.n)}">${esc(x.n)}</a></h3><small>${esc(x.c||"")}${x.d?" · "+esc(x.d):""}</small></div><div class="acts"><a class="btn call" href="tel:+${intl(x.ph)}">اتصال</a><a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/${intl(x.wa||x.ph)}">واتساب</a>${mapURL(x.m)?`<a class="btn map" target="_blank" rel="noopener" href="${esc(mapURL(x.m))}">${t('الخريطة')}</a>`:''}<button class="btn prod" data-shop="${esc(x.n)}">${t('الملف الشخصي')}</button></div></article>`).join(""):`<p class="empty">ما في أصحاب مهن مسجلين بهالقسم حالياً.</p><button class="ghost" data-join>إذا بتشتغل بهالمهنة، سجّل رقمك</button>`;
+  $("#plist").innerHTML=!cur?`<p class="empty">اختر مهنة لعرض الأرقام</p>`:l.length?l.map(x=>`<article class="pro">${avatar(x)}<div class="pi"><h3>${esc(x.n)}</h3><small>${esc(x.c||"")}${x.d?" · "+esc(x.d):""}</small></div><div class="acts"><a class="btn call" href="tel:+${intl(x.ph)}">اتصال</a><a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/${intl(x.wa||x.ph)}">واتساب</a>${mapURL(x.m)?`<a class="btn map" target="_blank" rel="noopener" href="${esc(mapURL(x.m))}">${t('الخريطة')}</a>`:''}</div></article>`).join(""):`<p class="empty">ما في أصحاب مهن مسجلين بهالقسم حالياً.</p><button class="ghost" data-join>إذا بتشتغل بهالمهنة، سجّل رقمك</button>`;
 }
 function setView(v){view=v;$("#shop").hidden=v!=='shop';$("#pros").hidden=v!=='pros';$("#orders").hidden=v!=='orders';$("#veh").hidden=v!=='veh';$("#tabVeh").setAttribute('aria-selected',v==='veh');
   $("#tabShop").setAttribute('aria-selected',v==='shop');$("#tabPros").setAttribute('aria-selected',v==='pros');$("#tabOrd").setAttribute('aria-selected',v==='orders');
@@ -2051,7 +2079,7 @@ $("#elink").onclick=async()=>{
 function updOwnNote(){const o=getOwner(),el=$("#ownNote");if(!o||!SHEET_URL){el.hidden=true;return}
   const x=PROS.find(y=>last9(y.ph)===last9(o.ph));
   if(x&&o){try{const k='ownOK_'+last9(o.ph);if(!localStorage.getItem(k)){localStorage.setItem(k,'1');addNotif('تمت الموافقة على ملفك «'+x.n+'» وصار ظاهر بالدليل ✓')}}catch(e){}}
-  if(x){el.hidden=false;el.innerHTML=`<div class="pi"><h3>${esc(x.n)}</h3><small>${t('هاد ملفك. افتحو لتضيف صور من أعمالك.')}</small></div><div class="acts"><button class="btn call" data-shop="${esc(x.n)}">${t('افتح ملفي')}</button></div>`}
+  if(x){el.hidden=false;el.innerHTML=`<div class="pi"><h3>${esc(x.n)}</h3><small>${t('هاد ملفك. افتحو من زر «ملفي» بالشريط السفلي لتضيف صور من أعمالك.')}</small></div>`}
   else if(PROS_READY){el.hidden=false;el.innerHTML=`<div class="pi"><h3>${esc(o.name||'')}</h3><small>${t('طلبك قيد المراجعة. بيظهر ملفك لما نوافق عليه.')}</small></div>`}
   else{el.hidden=true;return}tr(el)}
 $("#ownNote").onclick=e=>{const b=e.target.closest("[data-shop]");if(b)openShop(b.dataset.shop)};
@@ -2124,7 +2152,7 @@ openFromHash();
 /* ===== نشر المركبات: حتى 10 صور + كامل التفاصيل (تطوير واجهة — الإرسال لنفس SHEET_URL) ===== */
 (function(){
 var vadlg=$("#vadlg");if(!vadlg)return;
-var VS=[],VMAX=10;
+var VS=[],VMAX=10;var VLAST=null;
 var camIco=function(){return ESVG["\u{1F4F7}"]||""};
 function renderVPrev(){var h=VS.map(function(u){return '<span class="av sq ld"><img src="'+u+'" alt=""></span>'}).join('');
   $("#vaPrev").innerHTML=h?h:'<span class="av sq"><b style="font-weight:400">'+camIco()+'</b></span>'}
@@ -2143,11 +2171,51 @@ $("#vasend").onclick=async function(){
   if(y&&(+y<1950||+y>2100)){er.textContent=t('سنة الصنع مو منطقية.');return}
   if(!VS.length){er.textContent=t('اختر صورة وحدة على الأقل.');return}
   var b=$("#vasend"),oldT=b.textContent;b.disabled=true;b.textContent=t('جاري الإرسال…');er.textContent='';
-  try{var r=await postJSON({action:'addveh',phone:o.ph,code:o.code,type:$("#vat").value,name:name,year:y,price:price,cond:$("#vac").value,km:km,city:$("#vacy").value,desc:$("#vad").value.trim(),photos:VS});
+  VLAST={action:'addveh',phone:o.ph,code:o.code,type:$("#vat").value,name:name,year:y,price:price,cond:$("#vac").value,km:km,city:$("#vacy").value,desc:$("#vad").value.trim(),photos:VS};
+  try{var r=await postJSON(VLAST);
     if(r&&r.ok){vadlg.close();toast(t('وصلت مركبتك للمراجعة، بتظهر بقسم المركبات بعد موافقتنا ✓'))}
-    else er.textContent=errMsg(r&&r.error,r&&r.msg)}
-  catch(e){er.textContent=t('ما قدرنا نتأكد إنو الطلب وصل. تأكد من الإنترنت أو ابعت طلبك عبر واتساب.')}
+    else if(r&&r.error==='server'&&VS.length>3){var r2=await postJSON(Object.assign({},VLAST,{photos:VS.slice(0,3)}));
+      if(r2&&r2.ok){vadlg.close();toast(t('وصلت مركبتك للمراجعة، بتظهر بقسم المركبات بعد موافقتنا ✓'))}
+      else vaFail(er,r2&&r2.error==='server'?r2:r)}
+    else vaFail(er,r)}
+  catch(e){vaFail(er,'net')}
   finally{b.disabled=false;b.textContent=oldT}};
+
+/* --- تشخيص فشل نشر المركبة + مخرج واتساب (لا يمس الطلبات ولا الإشعارات) --- */
+function vehText(){
+  var d=VLAST||{},o=getOwner()||{};
+  var TN={car:'سيارة',bike:'دراجة نارية'},CN={'new':'جديدة','used':'مستعملة'};
+  var L=['نشر مركبة بدليل '+STORE,'—','النوع: '+(TN[d.type]||d.type||'—'),'الموديل: '+(d.name||'—'),'سنة الصنع: '+(d.year||'—')];
+  if(d.cond)L.push('الحالة: '+(CN[d.cond]||d.cond));
+  L.push('السعر بالدولار: '+(d.price||0));
+  if(d.km)L.push('الكيلومتراج: '+d.km);
+  L.push('المدينة: '+(d.city||'—'));
+  if(d.desc)L.push('الوصف: '+d.desc);
+  if(o.ph)L.push('رقم الناشر: '+o.ph);
+  if(o.code)L.push('رمز التعديل: '+o.code);
+  L.push('—','(رح أرفق صور المركبة بهالمحادثة)');
+  return L.join('\n');
+}
+function vaFail(er,r){
+  var code=(typeof r==='string')?r:(r&&r.error);
+  var head=code==='oldserver'
+    ? t('نشر المركبات بالصور مو مفعّل بعد على سيرفر الجدول (Google Apps Script). المشكلة مو من جهازك ولا من الصور — صاحب المتجر لازم يحدّث السكربت ويعيد نشره. بياناتك ما ضاعت: أرسلها هلأ على واتساب.')
+    : code==='net'
+      ? t('ما قدرنا نوصل للسيرفر. تأكد من الإنترنت، أو أرسل تفاصيل المركبة على واتساب.')
+      : code==='full'
+        ? t('وصلت للحد الأقصى من الإعلانات. احذف إعلان قديم.')
+        : code==='auth'||code==='invalid'
+          ? t('لازم تسجّل ملفك بالدليل أول (رقم الهاتف + رمز التعديل).')
+          : errMsg(code,r&&r.msg);
+  er.innerHTML='<span class="vahd">'+esc(head)+'</span>'
+    +'<span class="vafb"><button type="button" class="send" id="vaWa">'+t('أرسل تفاصيل المركبة على واتساب')+'</button>'
+    +'<small class="note">'+t('بتفتح المحادثة وكل التفاصيل مكتوبة فيها — أرفق معها صور المركبة واضغط إرسال.')+'</small></span>';
+  tr(er);
+  var wb=document.getElementById('vaWa');
+  if(wb)wb.onclick=function(){window.open('https://wa.me/'+WHATSAPP+'?text='+encodeURIComponent(vehText()),'_blank')};
+  try{if(VLAST)localStorage.setItem('vehDraft',JSON.stringify({type:VLAST.type,name:VLAST.name,year:VLAST.year,price:VLAST.price,cond:VLAST.cond,km:VLAST.km,city:VLAST.city,desc:VLAST.desc,t:Date.now()}))}catch(_){}
+}
+addKU({'نشر المركبات بالصور مو مفعّل بعد على سيرفر الجدول (Google Apps Script). المشكلة مو من جهازك ولا من الصور — صاحب المتجر لازم يحدّث السكربت ويعيد نشره. بياناتك ما ضاعت: أرسلها هلأ على واتساب.':'Weşandina wesayîtan bi wêneyan hîn li ser serverê (Google Apps Script) ne çalak e. Kêşe ne ji cîhaza te ye — xwediyê firoşgehê divê skriptê nû bike. Daneyên te winda nebûn: niha li WhatsApp bişîne.','أرسل تفاصيل المركبة على واتساب':'Hûrgiliyên wesayîtê li WhatsApp bişîne','بتفتح المحادثة وكل التفاصيل مكتوبة فيها — أرفق معها صور المركبة واضغط إرسال.':'Sohbet vedibe û hemû hûrgulî tê de ne — wêneyên wesayîtê pê ve bike û bişîne.','ما قدرنا نوصل للسيرفر. تأكد من الإنترنت، أو أرسل تفاصيل المركبة على واتساب.':'Nikaribûn bigihîjin serverê. Înternetê kontrol bike an hûrguliyan li WhatsApp bişîne.'});
 $("#vaX").onclick=function(){vadlg.close()};
 vadlg.addEventListener("click",function(e){if(e.target===vadlg)vadlg.close()});
 if($("#addVeh"))$("#addVeh").onclick=function(){
@@ -2266,6 +2334,117 @@ if(tour&&bike&&truck&&tour.getTotalLength){
   }
 }
 },2900);
+})();
+</script>
+
+<script>
+/* ===== تحديث الواجهة ٣: المفضلة كنافذة منبثقة + زر «ملفي» (لا يمس الطلبات ولا الإشعارات) ===== */
+(function(){
+  function $q(x){return document.querySelector(x)}
+  var fdlg=$q('#fdlg');if(!fdlg)return;
+  var fdB=$q('#fdB'),fdSum=$q('#fdSum'),fdT=$q('#fdT'),bnFav=$q('#bnFav'),bnMe=$q('#bnMe');
+  var HEART_ON='on';
+  function favProducts(){return PRODUCTS.filter(function(p){return FAVS.has(+p.id)})}
+  function markNav(){
+    [].forEach.call(document.querySelectorAll('#bnav .bn'),function(b){b.classList.remove('is-on')});
+    if(bnFav&&fdlg.open)bnFav.classList.add('is-on');
+    else if(window.navSync)navSync();
+  }
+  function openCartSheet(){var b=$q('#openCart');if(b)b.click()}
+  function goShop(){fdlg.close();favOnly=false;setView('shop');refreshGrid();markNav();window.scrollTo({top:0,behavior:'smooth'})}
+  function renderFavs(){
+    var l=favProducts(),n=l.length;
+    fdT.innerHTML=esc(t('المفضلة'))+(n?'<span class="fdn">'+(n>99?'99+':n)+'</span>':'');
+    if(!n){
+      fdSum.hidden=true;
+      fdB.innerHTML='<p class="empty">'+esc(t('مافي شي بالمفضلة بعد. اضغط على القلب بأي منتج لتحفظو هون.'))+'</p>'
+        +'<button type="button" class="send" id="fdGo">'+esc(t('تسوّق الآن'))+'</button>';
+      tr(fdlg);
+      var g=$q('#fdGo');if(g)g.onclick=goShop;
+      return;
+    }
+    fdB.innerHTML='<p class="note" id="fdHint">'+esc(t('هاي المنتجات اللي حفظتها بهالجهاز. اضغط القلب لتشيل أي منتج.'))+'</p>'
+      +'<div class="grid fdg">'+l.map(cardHTML).join('')+'</div>';
+    var one=l.reduce(function(a,p){return a+(+p.p||0)},0);
+    var incart=l.reduce(function(a,p){return a+(+p.p||0)*(cart[p.id]||0)},0);
+    fdSum.hidden=false;
+    fdSum.innerHTML='<div><span>'+esc(t('عدد المنتجات'))+'</span><b>'+n+'</b></div>'
+      +'<div><span>'+esc(t('قيمة المفضلة'))+'</span><b class="tot">'+money(one)+'</b></div>'
+      +(incart?'<div><span>'+esc(t('الموجود بالسلة منها'))+'</span><b>'+money(incart)+'</b></div>':'')
+      +'<div id="fdActs"><button type="button" class="send" id="fdAll">'+esc(t('أضف الكل للسلة'))+'</button>'
+      +'<button type="button" class="ghost" id="fdCart">'+esc(t('افتح السلة'))+'</button></div>';
+    tr(fdlg);
+    var ab=$q('#fdAll');if(ab)ab.onclick=function(){
+      l.forEach(function(p){cart[p.id]=(cart[p.id]||0)+1});
+      save();render(true);markNav();
+      toast(t('ضفنا كل المفضلة للسلة ✓'));
+      renderFavs();
+    };
+    var cb=$q('#fdCart');if(cb)cb.onclick=function(){fdlg.close();openCartSheet()};
+  }
+  function openFavs(){
+    renderFavs();
+    if(typeof tr==='function')tr(fdlg);
+    if(!fdlg.open)fdlg.showModal();
+    markNav();
+    try{fdlg.scrollTop=0}catch(_){}
+  }
+  window.__openFavs=openFavs;
+  if(bnFav)bnFav.onclick=function(){
+    if(fdlg.open){fdlg.close();return}
+    favOnly=false;
+    if(typeof view!=='undefined'&&view!=='shop')setView('shop');
+    refreshGrid();
+    openFavs();
+  };
+  $q('#fdX').onclick=function(){fdlg.close()};
+  fdlg.addEventListener('close',function(){markNav()});
+  fdlg.addEventListener('click',function(e){
+    if(e.target===fdlg){fdlg.close();return}
+    var sc=e.target.closest('[data-shopc]');
+    if(sc){fdlg.close();openShop(sc.dataset.shopc);return}
+    var pl=e.target.closest('a[href^="#p="]');
+    if(pl){fdlg.close();return}
+    var ad=e.target.closest('[data-add]');
+    if(ad){
+      cart[ad.dataset.add]=(cart[ad.dataset.add]||0)+1;
+      save();render(true);toast(t('أضفناه للسلة ✓'));renderFavs();return;
+    }
+    if(e.target.closest('a')||e.target.closest('button'))return;
+    var c=e.target.closest('.card');
+    if(c&&c.dataset.id){fdlg.close();location.hash='p='+c.dataset.id}
+  });
+  /* مستمع capture مسجّل بعد مستمع الشريط السفلي: هو بيحدّث FAVS أولاً ثم نعيد الرسم.
+     (مستمع الشريط السفلي بيستعمل stopPropagation فمنع الوصول لأي مستمع bubble) */
+  document.addEventListener('click',function(e){
+    var f=e.target&&e.target.closest?e.target.closest('[data-fav]'):null;
+    if(!f||!fdlg.open)return;
+    renderFavs();markNav();
+  },true);
+  /* زر «ملفي» بالشريط السفلي: الوصول الوحيد للملف الشخصي */
+  if(bnMe)bnMe.onclick=function(){
+    var o=getOwner();
+    if(!o){toast(t('سجّل ملفك أول حتى تشوف ملفك.'));openJoin();return}
+    var mine=null;
+    try{mine=PROS.find(function(p){return last9(p.ph)===last9(o.ph)})}catch(_){}
+    if(!mine&&o.name)mine=PROS.find(function(p){return p.n===o.name});
+    if(mine){
+      if(pdlg&&pdlg.open)pdlg.close();
+      if(fdlg.open)fdlg.close();
+      location.hash='u='+encodeURIComponent(mine.n);
+      [].forEach.call(document.querySelectorAll('#bnav .bn'),function(b){b.classList.remove('is-on')});
+      bnMe.classList.add('is-on');
+      return;
+    }
+    toast(t('طلبك قيد المراجعة. بيظهر ملفك لما نوافق عليه.'));
+    setView('pros');
+    if(typeof updOwnNote==='function')updOwnNote();
+    markNav();
+    var note=$q('#ownNote');
+    if(note&&!note.hidden)note.scrollIntoView({behavior:'smooth',block:'center'});
+  };
+  addKU({'المفضلة':'Bijare','تسوّق الآن':'Niha bikirr','هاي المنتجات اللي حفظتها بهالجهاز. اضغط القلب لتشيل أي منتج.':'Ev hilberên tu li vê cîhazê tomar kirine. Li dilê bitikîne da yekê jê bibî.','عدد المنتجات':'Hejmara hilberan','قيمة المفضلة':'Nirxa bijareyan','الموجود بالسلة منها':'Yên di selikê de','أضف الكل للسلة':'Hemûyan têxe selikê','افتح السلة':'Selikê veke','ضفنا كل المفضلة للسلة ✓':'Hemû bijare hatin zêdekirin ✓','أضفناه للسلة ✓':'Hate zêdekirin ✓','طلبك قيد المراجعة. بيظهر ملفك لما نوافق عليه.':'Daxwaza te di bin nirxandinê de ye. Profîla te piştî erêkirinê xuya dibe.','سجّل ملفك أول حتى تشوف ملفك.':'Pêşî profîla xwe tomar bike da tu profîla xwe bibînî.'});
+  if(typeof favOnly!=='undefined')favOnly=false;
 })();
 </script>
 </body>
